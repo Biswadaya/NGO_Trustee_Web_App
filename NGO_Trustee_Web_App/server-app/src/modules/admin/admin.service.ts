@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../utils/db';
+import { AppError } from '../../middleware/error';
 
-const prisma = new PrismaClient();
 
 export const getDashboardStats = async () => {
     const [
@@ -33,3 +33,81 @@ export const getDashboardStats = async () => {
         recentActivity: [], // Placeholder
     };
 };
+
+export const getPendingVolunteers = async () => {
+    const volunteers = await prisma.volunteer.findMany({
+        where: { status: 'PENDING' },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    created_at: true,
+                },
+            },
+        },
+        orderBy: { created_at: 'desc' },
+    });
+
+    return volunteers;
+};
+
+export const approveVolunteer = async (volunteerId: string, approvedById: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { id: volunteerId },
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer not found', 404);
+    }
+
+    if (volunteer.status !== 'PENDING') {
+        throw new AppError('Volunteer is not in pending status', 400);
+    }
+
+    const updatedVolunteer = await prisma.volunteer.update({
+        where: { id: volunteerId },
+        data: {
+            status: 'ACTIVE',
+            approval_date: new Date(),
+            activated_manually: true,
+            activated_by_id: approvedById,
+        },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                    role: true,
+                },
+            },
+        },
+    });
+
+    return updatedVolunteer;
+};
+
+export const rejectVolunteer = async (volunteerId: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { id: volunteerId },
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer not found', 404);
+    }
+
+    if (volunteer.status !== 'PENDING') {
+        throw new AppError('Volunteer is not in pending status', 400);
+    }
+
+    const updatedVolunteer = await prisma.volunteer.update({
+        where: { id: volunteerId },
+        data: {
+            status: 'INACTIVE',
+        },
+    });
+
+    return updatedVolunteer;
+};
+

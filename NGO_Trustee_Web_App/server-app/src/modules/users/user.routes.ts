@@ -5,10 +5,21 @@ import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
-// Admin only routes
-router.use(protect, restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MANAGER));
+import { checkPermission } from '../../middleware/permissions';
 
-router.put('/:userId/block', UserController.blockUser);
-router.put('/:userId/unblock', UserController.unblockUser);
+// Admin/Manager routes
+router.put('/:userId/block',
+    protect,
+    restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MANAGER),
+    checkPermission('can_block_users'),
+    UserController.blockUser
+);
+
+router.put('/:userId/unblock',
+    protect,
+    restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MANAGER),
+    checkPermission('can_block_users'),
+    UserController.unblockUser
+);
 
 export default router;

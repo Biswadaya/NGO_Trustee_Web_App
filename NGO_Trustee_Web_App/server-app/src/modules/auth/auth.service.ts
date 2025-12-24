@@ -1,9 +1,9 @@
-import { PrismaClient, User, Volunteer, UserRole } from '@prisma/client';
+import { User, Volunteer, UserRole } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { AppError } from '../../middleware/error';
 import { signToken, signRefreshToken } from '../../utils/jwt';
+import { prisma } from '../../utils/db';
 
-const prisma = new PrismaClient();
 
 export const registerUser = async (data: {
     email: string;

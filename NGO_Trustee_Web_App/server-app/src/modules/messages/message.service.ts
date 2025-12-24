@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../../utils/db';
 
-const prisma = new PrismaClient();
 
 export const sendMessage = async (data: any, senderId: string) => {
     const { recipient_type, recipient_id, subject, message, priority } = data;

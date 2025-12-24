@@ -1,11 +1,11 @@
-import { PrismaClient, VolunteerStatus, MembershipStatus } from '@prisma/client';
+import { VolunteerStatus, MembershipStatus } from '@prisma/client';
 import { AppError } from '../../middleware/error';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
 import fs from 'fs';
 import path from 'path';
+import { prisma } from '../../utils/db';
 
-const prisma = new PrismaClient();
 
 export const activateVolunteer = async (volunteerId: string, activatedBy: string) => {
     return prisma.volunteer.update({

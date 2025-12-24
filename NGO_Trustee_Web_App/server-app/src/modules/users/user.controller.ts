@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AppError } from '../../middleware/error';
+import { prisma } from '../../utils/db';
 
-const prisma = new PrismaClient();
 
 export const blockUser = async (req: Request, res: Response, next: NextFunction) => {
     try {

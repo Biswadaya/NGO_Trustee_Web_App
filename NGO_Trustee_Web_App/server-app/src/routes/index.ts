@@ -7,6 +7,9 @@ import donationRoutes from '../modules/donations/donation.routes';
 import certificateRoutes from '../modules/certificates/certificate.routes';
 import messageRoutes from '../modules/messages/message.routes';
 import adminRoutes from '../modules/admin/admin.routes';
+import noticeRoutes from '../modules/notices/notice.routes';
+import fileRoutes from '../modules/files/file.routes';
+import transparencyRoutes from '../modules/admin/transparency.routes';
 
 const router = express.Router();
 
@@ -18,5 +21,8 @@ router.use('/donations', donationRoutes);
 router.use('/certificates', certificateRoutes);
 router.use('/messages', messageRoutes);
 router.use('/admin', adminRoutes);
+router.use('/notices', noticeRoutes);
+router.use('/files', fileRoutes);
+router.use('/transparency', transparencyRoutes);
 
 export default router;
