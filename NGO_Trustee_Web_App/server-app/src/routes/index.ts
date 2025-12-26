@@ -10,6 +10,7 @@ import adminRoutes from '../modules/admin/admin.routes';
 import noticeRoutes from '../modules/notices/notice.routes';
 import fileRoutes from '../modules/files/file.routes';
 import transparencyRoutes from '../modules/admin/transparency.routes';
+import dashboardRoutes from '../modules/dashboard/dashboard.routes';
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use('/admin', adminRoutes);
 router.use('/notices', noticeRoutes);
 router.use('/files', fileRoutes);
 router.use('/transparency', transparencyRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 export default router;

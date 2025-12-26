@@ -9,5 +9,9 @@ router.post('/', DonationController.create); // Public for now, or use token if 
 
 router.use(protect, restrictTo(UserRole.ADMIN, UserRole.MANAGER));
 router.get('/', DonationController.list);
+router.get('/stats', DonationController.getStats);
+router.get('/:id', DonationController.getById);
+router.get('/transaction/:transaction_id', DonationController.getByTransactionId);
 
 export default router;
+

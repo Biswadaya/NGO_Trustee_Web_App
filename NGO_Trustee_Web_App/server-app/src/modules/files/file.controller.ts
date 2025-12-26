@@ -33,3 +33,40 @@ export const uploadFile = async (req: Request, res: Response, next: NextFunction
         next(error);
     }
 };
+
+export const listFiles = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const files = await prisma.file.findMany({
+            orderBy: { created_at: 'desc' },
+            include: { uploaded_by: { select: { email: true, role: true } } }
+        });
+        res.status(200).json({ status: 'success', data: { files } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateFile = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { filename } = req.body;
+        const file = await prisma.file.update({
+            where: { id: req.params.id },
+            data: { filename },
+        });
+        res.status(200).json({ status: 'success', data: { file } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteFile = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await prisma.file.delete({
+            where: { id: req.params.id },
+        });
+        res.status(204).json({ status: 'success', data: null });
+    } catch (error) {
+        next(error);
+    }
+};
+

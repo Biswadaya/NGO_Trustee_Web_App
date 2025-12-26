@@ -71,3 +71,113 @@ export const payMembership = async (volunteerId: string, amount: number) => {
         }
     });
 };
+
+export const getVolunteers = async () => {
+    return prisma.volunteer.findMany({
+        orderBy: { created_at: 'desc' },
+        include: { user: { select: { email: true, role: true } } }
+    });
+};
+
+export const getVolunteerPersonalInfo = async (id: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { id },
+        include: { user: { select: { email: true, role: true } } }
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer not found', 404);
+    }
+
+    return volunteer;
+};
+
+export const updateVolunteerStatus = async (id: string, status: VolunteerStatus) => {
+    return prisma.volunteer.update({
+        where: { id },
+        data: { status }
+    });
+};
+
+export const getVolunteerIdCard = async (id: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            unique_id: true,
+            full_name: true,
+            id_card_number: true,
+            id_card_qr_code: true,
+            id_card_issued_date: true,
+            id_card_status: true
+        }
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer not found', 404);
+    }
+
+    return volunteer;
+};
+
+export const getAllIdCards = async () => {
+    return prisma.volunteer.findMany({
+        where: { id_card_number: { not: null } },
+        select: {
+            id: true,
+            unique_id: true,
+            full_name: true,
+            id_card_number: true,
+            id_card_issued_date: true,
+            id_card_status: true
+        },
+        orderBy: { id_card_issued_date: 'desc' }
+    });
+};
+
+export const revokeIdCard = async (id: string) => {
+    return prisma.volunteer.update({
+        where: { id },
+        data: { id_card_status: 'revoked', status: VolunteerStatus.BLOCKED }
+    });
+};
+
+export const getVolunteerUniqueId = async (id: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { id },
+        select: { unique_id: true }
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer not found', 404);
+    }
+
+    return volunteer.unique_id;
+};
+
+export const registerVolunteer = async (data: any) => {
+    // First create user account
+    const user = await prisma.user.create({
+        data: {
+            email: data.email,
+            password_hash: 'hashed_password', // In production, properly hash the password
+            role: 'VOLUNTEER'
+        }
+    });
+
+    // Then create volunteer profile
+    return prisma.volunteer.create({
+        data: {
+            user_id: user.id,
+            full_name: data.full_name,
+            email: data.email,
+            phone: data.phone,
+            bio: data.bio,
+            skills: data.skills,
+            availability: data.availability,
+            motivation: data.motivation,
+            emergency_contact: data.emergency_contact
+        }
+    });
+};
+

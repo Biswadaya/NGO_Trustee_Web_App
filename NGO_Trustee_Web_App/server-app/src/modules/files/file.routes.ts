@@ -7,5 +7,9 @@ const router = express.Router();
 
 router.use(protect);
 router.post('/upload', upload.single('file'), FileController.uploadFile);
+router.get('/list', FileController.listFiles);
+router.put('/:id', FileController.updateFile);
+router.delete('/:id', FileController.deleteFile);
 
 export default router;
+

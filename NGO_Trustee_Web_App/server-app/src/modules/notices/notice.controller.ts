@@ -40,4 +40,22 @@ export const listAdmin = async (req: Request, res: Response, next: NextFunction)
     } catch (error) {
         next(error);
     }
-}
+};
+
+export const updateNotice = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const notice = await NoticeService.updateNotice(req.params.id, req.body);
+        res.status(200).json({ status: 'success', data: { notice } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteNotice = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await NoticeService.deleteNotice(req.params.id);
+        res.status(204).json({ status: 'success', data: null });
+    } catch (error) {
+        next(error);
+    }
+};

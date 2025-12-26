@@ -6,7 +6,10 @@ import { UserRole } from '@prisma/client';
 const router = express.Router();
 
 // Public read access
-router.get('/', TransparencyController.list);
+router.get('/reports', TransparencyController.list);
+router.get('/certifications', TransparencyController.getCertifications);
+router.get('/financial-breakdown', TransparencyController.getFinancialBreakdown);
+
 
 // Admin write access
 router.use(protect);

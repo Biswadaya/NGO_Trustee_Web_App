@@ -1,28 +1,21 @@
 import express from 'express';
 import * as NoticeController from './notice.controller';
 import { protect, restrictTo } from '../../middleware/auth';
-import { checkPermission } from '../../middleware/permissions';
 import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
 // Public routes
-router.get('/public', NoticeController.listPublic);
+router.get('/notices/list', NoticeController.listPublic);
 
-// Authenticated routes
+// Protected routes
 router.use(protect);
 router.get('/my-notices', NoticeController.listMyNotices);
 
 // Admin routes
-router.get('/admin/all',
-    restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MANAGER),
-    NoticeController.listAdmin
-);
-
-router.post('/',
-    restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN, UserRole.MANAGER),
-    checkPermission('can_edit_notices'),
-    NoticeController.create
-);
+router.post('/admin/notices/create', restrictTo(UserRole.ADMIN, UserRole.MANAGER), NoticeController.create);
+router.get('/admin/notice/history', restrictTo(UserRole.ADMIN, UserRole.MANAGER), NoticeController.listAdmin);
+router.put('/admin/notice/:id/edit', restrictTo(UserRole.ADMIN, UserRole.MANAGER), NoticeController.updateNotice);
+router.delete('/admin/notice/:id', restrictTo(UserRole.ADMIN, UserRole.MANAGER), NoticeController.deleteNotice);
 
 export default router;
