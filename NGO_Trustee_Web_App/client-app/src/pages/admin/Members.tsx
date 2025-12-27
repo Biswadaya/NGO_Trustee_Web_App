@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { adminAPI, volunteerAPI } from '@/api/endpoints';
-import { Search, Plus, MoreHorizontal, UserX, UserCheck, ShieldAlert, Loader2 } from 'lucide-react';
+import { Search, Plus, MoreHorizontal, UserX, UserCheck, ShieldAlert, Loader2, History } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -42,7 +42,7 @@ const AdminMembers = () => {
     full_name: '',
     email: '',
     password: '',
-    role: 'DONOR'
+    role: 'VOLUNTEER'
   });
 
   const fetchUsers = async () => {
@@ -64,9 +64,15 @@ const AdminMembers = () => {
     e.preventDefault();
     try {
       setIsActionLoading(true);
-      await volunteerAPI.register(newUser);
-      toast.success('User account created successfully');
-      setNewUser({ full_name: '', email: '', password: '', role: 'DONOR' });
+      if (newUser.role === 'VOLUNTEER') {
+        await adminAPI.addVolunteer(newUser);
+        toast.success('Volunteer added (Pending Approval)');
+      } else {
+        // Fallback for non-volunteers if needed, or just warn
+        await volunteerAPI.register(newUser);
+        toast.success('User created');
+      }
+      setNewUser({ full_name: '', email: '', password: '', role: 'VOLUNTEER' });
       fetchUsers();
     } catch (error) {
       toast.error('Failed to create user');
@@ -82,6 +88,16 @@ const AdminMembers = () => {
       fetchUsers();
     } catch (error) {
       toast.error('Failed to update role');
+    }
+  };
+
+  const handleRevertRole = async (id: string) => {
+    try {
+      const res = await adminAPI.revertUserRole(id);
+      toast.success(res.data.message || 'Role reverted successfully');
+      fetchUsers();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to revert role');
     }
   };
 
@@ -206,16 +222,24 @@ const AdminMembers = () => {
                             src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${u.email}`}
                             className="w-10 h-10 rounded-full border border-border/50"
                           />
-                          <span className="font-semibold text-sm">{u.username || 'User'}</span>
+                          <div>
+                            <p className="font-semibold text-sm">{u.volunteer_profile?.full_name || u.username}</p>
+                            <p className="text-xs text-muted-foreground">{u.username}</p>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-sm text-muted-foreground">{u.email}</td>
                         <td className="px-6 py-4">
                           <Badge variant="glass" className="text-[10px]">{u.role}</Badge>
                         </td>
                         <td className="px-6 py-4">
-                          <Badge variant={u.is_blocked ? 'inactive' : 'success'}>
-                            {u.is_blocked ? 'BLOCKED' : 'ACTIVE'}
-                          </Badge>
+                          <div className="flex flex-col gap-1">
+                            <Badge variant={u.is_blocked ? 'inactive' : 'success'}>
+                              {u.is_blocked ? 'BLOCKED' : 'ACTIVE'}
+                            </Badge>
+                            {u.volunteer_profile?.status === 'PENDING' && (
+                              <Badge variant="warning" className="w-fit text-[10px]">Pending Approval</Badge>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <DropdownMenu>
@@ -232,6 +256,9 @@ const AdminMembers = () => {
                               </DropdownMenuItem>
                               <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => handleUpdateRole(u.id, 'DONOR')}>
                                 <UserCheck className="w-4 h-4 text-success" /> Demote to Donor
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => handleRevertRole(u.id)}>
+                                <History className="w-4 h-4 text-warning" /> Revert Role
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               {u.is_blocked ? (

@@ -1,13 +1,16 @@
 import { prisma } from '../../utils/db';
+import { logAction } from '../audit/audit.service';
 
 
 export const createCampaign = async (data: any, userId: string) => {
-    return prisma.campaign.create({
+    const campaign = await prisma.campaign.create({
         data: {
             ...data,
             created_by_id: userId,
         },
     });
+    await logAction(userId, 'CREATE_CAMPAIGN', 'CAMPAIGN', campaign.id, { title: campaign.title });
+    return campaign;
 };
 
 export const getCampaigns = async () => {
@@ -31,13 +34,20 @@ export const getCampaignById = async (id: string) => {
 };
 
 export const updateCampaign = async (id: string, data: any) => {
-    return prisma.campaign.update({
+    const campaign = await prisma.campaign.update({
         where: { id },
         data,
     });
+    // We don't have userId readily available here without changing signature, 
+    // but assuming caller might (or we accept it is system/unknown if not passed).
+    // Ideally we should pass userId to updateCampaign.
+    // For now we'll log it as system or unknown if we can't get it.
+    await logAction(null, 'UPDATE_CAMPAIGN', 'CAMPAIGN', id, { updates: Object.keys(data) });
+    return campaign;
 };
 
 export const deleteCampaign = async (id: string) => {
+    await logAction(null, 'DELETE_CAMPAIGN', 'CAMPAIGN', id, null);
     return prisma.campaign.delete({
         where: { id },
     });

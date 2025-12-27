@@ -33,16 +33,19 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [recentLogs, setRecentLogs] = useState<any[]>([]);
+  const [analytics, setAnalytics] = useState<any>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [overviewRes, logsRes] = await Promise.all([
+        const [overviewRes, logsRes, analyticsRes] = await Promise.all([
           dashboardAPI.getOverview(),
-          adminAPI.getAuditLogs(10)
+          adminAPI.getAuditLogs(10),
+          dashboardAPI.getAnalytics('30d')
         ]);
-        setData(overviewRes.data.data.stats);
+        setData(overviewRes.data.data);
         setRecentLogs(logsRes.data.data.logs || []);
+        setAnalytics(analyticsRes.data.data);
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
         toast.error('Could not load dashboard stats');
@@ -67,7 +70,7 @@ const AdminDashboard = () => {
   const statCards = [
     {
       title: 'Total Members',
-      value: data?.totalUsers?.toLocaleString() || '0',
+      value: data?.totalVolunteers?.toLocaleString() || '0',
       change: `+2.4%`,
       trend: 'up',
       icon: Users,
@@ -75,7 +78,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Active Volunteers',
-      value: data?.totalVolunteers?.toString() || '0',
+      value: data?.totalActiveVolunteers?.toString() || '0',
       change: '+5.1%',
       trend: 'up',
       icon: Heart,
@@ -83,7 +86,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Total Donations',
-      value: `₹${((data?.totalDonations || 0) / 1000).toFixed(1)}K`,
+      value: `₹${((data?.totalDonationAmount || 0) / 1000).toFixed(1)}K`,
       change: '+12.3%',
       trend: 'up',
       icon: DollarSign,
@@ -99,15 +102,16 @@ const AdminDashboard = () => {
     },
   ];
 
-  // Placeholder chart data until analytics API is fully utilized
-  const chartData = [
-    { name: 'Jan', members: 40, donations: 240 },
-    { name: 'Feb', members: 30, donations: 139 },
-    { name: 'Mar', members: 20, donations: 980 },
-    { name: 'Apr', members: 27, donations: 390 },
-    { name: 'May', members: 18, donations: 480 },
-    { name: 'Jun', members: 23, donations: 380 },
-  ];
+  // Process chart data
+  const memberGrowthData = analytics?.volunteersTrend?.map((v: any) => ({
+    name: new Date(v.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    members: v.count
+  })) || [];
+
+  const donationTrendData = analytics?.donationsTrend?.map((d: any) => ({
+    name: new Date(d.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+    donations: d.amount
+  })) || [];
 
   return (
     <DashboardLayout>
@@ -165,7 +169,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
+                  <LineChart data={memberGrowthData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="name" className="text-xs" />
                     <YAxis className="text-xs" />
@@ -199,7 +203,7 @@ const AdminDashboard = () => {
             <CardContent>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
+                  <BarChart data={donationTrendData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="name" className="text-xs" />
                     <YAxis className="text-xs" />

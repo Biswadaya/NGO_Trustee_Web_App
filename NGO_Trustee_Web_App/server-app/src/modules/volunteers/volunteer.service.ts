@@ -1,4 +1,5 @@
 import { VolunteerStatus, MembershipStatus } from '@prisma/client';
+import { logAction } from '../audit/audit.service';
 import { AppError } from '../../middleware/error';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
@@ -8,7 +9,7 @@ import { prisma } from '../../utils/db';
 
 
 export const activateVolunteer = async (volunteerId: string, activatedBy: string) => {
-    return prisma.volunteer.update({
+    const vol = await prisma.volunteer.update({
         where: { id: volunteerId },
         data: {
             status: VolunteerStatus.ACTIVE,
@@ -17,6 +18,8 @@ export const activateVolunteer = async (volunteerId: string, activatedBy: string
             approval_date: new Date(),
         },
     });
+    await logAction(activatedBy, 'ACTIVATE_VOLUNTEER', 'VOLUNTEER', volunteerId, null);
+    return vol;
 };
 
 export const generateIdCard = async (volunteerId: string) => {
@@ -93,10 +96,12 @@ export const getVolunteerPersonalInfo = async (id: string) => {
 };
 
 export const updateVolunteerStatus = async (id: string, status: VolunteerStatus) => {
-    return prisma.volunteer.update({
+    const vol = await prisma.volunteer.update({
         where: { id },
         data: { status }
     });
+    await logAction(null, 'UPDATE_VOLUNTEER_STATUS', 'VOLUNTEER', id, { status });
+    return vol;
 };
 
 export const getVolunteerIdCard = async (id: string) => {
@@ -180,7 +185,7 @@ export const registerVolunteer = async (data: any) => {
     });
 
     // Then create volunteer profile
-    return prisma.volunteer.create({
+    const volunteer = await prisma.volunteer.create({
         data: {
             user_id: user.id,
             full_name: data.full_name,
@@ -194,6 +199,9 @@ export const registerVolunteer = async (data: any) => {
             status: 'PENDING'
         }
     });
+
+    await logAction(user.id, 'REGISTER_VOLUNTEER', 'VOLUNTEER', volunteer.id, null);
+    return volunteer;
 };
 
 // --- Task Management ---

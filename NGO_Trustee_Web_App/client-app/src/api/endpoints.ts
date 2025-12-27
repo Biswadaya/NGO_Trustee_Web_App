@@ -89,6 +89,7 @@ export const adminAPI = {
     getVolunteerPaymentStats: (id: string) => api.get(`/admin/volunteer/${id}/payment_stats`),
     activateVolunteer: (id: string) => api.put(`/admin/volunteer/${id}/active-manual`),
     updateUserRole: (id: string, role: string) => api.put(`/admin/users/${id}/role`, { role }),
+    revertUserRole: (id: string) => api.put(`/admin/users/${id}/revert-role`),
     listUsers: () => api.get('/admin/users'),
     blockUser: (id: string, data: any) => api.put(`/admin/users/${id}/block`, data),
     unblockUser: (id: string) => api.put(`/admin/users/${id}/unblock`),

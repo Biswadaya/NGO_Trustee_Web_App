@@ -47,7 +47,13 @@ export const getFinancialBreakdown = async () => {
         campaigns: campaigns.map(c => ({
             title: c.title,
             percentage: (Number(c.raised_amount) / Number(c.goal_amount)) * 100
-        }))
+        })),
+        chartData: [
+            { name: 'Projects', value: Number(totalRaised) },
+            { name: 'Operations', value: Number(totalDonations) * 0.1 },
+            { name: 'Marketing', value: Number(totalDonations) * 0.05 },
+            { name: 'Reserve', value: Number(totalDonations) - Number(totalRaised) - (Number(totalDonations) * 0.15) }
+        ].map(i => ({ ...i, value: Math.max(0, i.value) })) // Ensure no negatives
     };
 };
 

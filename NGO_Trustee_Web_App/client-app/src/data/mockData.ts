@@ -46,11 +46,11 @@ export const recentDonations = [
 ];
 
 export const projects = [
-  { id: 1, name: 'Education for All', description: 'Providing quality education to underprivileged children', raised: 450000, goal: 500000, supporters: 234, status: 'Active', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400' },
-  { id: 2, name: 'Healthcare Initiative', description: 'Free medical camps in rural areas', raised: 320000, goal: 400000, supporters: 189, status: 'Active', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400' },
-  { id: 3, name: 'Women Empowerment', description: 'Skill development programs for women', raised: 280000, goal: 350000, supporters: 156, status: 'Active', image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=400' },
-  { id: 4, name: 'Clean Water Project', description: 'Installing water purification systems', raised: 180000, goal: 250000, supporters: 98, status: 'Active', image: 'https://images.unsplash.com/photo-1541544181051-e46607bc22a4?w=400' },
-  { id: 5, name: 'Rural Development', description: 'Infrastructure development in villages', raised: 520000, goal: 600000, supporters: 312, status: 'Active', image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400' },
+  { id: 1, name: 'Education for All', description: 'Providing quality education to underprivileged children', raised: 450000, goal: 500000, supporters: 234, status: 'Active', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400', category: 'Education', location: 'Rural Bihar' },
+  { id: 2, name: 'Healthcare Initiative', description: 'Free medical camps in rural areas', raised: 320000, goal: 400000, supporters: 189, status: 'Active', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400', category: 'Health', location: 'Uttar Pradesh' },
+  { id: 3, name: 'Women Empowerment', description: 'Skill development programs for women', raised: 280000, goal: 350000, supporters: 156, status: 'Active', image: 'https://images.unsplash.com/photo-1573497620053-ea5300f94f21?w=400', category: 'Community', location: 'Rajasthan' },
+  { id: 4, name: 'Clean Water Project', description: 'Installing water purification systems', raised: 180000, goal: 250000, supporters: 98, status: 'Active', image: 'https://images.unsplash.com/photo-1541544181051-e46607bc22a4?w=400', category: 'Environment', location: 'Maharashtra' },
+  { id: 5, name: 'Rural Development', description: 'Infrastructure development in villages', raised: 520000, goal: 600000, supporters: 312, status: 'Active', image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400', category: 'Community', location: 'Odisha' },
 ];
 
 export const events = [

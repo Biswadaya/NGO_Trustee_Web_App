@@ -110,6 +110,15 @@ export const updateUserRole = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+export const revertUserRole = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await AdminService.revertUserRole(req.params.id);
+        res.status(200).json({ status: 'success', message: `Role reverted to ${user.role}`, data: { user } });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const blockUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { reason } = req.body;

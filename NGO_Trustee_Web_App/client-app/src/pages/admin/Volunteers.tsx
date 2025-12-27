@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { volunteerAPI, adminAPI } from '@/api/endpoints';
-import { Plus, IdCard, CheckCircle, XCircle, Loader2, Search, Users } from 'lucide-react';
+import { Plus, IdCard, CheckCircle, XCircle, Loader2, Search, Users, Download, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,6 +24,8 @@ const AdminVolunteers = () => {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedVolunteer, setSelectedVolunteer] = useState<any>(null);
+  const [showIdCard, setShowIdCard] = useState(false);
   const [newVolunteer, setNewVolunteer] = useState({
     full_name: '',
     email: '',
@@ -73,14 +75,53 @@ const AdminVolunteers = () => {
     }
   };
 
-  const handleGenerateId = async (id: string) => {
+  const handleGenerateId = async (id: string, volunteer: any) => {
     try {
       toast.loading('Generating ID Card...', { id: 'gen-id' });
       await volunteerAPI.generateId(id);
-      toast.success('ID Card generated successfully!', { id: 'gen-id' });
+      const res = await volunteerAPI.getIdCard(id);
+
+      setSelectedVolunteer({ ...volunteer, ...res.data.data });
+      setShowIdCard(true);
+      toast.success('ID Card ready!', { id: 'gen-id' });
       fetchVolunteers();
     } catch (error) {
       toast.error('Failed to generate ID card', { id: 'gen-id' });
+    }
+  };
+
+  const handlePrintId = () => {
+    const printContent = document.getElementById('id-card-print-area');
+    const windowUrl = 'about:blank';
+    const uniqueName = new Date();
+    const windowName = 'Print' + uniqueName.getTime();
+    const printWindow = window.open(windowUrl, windowName, 'left=50000,top=50000,width=0,height=0');
+
+    if (printWindow && printContent) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <style>
+              body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+              .id-card { width: 350px; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; position: relative; }
+              .header { background: #2563eb; color: white; padding: 20px; text-align: center; }
+              .content { padding: 20px; text-align: center; }
+              .photo { width: 100px; height: 100px; border-radius: 50%; margin: 0 auto 15px; display: block; object-fit: cover; }
+              .qr { width: 120px; height: 120px; margin: 15px auto; display: block; }
+              .label { font-size: 10px; color: #666; text-transform: uppercase; margin-top: 10px; }
+              .value { font-weight: bold; font-size: 14px; }
+              .footer { background: #f3f4f6; padding: 10px; text-align: center; font-size: 10px; color: #666; }
+            </style>
+          </head>
+          <body>
+            ${printContent.innerHTML}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
     }
   };
 
@@ -216,7 +257,7 @@ const AdminVolunteers = () => {
                         size="sm"
                         variant="premium"
                         className="flex-1"
-                        onClick={() => handleGenerateId(v.id)}
+                        onClick={() => handleGenerateId(v.id, v)}
                         disabled={v.status !== 'ACTIVE'}
                       >
                         <IdCard className="w-3.5 h-3.5 mr-1" /> ID Card
@@ -240,6 +281,76 @@ const AdminVolunteers = () => {
             )}
           </div>
         )}
+
+        <Dialog open={showIdCard} onOpenChange={setShowIdCard}>
+          <DialogContent className="sm:max-w-md glass-card border-none">
+            <DialogHeader>
+              <DialogTitle>Volunteer ID Card</DialogTitle>
+              <DialogDescription>
+                Official Digital Identity Card
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col items-center" id="id-card-print-area">
+              <div className="id-card w-full max-w-[320px] bg-white rounded-xl shadow-lg overflow-hidden border border-border/50">
+                <div className="header bg-primary h-24 relative flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-90"></div>
+                  <div className="relative z-10 text-white text-center">
+                    <h3 className="font-bold text-lg tracking-wider">BISWADAYA NGO</h3>
+                    <p className="text-[10px] opacity-80 uppercase tracking-widest">Trustee Volunteer</p>
+                  </div>
+                </div>
+
+                <div className="content p-6 pt-0 relative">
+                  <div className="flex justify-center -mt-10 mb-4">
+                    <img
+                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${selectedVolunteer?.user?.email}`}
+                      className="photo w-24 h-24 rounded-full border-4 border-white bg-white shadow-md"
+                    />
+                  </div>
+
+                  <div className="text-center space-y-1 mb-6">
+                    <h2 className="value text-xl font-bold text-gray-800">{selectedVolunteer?.full_name}</h2>
+                    <p className="text-sm text-gray-500 font-medium">{selectedVolunteer?.email}</p>
+                    <Badge variant="outline" className="mt-2 bg-primary/5 text-primary border-primary/20">
+                      {selectedVolunteer?.unique_id || 'ID PENDING'}
+                    </Badge>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-center border-t border-gray-100 pt-4">
+                    <div>
+                      <p className="label text-[10px] text-gray-400 uppercase font-bold tracking-wider">Status</p>
+                      <p className="value font-semibold text-gray-700">{selectedVolunteer?.status}</p>
+                    </div>
+                    <div>
+                      <p className="label text-[10px] text-gray-400 uppercase font-bold tracking-wider">Issued</p>
+                      <p className="value font-semibold text-gray-700">{new Date().getFullYear()}</p>
+                    </div>
+                  </div>
+
+                  {selectedVolunteer?.id_card_qr_code && (
+                    <div className="mt-6 flex justify-center">
+                      <img src={selectedVolunteer.id_card_qr_code} className="qr w-28 h-28 mix-blend-multiply opacity-90" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="footer bg-gray-50 p-3 text-center border-t border-gray-100">
+                  <p className="text-[10px] text-gray-400">Authorized Signature • Valid Indefinitely</p>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
+              <Button variant="outline" className="w-full" onClick={handlePrintId}>
+                <Printer className="w-4 h-4 mr-2" /> Print Card
+              </Button>
+              <Button variant="premium" className="w-full" onClick={() => window.print()}>
+                <Download className="w-4 h-4 mr-2" /> Download PDF
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

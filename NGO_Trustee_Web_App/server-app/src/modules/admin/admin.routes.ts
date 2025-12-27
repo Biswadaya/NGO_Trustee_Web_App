@@ -37,6 +37,7 @@ router.get('/volunteer/:id/payment_stats', AdminController.getVolunteerPaymentSt
 
 // User management
 router.put('/users/:id/role', AdminController.updateUserRole);
+router.put('/users/:id/revert-role', AdminController.revertUserRole);
 router.put('/users/:id/block', AdminController.blockUser);
 router.put('/users/:id/unblock', AdminController.unblockUser);
 router.get('/users/blocked-users', AdminController.getBlockedUsers);

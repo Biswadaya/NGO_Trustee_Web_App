@@ -2,8 +2,14 @@ import { Notice } from '@prisma/client';
 import { prisma } from '../../utils/db';
 
 export const createNotice = async (data: any, userId: string) => {
+    const { target_role, ...rest } = data;
     return prisma.notice.create({
-        data: { ...data, published_by_id: userId, published_at: new Date() },
+        data: {
+            ...rest,
+            target_audience: target_role || 'public',
+            published_by_id: userId,
+            published_at: new Date()
+        },
     });
 };
 

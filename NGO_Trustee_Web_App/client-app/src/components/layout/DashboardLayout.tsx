@@ -42,6 +42,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Footer from './Footer';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -121,20 +122,25 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 bg-sidebar flex flex-col transition-all duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 z-50 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out shadow-xl",
           sidebarOpen ? "w-64" : "w-20",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center gap-3 px-4 h-20 border-b border-gray-100 bg-white/50 backdrop-blur-xl">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 ring-1 ring-white/10">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
           {sidebarOpen && (
-            <span className="text-xl font-display font-bold text-sidebar-foreground">
-              Trust Flow
-            </span>
+            <div className="flex flex-col">
+              <span className="text-xl font-display font-bold text-slate-900 tracking-tight">
+                Trust Flow
+              </span>
+              <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
+                Admin Panel
+              </span>
+            </div>
           )}
         </div>
 
@@ -150,8 +156,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
                       isActive
-                        ? "bg-sidebar-accent/20 text-sidebar-foreground border-l-4 border-sidebar-primary"
-                        : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/10"
+                        ? "bg-primary/10 text-primary border-l-4 border-primary font-medium"
+                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     )}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
@@ -164,16 +170,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-gray-200 space-y-2">
           <Button
             variant="ghost"
             className={cn(
-              "w-full justify-start text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/10",
+              "w-full justify-start text-slate-600 hover:text-red-600 hover:bg-red-50",
               !sidebarOpen && "justify-center"
             )}
             onClick={handleLogout}
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="w-5 h-5 flex-shrink-0" />
             {sidebarOpen && <span className="ml-3">Logout</span>}
           </Button>
         </div>
@@ -315,9 +321,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6">
-          {children}
+        <main className="flex-1 p-4 md:p-6 flex flex-col">
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
         </main>
       </div>
 

@@ -1,6 +1,7 @@
 import { prisma } from '../../utils/db';
 import { AppError } from '../../middleware/error';
 import bcrypt from 'bcryptjs';
+import { logAction } from '../audit/audit.service';
 
 export const addVolunteer = async (data: any, adminId: string) => {
     const { email, password, full_name, phone, skills, bio } = data;
@@ -28,12 +29,15 @@ export const addVolunteer = async (data: any, adminId: string) => {
                 phone,
                 skills: Array.isArray(skills) ? skills : (skills ? skills.split(',').map((s: string) => s.trim()) : []),
                 bio,
-                status: 'ACTIVE',
-                approval_date: new Date(),
-                activated_manually: true,
-                activated_by_id: adminId
+                status: 'PENDING',
+                approval_date: null,
+                activated_manually: false,
+                activated_by_id: null
             }
         });
+
+        // Log the action
+        await logAction(adminId, 'ADD_VOLUNTEER', 'VOLUNTEER', volunteer.id, { email: volunteer.email });
 
         return { user, volunteer };
     });
@@ -84,11 +88,14 @@ export const approveVolunteer = async (volunteerId: string, approvedById: string
     if (!volunteer) throw new AppError('Volunteer not found', 404);
     if (volunteer.status !== 'PENDING') throw new AppError('Volunteer is not in pending status', 400);
 
-    return prisma.volunteer.update({
+    const updatedVolunteer = await prisma.volunteer.update({
         where: { id: volunteerId },
         data: { status: 'ACTIVE', approval_date: new Date(), activated_manually: true, activated_by_id: approvedById },
         include: { user: { select: { id: true, email: true, role: true } } },
     });
+
+    await logAction(approvedById, 'APPROVE_VOLUNTEER', 'VOLUNTEER', volunteerId, null);
+    return updatedVolunteer;
 };
 
 export const rejectVolunteer = async (volunteerId: string) => {
@@ -96,6 +103,7 @@ export const rejectVolunteer = async (volunteerId: string) => {
     if (!volunteer) throw new AppError('Volunteer not found', 404);
     if (volunteer.status !== 'PENDING') throw new AppError('Volunteer is not in pending status', 400);
 
+    await logAction(null, 'REJECT_VOLUNTEER', 'VOLUNTEER', volunteerId, null);
     return prisma.volunteer.update({
         where: { id: volunteerId },
         data: { status: 'INACTIVE' },
@@ -110,11 +118,19 @@ export const getFundsSummary = async () => {
         prisma.donation.aggregate({ _sum: { amount: true }, _avg: { amount: true } })
     ]);
 
+    const totalRevenue = Number(aggregates._sum.amount || 0);
+    const averageDonation = Number(aggregates._avg.amount || 0);
+
+    // Mock expenses logic (e.g. 15% of revenue)
+    const totalExpenses = totalRevenue * 0.15;
+    const netBalance = totalRevenue - totalExpenses;
+
     return {
-        totalDonations,
-        totalCampaigns,
-        totalAmount: aggregates._sum.amount || 0,
-        averageAmount: aggregates._avg.amount || 0
+        totalDonations: totalRevenue,
+        totalExpenses,
+        netBalance,
+        averageDonation,
+        totalCampaigns
     };
 };
 
@@ -157,17 +173,59 @@ export const getVolunteerPaymentStats = async (id: string) => {
 };
 
 export const updateUserRole = async (userId: string, role: string) => {
-    return prisma.user.update({
+    // Fetch current user to get old role
+    const currentUser = await prisma.user.findUnique({ where: { id: userId } });
+    if (!currentUser) throw new AppError('User not found', 404);
+
+    const oldRole = currentUser.role;
+
+    const user = await prisma.user.update({
         where: { id: userId },
         data: { role: role as any }
     });
+
+    await logAction(null, 'UPDATE_USER_ROLE', 'USER', userId, { oldRole, newRole: role });
+    return user;
+};
+
+export const revertUserRole = async (userId: string) => {
+    // Find the last role update action for this user
+    const lastUpdate = await prisma.auditLog.findFirst({
+        where: {
+            entity_id: userId,
+            action: 'UPDATE_USER_ROLE'
+        },
+        orderBy: { timestamp: 'desc' }
+    });
+
+    if (!lastUpdate || !lastUpdate.action_details) {
+        throw new AppError('No previous role history found', 404);
+    }
+
+    const details = lastUpdate.action_details as any;
+    const oldRole = details.oldRole;
+
+    if (!oldRole) {
+        throw new AppError('Previous role not recorded in history', 400);
+    }
+
+    // Revert to old role
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: { role: oldRole }
+    });
+
+    await logAction(null, 'REVERT_USER_ROLE', 'USER', userId, { revertedTo: oldRole });
+    return user;
 };
 
 export const blockUser = async (userId: string, blockedById: string, reason: string) => {
-    return prisma.user.update({
+    const user = await prisma.user.update({
         where: { id: userId },
         data: { is_blocked: true, blocked_by_id: blockedById, blocked_reason: reason, blocked_at: new Date() }
     });
+    await logAction(blockedById, 'BLOCK_USER', 'USER', userId, { reason });
+    return user;
 };
 
 export const unblockUser = async (userId: string) => {
@@ -187,7 +245,21 @@ export const getBlockedUsers = async () => {
 export const listUsers = async (limit: number = 100) => {
     return prisma.user.findMany({
         take: limit,
-        select: { id: true, email: true, role: true, is_blocked: true, created_at: true, username: true },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            is_blocked: true,
+            created_at: true,
+            username: true,
+            volunteer_profile: {
+                select: {
+                    full_name: true,
+                    phone: true,
+                    status: true
+                }
+            }
+        },
         orderBy: { created_at: 'desc' }
     });
 };
@@ -202,7 +274,7 @@ export const getAuditLogs = async (limit: number = 50) => {
 
 // Event management (using Notice model with event type)
 export const createEvent = async (data: any, publishedById: string) => {
-    return prisma.notice.create({
+    const event = await prisma.notice.create({
         data: {
             title: data.title,
             content: data.content,
@@ -213,6 +285,9 @@ export const createEvent = async (data: any, publishedById: string) => {
             published_by_id: publishedById
         }
     });
+
+    await logAction(publishedById, 'CREATE_EVENT', 'EVENT', event.id, { title: event.title });
+    return event;
 };
 
 export const updateEvent = async (id: string, data: any) => {

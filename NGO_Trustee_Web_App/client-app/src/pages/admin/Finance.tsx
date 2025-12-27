@@ -21,8 +21,8 @@ const AdminFinance = () => {
         adminAPI.getFundsSummary(),
         transparencyAPI.getFinancialBreakdown()
       ]);
-      setFinanceData(summaryRes.data.data.summary);
-      setBreakdown(breakdownRes.data.data.breakdown || []);
+      setFinanceData(summaryRes.data.data);
+      setBreakdown(breakdownRes.data.data.breakdown.chartData || []);
     } catch (error) {
       console.error('Failed to load financial data');
       toast.error('Financial data sync failed');
