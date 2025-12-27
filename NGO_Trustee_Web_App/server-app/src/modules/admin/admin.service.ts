@@ -1,5 +1,43 @@
 import { prisma } from '../../utils/db';
 import { AppError } from '../../middleware/error';
+import bcrypt from 'bcryptjs';
+
+export const addVolunteer = async (data: any, adminId: string) => {
+    const { email, password, full_name, phone, skills, bio } = data;
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new AppError('User already exists', 400);
+
+    const hashedPassword = await bcrypt.hash(password || 'password123', 12);
+
+    return prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+            data: {
+                email,
+                password_hash: hashedPassword,
+                role: 'VOLUNTEER',
+                username: email.split('@')[0]
+            }
+        });
+
+        const volunteer = await tx.volunteer.create({
+            data: {
+                user_id: user.id,
+                full_name,
+                email,
+                phone,
+                skills: Array.isArray(skills) ? skills : (skills ? skills.split(',').map((s: string) => s.trim()) : []),
+                bio,
+                status: 'ACTIVE',
+                approval_date: new Date(),
+                activated_manually: true,
+                activated_by_id: adminId
+            }
+        });
+
+        return { user, volunteer };
+    });
+};
 
 
 export const getDashboardStats = async () => {
@@ -143,6 +181,14 @@ export const getBlockedUsers = async () => {
     return prisma.user.findMany({
         where: { is_blocked: true },
         select: { id: true, email: true, role: true, blocked_reason: true, blocked_at: true }
+    });
+};
+
+export const listUsers = async (limit: number = 100) => {
+    return prisma.user.findMany({
+        take: limit,
+        select: { id: true, email: true, role: true, is_blocked: true, created_at: true, username: true },
+        orderBy: { created_at: 'desc' }
     });
 };
 

@@ -23,7 +23,7 @@ export const registerUser = async (data: {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     // Transaction to create User and Volunteer profile together
-    const user = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
         const newUser = await tx.user.create({
             data: {
                 email,
@@ -32,22 +32,23 @@ export const registerUser = async (data: {
             },
         });
 
-        await tx.volunteer.create({
+        const volunteer = await tx.volunteer.create({
             data: {
                 user_id: newUser.id,
                 email: newUser.email,
                 full_name,
                 status: 'PENDING',
+                skills: [],
             },
         });
 
-        return newUser;
+        const token = signToken({ userId: newUser.id, role: newUser.role });
+        const refreshToken = signRefreshToken({ userId: newUser.id, role: newUser.role });
+
+        return { user: { ...newUser, status: volunteer.status }, token, refreshToken };
     });
 
-    const token = signToken({ userId: user.id, role: user.role });
-    const refreshToken = signRefreshToken({ userId: user.id, role: user.role });
-
-    return { user, token, refreshToken };
+    return result;
 };
 
 export const loginUser = async (data: { email: string; password: string }) => {
@@ -65,8 +66,21 @@ export const loginUser = async (data: { email: string; password: string }) => {
         throw new AppError(`Account blocked: ${user.blocked_reason}`, 403);
     }
 
+    let status = 'ACTIVE';
+    if (user.role === UserRole.VOLUNTEER) {
+        const volunteer = await prisma.volunteer.findFirst({
+            where: { user_id: user.id },
+            select: { status: true }
+        });
+        status = volunteer?.status || 'PENDING';
+    }
+
     const token = signToken({ userId: user.id, role: user.role });
     const refreshToken = signRefreshToken({ userId: user.id, role: user.role });
 
-    return { user, token, refreshToken };
+    return {
+        user: { ...user, status },
+        token,
+        refreshToken
+    };
 };

@@ -1,22 +1,33 @@
-import app from './app';
-import Logger from './utils/logger';
 import dotenv from 'dotenv';
-import { prisma } from './utils/db';
-
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+import app from './app';
+import Logger from './utils/logger';
+import { prisma } from './utils/db';
+
+const PORT = process.env.PORT || 5000;
 
 
 const startServer = async () => {
     try {
-        // Attempt to connect to DB
-        // await prisma.$connect(); // Cannot connect without running DB, skipping explicit connect in MVP init
-        // Logger.info('Database connected successfully');
-
-        app.listen(PORT, () => {
+        const server = app.listen(PORT, () => {
             Logger.info(`Server is running @ http://localhost:${PORT}`);
         });
+
+        // Graceful shutdown logic
+        const shutdown = async () => {
+            Logger.info('Shutting down server...');
+            server.close(async () => {
+                Logger.info('HTTP server closed');
+                await prisma.$disconnect();
+                Logger.info('Database disconnected');
+                process.exit(0);
+            });
+        };
+
+        process.on('SIGINT', shutdown);
+        process.on('SIGTERM', shutdown);
+
     } catch (error) {
         Logger.error('Failed to start server:', error);
         process.exit(1);

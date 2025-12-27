@@ -5,7 +5,8 @@ import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
-router.post('/', DonationController.create); // Public for now, or use token if logged in (logic in controller needs adjustment for optional auth)
+router.get('/my-donations', protect, DonationController.getMyDonations);
+router.post('/', DonationController.create); // Public for now
 
 router.use(protect, restrictTo(UserRole.ADMIN, UserRole.MANAGER));
 router.get('/', DonationController.list);

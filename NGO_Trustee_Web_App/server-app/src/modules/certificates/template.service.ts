@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../utils/db';
 
 export const createTemplate = async (data: any, userId: string) => {
     return prisma.certificateTemplate.create({

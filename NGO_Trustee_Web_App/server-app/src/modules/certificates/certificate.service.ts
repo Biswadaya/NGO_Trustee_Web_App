@@ -1,9 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../utils/db';
 
 export const generateCertificate = async (data: any) => {
     const { recipient_name, issued_for, template_id } = data;

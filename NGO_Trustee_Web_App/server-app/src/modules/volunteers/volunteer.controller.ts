@@ -112,3 +112,40 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 
+// --- Task Management ---
+export const getTasks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const tasks = await VolunteerService.getTasks(req.params.id);
+        res.status(200).json({ status: 'success', data: { tasks } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const listAllTasks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const tasks = await VolunteerService.listAllTasks();
+        res.status(200).json({ status: 'success', data: { tasks } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createTask = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const task = await VolunteerService.createTask(req.body);
+        res.status(201).json({ status: 'success', data: { task } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateTaskStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const task = await VolunteerService.updateTaskStatus(req.params.taskId, req.body.status);
+        res.status(200).json({ status: 'success', data: { task } });
+    } catch (error) {
+        next(error);
+    }
+};
+

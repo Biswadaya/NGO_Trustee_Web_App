@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient, UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client';
 import { AppError } from './error';
 import { AuthRequest } from './auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '../utils/db';
 
 // Define keys that match the ManagerPermission model boolean fields
 export type ManagerPermissionKey =

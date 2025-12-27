@@ -18,6 +18,7 @@ router.get('/dashboard/overview', AdminController.getDashboard); // Alias
 
 // Volunteer management
 router.get('/volunteers/pending', AdminController.getPendingVolunteers);
+router.post('/volunteers', AdminController.addVolunteer);
 router.put('/volunteers/:id/approve', AdminController.approveVolunteer);
 router.put('/volunteers/:id/reject', AdminController.rejectVolunteer);
 router.put('/volunteer/:id/active-manual', AdminController.approveVolunteer); // Alias for manual activation
@@ -29,6 +30,8 @@ router.get('/funds/expenses', AdminController.getExpenses);
 // Volunteer stats
 router.get('/volunteer/stats', AdminController.getVolunteerStats);
 router.get('/volunteer/unpaid', AdminController.getUnpaidVolunteers);
+router.get('/users', AdminController.listUsers);
+router.get('/users/blocked', AdminController.getBlockedUsers);
 router.get('/volunteer/:id/payment_stats', AdminController.getVolunteerPaymentStats);
 
 

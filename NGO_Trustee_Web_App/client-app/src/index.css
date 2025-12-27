@@ -1,7 +1,216 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-gray-50 text-gray-900;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display: "Playfair Display", serif;
+
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  --color-background: hsl(220 20% 97%);
+  --color-foreground: hsl(222 47% 11%);
+
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222 47% 11%);
+
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(222 47% 11%);
+
+  --color-primary: hsl(221 83% 53%);
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  --color-secondary: hsl(243 75% 59%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+
+  --color-muted: hsl(220 14% 96%);
+  --color-muted-foreground: hsl(220 9% 46%);
+
+  --color-accent: hsl(45 93% 47%);
+  --color-accent-foreground: hsl(222 47% 11%);
+
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  --color-success: hsl(142 76% 36%);
+  --color-success-foreground: hsl(0 0% 100%);
+
+  --color-warning: hsl(38 92% 50%);
+  --color-warning-foreground: hsl(222 47% 11%);
+
+  --color-border: hsl(220 13% 91%);
+  --color-input: hsl(220 13% 91%);
+  --color-ring: hsl(221 83% 53%);
+
+  --color-sidebar-background: hsl(222 47% 11%);
+  --color-sidebar-foreground: hsl(220 14% 96%);
+  --color-sidebar-primary: hsl(221 83% 53%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(243 75% 59%);
+  --color-sidebar-accent-foreground: hsl(0 0% 100%);
+  --color-sidebar-border: hsl(222 47% 18%);
+  --color-sidebar-ring: hsl(221 83% 53%);
+
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
+  --animate-scale-in: scaleIn 0.4s ease-out forwards;
+  --animate-slide-in-left: slideInLeft 0.5s ease-out forwards;
+  --animate-slide-in-right: slideInRight 0.5s ease-out forwards;
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
   }
+
+  @keyframes pulse-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsl(221 83% 53% / 0.3);
+    }
+
+    50% {
+      box-shadow: 0 0 40px hsl(221 83% 53% / 0.5);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 243 75% 59%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 45 93% 47%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.75rem;
+
+    /* Extra variables used in demo components */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(243 75% 59%) 100%);
+    --gradient-gold: linear-gradient(135deg, hsl(45 93% 47%) 0%, hsl(38 92% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(243 75% 45%) 50%, hsl(221 83% 40%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 20% 98%) 100%);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@utility glass-card {
+  @apply bg-card/70 backdrop-blur-xl border border-border/50 shadow-lg;
+}
+
+@utility glass-card-hover {
+  @apply glass-card transition-all duration-300 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1;
+}
+
+@utility gradient-text {
+  @apply bg-clip-text text-transparent;
+  background-image: var(--gradient-primary);
+}
+
+@utility gradient-text-gold {
+  @apply bg-clip-text text-transparent;
+  background-image: var(--gradient-gold);
+}
+
+@utility btn-premium {
+  @apply relative overflow-hidden transition-all duration-300 text-white;
+  background: var(--gradient-primary);
+}
+
+@utility shimmer-bg {
+  @apply relative overflow-hidden;
 }

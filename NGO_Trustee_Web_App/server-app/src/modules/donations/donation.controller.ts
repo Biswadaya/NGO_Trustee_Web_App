@@ -45,4 +45,13 @@ export const getStats = async (req: Request, res: Response, next: NextFunction) 
         next(error);
     }
 };
-
+export const getMyDonations = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.userId;
+        const donations = await DonationService.getMyDonations(userId);
+        res.status(200).json({ status: 'success', data: { donations } });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../../middleware/auth';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../utils/db';
 
 export const uploadFile = async (req: Request, res: Response, next: NextFunction) => {
     try {

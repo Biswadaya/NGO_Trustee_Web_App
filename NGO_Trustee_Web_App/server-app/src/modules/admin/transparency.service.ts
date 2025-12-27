@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../utils/db';
 
 export const createReport = async (data: any, userId: string) => {
     return prisma.transparencyReport.create({

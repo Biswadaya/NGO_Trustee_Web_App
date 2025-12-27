@@ -44,6 +44,16 @@ export const rejectVolunteer = async (req: Request, res: Response, next: NextFun
     }
 };
 
+export const addVolunteer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const adminId = (req as any).user?.userId;
+        const result = await AdminService.addVolunteer(req.body, adminId);
+        res.status(201).json({ status: 'success', message: 'Volunteer created and activated', data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // NEW ADMIN CONTROLLERS
 export const getFundsSummary = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -123,6 +133,15 @@ export const unblockUser = async (req: Request, res: Response, next: NextFunctio
 export const getBlockedUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await AdminService.getBlockedUsers();
+        res.status(200).json({ status: 'success', data: { users } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const listUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const users = await AdminService.listUsers();
         res.status(200).json({ status: 'success', data: { users } });
     } catch (error) {
         next(error);

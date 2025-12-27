@@ -1,0 +1,256 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import {
+  Users,
+  Heart,
+  DollarSign,
+  Calendar,
+  FileText,
+  Bell,
+  ArrowUpRight,
+  ArrowDownRight,
+  MoreHorizontal,
+  Loader2,
+} from 'lucide-react';
+import { dashboardAPI, adminAPI } from '@/api/endpoints';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from 'recharts';
+import { toast } from 'sonner';
+
+const AdminDashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+  const [recentLogs, setRecentLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [overviewRes, logsRes] = await Promise.all([
+          dashboardAPI.getOverview(),
+          adminAPI.getAuditLogs(10)
+        ]);
+        setData(overviewRes.data.data.stats);
+        setRecentLogs(logsRes.data.data.logs || []);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        toast.error('Could not load dashboard stats');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const statCards = [
+    {
+      title: 'Total Members',
+      value: data?.totalUsers?.toLocaleString() || '0',
+      change: `+2.4%`,
+      trend: 'up',
+      icon: Users,
+      color: 'from-primary to-secondary'
+    },
+    {
+      title: 'Active Volunteers',
+      value: data?.totalVolunteers?.toString() || '0',
+      change: '+5.1%',
+      trend: 'up',
+      icon: Heart,
+      color: 'from-secondary to-primary'
+    },
+    {
+      title: 'Total Donations',
+      value: `₹${((data?.totalDonations || 0) / 1000).toFixed(1)}K`,
+      change: '+12.3%',
+      trend: 'up',
+      icon: DollarSign,
+      color: 'from-accent to-warning'
+    },
+    {
+      title: 'Pending Campaigns',
+      value: data?.totalCampaigns?.toString() || '0',
+      change: 'Active',
+      trend: 'up',
+      icon: FileText,
+      color: 'from-warning to-accent'
+    },
+  ];
+
+  // Placeholder chart data until analytics API is fully utilized
+  const chartData = [
+    { name: 'Jan', members: 40, donations: 240 },
+    { name: 'Feb', members: 30, donations: 139 },
+    { name: 'Mar', members: 20, donations: 980 },
+    { name: 'Apr', members: 27, donations: 390 },
+    { name: 'May', members: 18, donations: 480 },
+    { name: 'Jun', members: 23, donations: 380 },
+  ];
+
+  return (
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-display font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Welcome back! Real-time NGO management is synchronized.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline">
+              <Calendar className="w-4 h-4 mr-2" />
+              Dec 2025
+            </Button>
+            <Button variant="premium">
+              <FileText className="w-4 h-4 mr-2" />
+              Generate Report
+            </Button>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {statCards.map((stat, index) => (
+            <Card key={stat.title} variant="glass" className="animate-fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                    <stat.icon className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <Badge variant={stat.trend === 'up' ? 'success' : 'warning'} className="flex items-center gap-1">
+                    {stat.trend === 'up' ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                    {stat.change}
+                  </Badge>
+                </div>
+                <div className="mt-4">
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground">{stat.title}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts Row */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          <Card variant="glass">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">System Growth</CardTitle>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="name" className="text-xs" />
+                    <YAxis className="text-xs" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="members"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={3}
+                      dot={{ fill: 'hsl(var(--primary))' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card variant="glass">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg">Donation Insights</CardTitle>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="name" className="text-xs" />
+                    <YAxis className="text-xs" />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                    />
+                    <Bar dataKey="donations" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Audit Logs Row */}
+        <Card variant="glass">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-lg">Recent Audit Logs</CardTitle>
+            <Button variant="ghost" size="sm">View All Logs</Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentLogs.length > 0 ? (
+                recentLogs.map((log: any) => (
+                  <div key={log.id} className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors border-b border-border/50 last:border-0">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Bell className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm truncate">{log.action}</p>
+                      <p className="text-xs text-muted-foreground truncate">{log.details}</p>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <Badge variant="outline" className="text-[10px]">{log.entity_type}</Badge>
+                      <p className="text-[10px] text-muted-foreground mt-1">{new Date(log.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-10 text-muted-foreground">No recent activity found</div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </DashboardLayout>
+  );
+};
+
+export default AdminDashboard;

@@ -1,6 +1,5 @@
-import { PrismaClient, Notice } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { Notice } from '@prisma/client';
+import { prisma } from '../../utils/db';
 
 export const createNotice = async (data: any, userId: string) => {
     return prisma.notice.create({

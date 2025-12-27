@@ -155,13 +155,27 @@ export const getVolunteerUniqueId = async (id: string) => {
     return volunteer.unique_id;
 };
 
+import bcrypt from 'bcryptjs';
+
 export const registerVolunteer = async (data: any) => {
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+        where: { email: data.email }
+    });
+
+    if (existingUser) {
+        throw new AppError('User with this email already exists', 400);
+    }
+
+    const hashedPassword = await bcrypt.hash(data.password || 'password123', 12);
+
     // First create user account
     const user = await prisma.user.create({
         data: {
             email: data.email,
-            password_hash: 'hashed_password', // In production, properly hash the password
-            role: 'VOLUNTEER'
+            password_hash: hashedPassword,
+            role: 'VOLUNTEER',
+            username: data.email.split('@')[0]
         }
     });
 
@@ -173,11 +187,50 @@ export const registerVolunteer = async (data: any) => {
             email: data.email,
             phone: data.phone,
             bio: data.bio,
-            skills: data.skills,
+            skills: Array.isArray(data.skills) ? data.skills : (data.skills ? data.skills.split(',').map((s: string) => s.trim()) : []),
             availability: data.availability,
             motivation: data.motivation,
-            emergency_contact: data.emergency_contact
+            emergency_contact: data.emergency_contact,
+            status: 'PENDING'
         }
+    });
+};
+
+// --- Task Management ---
+export const getTasks = async (volunteerId: string) => {
+    return prisma.volunteerTask.findMany({
+        where: { volunteer_id: volunteerId },
+        orderBy: { created_at: 'desc' }
+    });
+};
+
+export const listAllTasks = async () => {
+    return prisma.volunteerTask.findMany({
+        include: { volunteer: { select: { full_name: true } } },
+        orderBy: { created_at: 'desc' }
+    });
+};
+
+export const createTask = async (data: any) => {
+    return prisma.volunteerTask.create({
+        data: {
+            volunteer_id: data.volunteer_id,
+            title: data.title,
+            description: data.description,
+            status: 'pending',
+            due_date: data.due_date ? new Date(data.due_date) : null
+        }
+    });
+};
+
+export const updateTaskStatus = async (taskId: string, status: string) => {
+    const data: any = { status };
+    if (status === 'completed') {
+        data.completed_at = new Date();
+    }
+    return prisma.volunteerTask.update({
+        where: { id: taskId },
+        data
     });
 };
 

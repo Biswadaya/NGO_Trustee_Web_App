@@ -22,4 +22,10 @@ router.put('/:id/status', restrictTo(UserRole.ADMIN, UserRole.MANAGER), Voluntee
 router.put('/:id/activate', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.activate);
 router.put('/:id/revoke', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.revokeId);
 
+// --- Task Management ---
+router.get('/:id/tasks', VolunteerController.getTasks);
+router.get('/tasks/all', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.listAllTasks);
+router.post('/tasks/create', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.createTask);
+router.put('/tasks/:taskId/status', VolunteerController.updateTaskStatus);
+
 export default router;

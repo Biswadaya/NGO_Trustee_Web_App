@@ -100,3 +100,11 @@ export const getDonationStats = async () => {
     };
 };
 
+export const getMyDonations = async (userId: string) => {
+    return prisma.donation.findMany({
+        where: { user_id: userId },
+        orderBy: { created_at: 'desc' },
+        include: { campaign: true }
+    });
+};
+

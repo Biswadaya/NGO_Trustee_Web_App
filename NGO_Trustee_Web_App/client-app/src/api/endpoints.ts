@@ -18,6 +18,22 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+// Add interceptor for 401 responses
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Redirect to login if not already there
+            if (!window.location.pathname.includes('/login')) {
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export const dashboardAPI = {
     getOverview: () => api.get('/dashboard/overview'),
     getAnalytics: (period: string) => api.get(`/dashboard/analytics?period=${period}`),
@@ -30,6 +46,7 @@ export const donationAPI = {
     getById: (id: string) => api.get(`/donations/${id}`),
     getByTransactionId: (txId: string) => api.get(`/donations/transaction/${txId}`),
     getStats: () => api.get('/donations/stats'),
+    getMyDonations: () => api.get('/donations/my-donations'),
 };
 
 export const campaignAPI = {
@@ -48,11 +65,14 @@ export const volunteerAPI = {
     payMembership: (data: any) => api.post('/volunteers/payment', data),
     getPersonalInfo: (id: string) => api.get(`/volunteers/${id}/personal-info`),
     updateStatus: (id: string, status: string) => api.put(`/volunteers/${id}/status`, { status }),
+    getStats: () => api.get('/volunteers/stats'),
     generateId: (id: string) => api.post(`/volunteers/${id}/generate-id`),
     getIdCard: (id: string) => api.get(`/volunteers/${id}/id-card`),
     listIdCards: () => api.get('/volunteers/id-card/list'),
     revokeId: (id: string) => api.put(`/volunteers/${id}/revoke`),
     getUniqueId: (id: string) => api.get(`/volunteers/${id}/get-unique-id`),
+    getMyTasks: (id: string) => api.get(`/volunteers/${id}/tasks`),
+    updateTaskStatus: (taskId: string, status: string) => api.put(`/volunteers/tasks/${taskId}/status`, { status }),
 };
 
 export const adminAPI = {
@@ -69,10 +89,15 @@ export const adminAPI = {
     getVolunteerPaymentStats: (id: string) => api.get(`/admin/volunteer/${id}/payment_stats`),
     activateVolunteer: (id: string) => api.put(`/admin/volunteer/${id}/active-manual`),
     updateUserRole: (id: string, role: string) => api.put(`/admin/users/${id}/role`, { role }),
-    blockUser: (id: string, reason: string) => api.put(`/admin/users/${id}/block`, { reason }),
+    listUsers: () => api.get('/admin/users'),
+    blockUser: (id: string, data: any) => api.put(`/admin/users/${id}/block`, data),
     unblockUser: (id: string) => api.put(`/admin/users/${id}/unblock`),
-    getBlockedUsers: () => api.get('/admin/users/blocked-users'),
+    getBlockedUsers: () => api.get('/admin/users'),
     getAuditLogs: (limit: number) => api.get(`/admin/audit-logs?limit=${limit}`),
+    getPendingVolunteers: () => api.get('/admin/volunteers/pending'),
+    addVolunteer: (data: any) => api.post('/admin/volunteers', data),
+    approveVolunteer: (id: string) => api.put(`/admin/volunteers/${id}/approve`),
+    rejectVolunteer: (id: string) => api.put(`/admin/volunteers/${id}/reject`),
 };
 
 export const messageAPI = {
