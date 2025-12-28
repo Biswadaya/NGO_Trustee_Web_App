@@ -1,19 +1,54 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Calendar,
-  MapPin,
   Clock,
   Users,
   ArrowRight
 } from 'lucide-react';
-import { events } from '@/data/mockData';
+import { publicAPI } from '@/api/endpoints';
 
 const Events = () => {
-  const upcomingEvents = events.filter(e => e.status === 'Upcoming');
-  const pastEvents = events.filter(e => e.status === 'Completed');
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await publicAPI.getEvents();
+        // Map Notice objects to Event UI model if needed, or just use as is
+        // Backend returns notices with notice_type = 'event'
+        // Fields: id, title, content (desc), published_at, expiry_date (event date), attachments
+        setEvents(res.data.data.events);
+      } catch (error) {
+        console.error("Failed to load events", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  // Helpers to process event data
+  const getEventDate = (dateStr: string) => {
+    if (!dateStr) return 'TBA';
+    return new Date(dateStr).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
+  const getEventTime = (dateStr: string) => {
+    if (!dateStr) return 'TBA';
+    return new Date(dateStr).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading events...</div>;
+  }
+
+  const upcomingEvents = events.filter(e => !e.expiry_date || new Date(e.expiry_date) > new Date());
+  const pastEvents = events.filter(e => e.expiry_date && new Date(e.expiry_date) <= new Date());
 
   return (
     <div className="bg-white min-h-screen">
@@ -45,50 +80,51 @@ const Events = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {upcomingEvents.map((event) => (
-              <Card key={event.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 bg-white border-slate-100">
-                <div className="p-1">
-                  <div className="aspect-[16/10] rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center relative overflow-hidden">
-                    <Calendar className="w-16 h-16 text-white/30" />
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
-                        {event.type}
-                      </Badge>
+          {upcomingEvents.length === 0 ? (
+            <div className="text-center py-10 text-slate-500">No upcoming events at the moment. Check back soon!</div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingEvents.map((event) => (
+                <Card key={event.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 bg-white border-slate-100">
+                  <div className="p-1">
+                    <div className="aspect-[16/10] rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center relative overflow-hidden">
+                      <Calendar className="w-16 h-16 text-white/30" />
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                          Event
+                        </Badge>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.name}</h3>
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.title}</h3>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Calendar className="w-4 h-4 text-indigo-600" />
-                      <span>{event.date}</span>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Calendar className="w-4 h-4 text-indigo-600" />
+                        <span>{getEventDate(event.expiry_date)}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-600">
+                        <Clock className="w-4 h-4 text-indigo-600" />
+                        <span>{getEventTime(event.expiry_date)}</span>
+                      </div>
+                      {/* Location not in basic model, maybe in content or custom field. Omitting for now */}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <Clock className="w-4 h-4 text-indigo-600" />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-600">
-                      <MapPin className="w-4 h-4 text-indigo-600" />
-                      <span>{event.location}</span>
-                    </div>
-                  </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <Users className="w-4 h-4" />
-                      <span>{event.attendees} attending</span>
+                    <p className="text-sm text-slate-600 mb-4 line-clamp-3">{event.content}</p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <Users className="w-4 h-4" />
+                        <span>Open for all</span>
+                      </div>
+                      {/* Registration link could be in attachments */}
                     </div>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" size="sm">
-                      Register
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -107,23 +143,15 @@ const Events = () => {
               <Card key={event.id} className="bg-slate-50 border-slate-100 opacity-80 hover:opacity-100 transition-opacity">
                 <CardContent className="p-6">
                   <Badge variant="secondary" className="mb-3 bg-slate-200 text-slate-600">Completed</Badge>
-                  <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.name}</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.title}</h3>
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-slate-500">
                       <Calendar className="w-4 h-4" />
-                      <span>{event.date}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <MapPin className="w-4 h-4" />
-                      <span>{event.location}</span>
+                      <span>{getEventDate(event.expiry_date)}</span>
                     </div>
                   </div>
-
-                  <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Users className="w-4 h-4" />
-                    <span>{event.attendees} attended</span>
-                  </div>
+                  <p className="text-sm text-slate-500 line-clamp-2">{event.content}</p>
                 </CardContent>
               </Card>
             ))}

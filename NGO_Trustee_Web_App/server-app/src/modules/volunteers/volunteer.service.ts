@@ -78,7 +78,10 @@ export const payMembership = async (volunteerId: string, amount: number) => {
 export const getVolunteers = async () => {
     return prisma.volunteer.findMany({
         orderBy: { created_at: 'desc' },
-        include: { user: { select: { email: true, role: true } } }
+        include: {
+            user: { select: { email: true, role: true } },
+            tasks: { select: { id: true, status: true } }
+        }
     });
 };
 
@@ -242,3 +245,143 @@ export const updateTaskStatus = async (taskId: string, status: string) => {
     });
 };
 
+export const getVolunteerStats = async (userId: string) => {
+    const volunteer = await prisma.volunteer.findUnique({
+        where: { user_id: userId },
+        include: {
+            tasks: true,
+            certificates: true,
+            user: { select: { email: true, username: true } }
+        }
+    });
+
+    if (!volunteer) {
+        throw new AppError('Volunteer profile not found', 404);
+    }
+
+    const tasksCompleted = volunteer.tasks.filter(t => t.status === 'completed').length;
+    const totalPoints = tasksCompleted * 10; // Simple logic: 10 pts per task
+    const totalCertificates = volunteer.certificates.length;
+
+    return {
+        volunteer,
+        stats: {
+            tasksCompleted,
+            totalPoints,
+            totalCertificates,
+            status: volunteer.status
+        }
+    };
+};
+
+// --- Group Management ---
+export const createGroup = async (name: string, description: string) => {
+    return prisma.volunteerGroup.create({
+        data: { name, description }
+    });
+};
+
+export const listGroups = async () => {
+    return prisma.volunteerGroup.findMany({
+        include: {
+            _count: { select: { volunteers: true } }
+        },
+        orderBy: { created_at: 'desc' }
+    });
+};
+
+export const getGroupMembers = async (groupId: string) => {
+    const group = await prisma.volunteerGroup.findUnique({
+        where: { id: groupId },
+        include: { volunteers: true }
+    });
+    if (!group) throw new AppError('Group not found', 404);
+    return group.volunteers;
+};
+
+export const addMembersToGroup = async (groupId: string, volunteerIds: string[]) => {
+    return prisma.volunteerGroup.update({
+        where: { id: groupId },
+        data: {
+            volunteers: {
+                connect: volunteerIds.map(id => ({ id }))
+            }
+        },
+        include: { _count: { select: { volunteers: true } } }
+    });
+};
+
+export const removeMemberFromGroup = async (groupId: string, volunteerId: string) => {
+    return prisma.volunteerGroup.update({
+        where: { id: groupId },
+        data: {
+            volunteers: {
+                disconnect: { id: volunteerId }
+            }
+        }
+    });
+};
+
+// --- Task Assignment Logic ---
+export const assignTaskToTarget = async (data: {
+    title: string,
+    description: string,
+    due_date?: string,
+    target_type: 'individual' | 'group' | 'all',
+    target_id?: string // volunteerId or groupId
+}) => {
+    let volunteerIds: string[] = [];
+
+    if (data.target_type === 'individual') {
+        if (!data.target_id) throw new AppError('Target ID required for individual assignment', 400);
+        volunteerIds = [data.target_id];
+    } else if (data.target_type === 'group') {
+        if (!data.target_id) throw new AppError('Group ID required for group assignment', 400);
+        const group = await prisma.volunteerGroup.findUnique({
+            where: { id: data.target_id },
+            include: { volunteers: { select: { id: true } } }
+        });
+        if (!group) throw new AppError('Group not found', 404);
+        volunteerIds = group.volunteers.map(v => v.id);
+    } else if (data.target_type === 'all') {
+        const volunteers = await prisma.volunteer.findMany({
+            where: { status: 'ACTIVE' },
+            select: { id: true }
+        });
+        volunteerIds = volunteers.map(v => v.id);
+    }
+
+    if (volunteerIds.length === 0) {
+        return { count: 0, message: 'No eligible volunteers found for assignment' };
+    }
+
+    // Bulk Create Tasks
+    const tasksData = volunteerIds.map(vid => ({
+        volunteer_id: vid,
+        title: data.title,
+        description: data.description,
+        status: 'pending',
+        due_date: data.due_date ? new Date(data.due_date) : null
+    }));
+
+    await prisma.volunteerTask.createMany({
+        data: tasksData
+    });
+
+    // Audit Log
+    try {
+        await logAction(null, 'ASSIGN_TASK_BULK', 'VOLUNTEER_TASK', null, {
+            title: data.title,
+            target_type: data.target_type,
+            count: tasksData.length
+        });
+    } catch (e) {
+        console.error("Failed to create audit log", e);
+    }
+
+    return { count: tasksData.length, message: `Task assigned to ${tasksData.length} volunteers` };
+};
+
+
+
+// End of file - Forced update to ensure server reload

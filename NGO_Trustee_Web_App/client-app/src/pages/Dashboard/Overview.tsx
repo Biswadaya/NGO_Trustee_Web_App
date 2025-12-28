@@ -1,5 +1,5 @@
 import { useAdminDashboard } from '../../hooks/useAdminDashboard';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Users, UserCheck, DollarSign, Award, TrendingUp } from 'lucide-react';
 
 function StatCard({ title, value, icon: Icon, color }: { title: string; value: number | string; icon: React.ElementType; color: string }) {

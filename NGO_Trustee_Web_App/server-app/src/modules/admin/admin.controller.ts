@@ -203,3 +203,12 @@ export const deleteEvent = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 };
+
+export const getPublicEvents = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const events = await AdminService.getPublicEvents();
+        res.status(200).json({ status: 'success', data: { events } });
+    } catch (error) {
+        next(error);
+    }
+};

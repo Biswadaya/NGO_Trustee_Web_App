@@ -22,30 +22,24 @@ export const registerUser = async (data: {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Transaction to create User and Volunteer profile together
+    // Transaction to create User
     const result = await prisma.$transaction(async (tx) => {
         const newUser = await tx.user.create({
             data: {
                 email,
                 password_hash: hashedPassword,
-                role: UserRole.VOLUNTEER, // Default role
+                role: UserRole.DONOR, // Changed from VOLUNTEER to DONOR
             },
         });
 
-        const volunteer = await tx.volunteer.create({
-            data: {
-                user_id: newUser.id,
-                email: newUser.email,
-                full_name,
-                status: 'PENDING',
-                skills: [],
-            },
-        });
+        // Donors don't strictly need a Volunteer profile, but if the system relies on it, we might need to handle that.
+        // However, based on schema, User is the main entity. Volunteer is an optional relation.
+        // So we just return the user.
 
         const token = signToken({ userId: newUser.id, role: newUser.role });
         const refreshToken = signRefreshToken({ userId: newUser.id, role: newUser.role });
 
-        return { user: { ...newUser, status: volunteer.status }, token, refreshToken };
+        return { user: { ...newUser, status: 'ACTIVE' }, token, refreshToken };
     });
 
     return result;

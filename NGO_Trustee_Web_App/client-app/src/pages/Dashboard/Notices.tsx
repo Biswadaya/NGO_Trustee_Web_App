@@ -1,5 +1,5 @@
 import { useNotices } from '../../hooks/useNotices';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Bell, Calendar, Tag, Plus } from 'lucide-react';
 
 function NoticeCard({ notice }: { notice: { id: string; title: string; content: string; notice_type: string; published_at: string } }) {

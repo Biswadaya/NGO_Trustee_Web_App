@@ -1,5 +1,5 @@
 import { usePendingVolunteers, useApproveVolunteer, useRejectVolunteer } from '../../hooks/useVolunteers';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Users, CheckCircle, XCircle, Mail, Calendar, Clock } from 'lucide-react';
 import { useState } from 'react';

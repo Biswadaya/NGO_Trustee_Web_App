@@ -73,6 +73,13 @@ export const volunteerAPI = {
     getUniqueId: (id: string) => api.get(`/volunteers/${id}/get-unique-id`),
     getMyTasks: (id: string) => api.get(`/volunteers/${id}/tasks`),
     updateTaskStatus: (taskId: string, status: string) => api.put(`/volunteers/tasks/${taskId}/status`, { status }),
+    createGroup: (data: any) => api.post('/volunteers/groups/create', data),
+    listGroups: () => api.get('/volunteers/groups/list'),
+    getGroupMembers: (groupId: string) => api.get(`/volunteers/groups/${groupId}/members`),
+    addMembersToGroup: (groupId: string, volunteerIds: string[]) => api.put(`/volunteers/groups/${groupId}/add-members`, { volunteerIds }),
+    removeMemberFromGroup: (groupId: string, volunteerId: string) => api.put(`/volunteers/groups/${groupId}/remove-member/${volunteerId}`),
+    assignTaskBulk: (data: any) => api.post('/volunteers/tasks/assign-bulk', data),
+    listAllTasks: () => api.get('/volunteers/tasks/all'),
 };
 
 export const adminAPI = {
@@ -115,6 +122,7 @@ export const messageAPI = {
 export const noticeAPI = {
     create: (data: any) => api.post('/notices/admin/notices/create', data),
     list: () => api.get('/notices/notices/list'),
+    getMyNotices: () => api.get('/notices/my-notices'),
     getHistory: () => api.get('/notices/admin/notice/history'),
     update: (id: string, data: any) => api.put(`/notices/admin/notice/${id}/edit`, data),
     delete: (id: string) => api.delete(`/notices/admin/notice/${id}`),
@@ -141,6 +149,14 @@ export const fileAPI = {
     list: () => api.get('/files/list'),
     update: (id: string, data: any) => api.put(`/files/${id}`, data),
     delete: (id: string) => api.delete(`/files/${id}`),
+};
+
+export const userAPI = {
+    getMe: () => api.get('/users/me'),
+};
+
+export const publicAPI = {
+    getEvents: () => api.get('/admin/events/public'),
 };
 
 export default api;

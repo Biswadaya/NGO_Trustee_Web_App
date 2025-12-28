@@ -111,8 +111,21 @@ model Volunteer {
   user                User      @relation(fields: [user_id], references: [id])
   certificates        Certificate[]
   tasks               VolunteerTask[]
+  groups              VolunteerGroup[]  @relation("VolunteerGroups")
 
   @@map("volunteers")
+}
+
+model VolunteerGroup {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  
+  volunteers  Volunteer[] @relation("VolunteerGroups")
+
+  @@map("volunteer_groups")
 }
 
 model ManagerPermission {

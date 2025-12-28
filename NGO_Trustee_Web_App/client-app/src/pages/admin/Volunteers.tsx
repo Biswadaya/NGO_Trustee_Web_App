@@ -223,8 +223,8 @@ const AdminVolunteers = () => {
 
                   <div className="grid grid-cols-2 gap-4 mb-6 p-3 rounded-lg bg-muted/30 border border-border/50">
                     <div>
-                      <p className="text-[10px] text-muted-foreground uppercase font-bold">Membership</p>
-                      <p className="text-xs font-semibold">{v.membership_status}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase font-bold">Tasks Assigned</p>
+                      <p className="text-xs font-semibold">{v.tasks?.length || 0}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-muted-foreground uppercase font-bold">Join Date</p>

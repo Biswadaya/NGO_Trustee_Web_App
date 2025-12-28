@@ -14,13 +14,17 @@ export const validate =
                 next();
             } catch (error) {
                 if (error instanceof ZodError) {
-                    const errorMessages = (error as any).errors.map((issue: any) => ({
-                        field: issue.path.join('.'),
-                        message: issue.message,
-                    }));
-                    res.status(400).json({ status: 'fail', errors: errorMessages });
-                    return;
+                    const issues = (error as any).errors || (error as any).issues;
+                    if (issues && Array.isArray(issues)) {
+                        const errorMessages = issues.map((issue: any) => ({
+                            field: issue.path.join('.'),
+                            message: issue.message,
+                        }));
+                        res.status(400).json({ status: 'fail', errors: errorMessages });
+                        return;
+                    }
                 }
+                console.error('Validation error:', error);
                 next(new AppError('Validation failed', 400));
             }
         };

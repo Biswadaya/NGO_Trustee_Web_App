@@ -19,6 +19,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: any) => Promise<void>;
   logout: () => void;
+  setAuth: (token: string, user: User) => void;
   switchRole: (role: UserRole) => void;
 }
 
@@ -76,6 +77,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.removeItem('user');
   };
 
+  const setAuth = (newToken: string, newUser: User) => {
+    setToken(newToken);
+    setUser(newUser);
+    localStorage.setItem('token', newToken);
+    localStorage.setItem('user', JSON.stringify(newUser));
+  };
+
   const switchRole = (role: UserRole) => {
     if (user) {
       const updatedUser = { ...user, role };
@@ -93,6 +101,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isLoading,
         login,
         logout,
+        setAuth,
         switchRole,
       }}
     >

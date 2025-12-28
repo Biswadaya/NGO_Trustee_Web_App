@@ -12,6 +12,7 @@ router.post('/register', VolunteerController.register);
 router.use(protect);
 
 router.get('/list', VolunteerController.list);
+router.get('/stats', VolunteerController.getStats);
 router.get('/id-card/list', VolunteerController.listIdCards);
 router.get('/:id/personal-info', VolunteerController.getPersonalInfo);
 router.get('/:id/id-card', VolunteerController.getIdCard);
@@ -27,5 +28,13 @@ router.get('/:id/tasks', VolunteerController.getTasks);
 router.get('/tasks/all', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.listAllTasks);
 router.post('/tasks/create', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.createTask);
 router.put('/tasks/:taskId/status', VolunteerController.updateTaskStatus);
+router.post('/tasks/assign-bulk', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.assignTaskBulk);
+
+// --- Group Management ---
+router.post('/groups/create', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.createGroup);
+router.get('/groups/list', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.listGroups);
+router.get('/groups/:groupId/members', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.getGroupMembers);
+router.put('/groups/:groupId/add-members', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.addMembersToGroup);
+router.put('/groups/:groupId/remove-member/:volunteerId', restrictTo(UserRole.ADMIN, UserRole.MANAGER), VolunteerController.removeMemberFromGroup);
 
 export default router;

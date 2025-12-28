@@ -15,6 +15,18 @@ export const activate = async (req: Request, res: Response, next: NextFunction) 
     }
 };
 
+export const getStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.userId;
+        const data = await VolunteerService.getVolunteerStats(userId);
+        res.status(200).json({ status: 'success', data });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 export const generateId = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
@@ -148,4 +160,64 @@ export const updateTaskStatus = async (req: Request, res: Response, next: NextFu
         next(error);
     }
 };
+
+// --- Group Management ---
+export const createGroup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, description } = req.body;
+        const group = await VolunteerService.createGroup(name, description);
+        res.status(201).json({ status: 'success', data: { group } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const listGroups = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const groups = await VolunteerService.listGroups();
+        res.status(200).json({ status: 'success', data: { groups } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getGroupMembers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const members = await VolunteerService.getGroupMembers(req.params.groupId);
+        res.status(200).json({ status: 'success', data: { members } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const addMembersToGroup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { volunteerIds } = req.body;
+        const group = await VolunteerService.addMembersToGroup(req.params.groupId, volunteerIds);
+        res.status(200).json({ status: 'success', data: { group } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const removeMemberFromGroup = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { volunteerId } = req.params;
+        const group = await VolunteerService.removeMemberFromGroup(req.params.groupId, volunteerId);
+        res.status(200).json({ status: 'success', data: { group } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// --- Bulk Task Assignment ---
+export const assignTaskBulk = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await VolunteerService.assignTaskToTarget(req.body);
+        res.status(200).json({ status: 'success', data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 

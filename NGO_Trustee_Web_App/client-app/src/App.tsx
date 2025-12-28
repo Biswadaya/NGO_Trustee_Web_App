@@ -19,11 +19,13 @@ import VolunteerRegister from "./pages/Auth/VolunteerRegister";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
+import AdminProfile from "./pages/admin/Profile";
 import AdminMembers from "./pages/admin/Members";
 import AdminVolunteers from "./pages/admin/Volunteers";
 import AdminDonations from "./pages/admin/Donations";
 import AdminEvents from "./pages/admin/Events";
 import AdminProjects from "./pages/admin/Projects";
+import AdminTasks from "./pages/admin/Tasks";
 import AdminVerification from "./pages/admin/Verification";
 import AdminFinance from "./pages/admin/Finance";
 import AdminAuditLogs from "./pages/admin/AuditLogs";
@@ -43,8 +45,8 @@ import UserSupport from "./pages/user/Support";
 
 // Volunteer Pages
 import VolunteerDashboard from "./pages/volunteer/Dashboard";
+import VolunteerProfile from "./pages/volunteer/Profile";
 import VolunteerTasks from "./pages/volunteer/Tasks";
-import VolunteerAttendance from "./pages/volunteer/Attendance";
 import VolunteerCertificates from "./pages/volunteer/Certificates";
 import VolunteerNotices from "./pages/volunteer/Notices";
 import VolunteerSupport from "./pages/volunteer/Support";
@@ -75,11 +77,13 @@ const App = () => (
 
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminDashboard /></RouteGuard>} />
+              <Route path="/admin/profile" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminProfile /></RouteGuard>} />
               <Route path="/admin/members" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminMembers /></RouteGuard>} />
               <Route path="/admin/volunteers" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminVolunteers /></RouteGuard>} />
               <Route path="/admin/donations" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminDonations /></RouteGuard>} />
               <Route path="/admin/events" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminEvents /></RouteGuard>} />
               <Route path="/admin/projects" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminProjects /></RouteGuard>} />
+              <Route path="/admin/tasks" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminTasks /></RouteGuard>} />
               <Route path="/admin/verification" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminVerification /></RouteGuard>} />
               <Route path="/admin/finance" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminFinance /></RouteGuard>} />
               <Route path="/admin/audit-logs" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminAuditLogs /></RouteGuard>} />
@@ -99,8 +103,8 @@ const App = () => (
 
               {/* Volunteer Routes */}
               <Route path="/volunteer/dashboard" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerDashboard /></RouteGuard>} />
+              <Route path="/volunteer/profile" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerProfile /></RouteGuard>} />
               <Route path="/volunteer/tasks" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerTasks /></RouteGuard>} />
-              <Route path="/volunteer/attendance" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerAttendance /></RouteGuard>} />
               <Route path="/volunteer/certificates" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerCertificates /></RouteGuard>} />
               <Route path="/volunteer/notices" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerNotices /></RouteGuard>} />
               <Route path="/volunteer/support" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerSupport /></RouteGuard>} />

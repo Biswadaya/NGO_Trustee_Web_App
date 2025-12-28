@@ -1,4 +1,4 @@
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { User, Mail, Shield, CheckCircle } from 'lucide-react';
 
 export default function Profile() {

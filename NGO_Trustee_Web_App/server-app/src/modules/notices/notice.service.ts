@@ -18,9 +18,9 @@ export const getNotices = async (targetAudience?: string) => {
 
     if (targetAudience) {
         if (targetAudience === 'VOLUNTEER') {
-            where.target_audience = { in: ['public', 'volunteers'] };
+            where.target_audience = { in: ['public', 'volunteers', 'VOLUNTEER', 'all', 'ALL'] };
         } else if (targetAudience === 'DONOR') {
-            where.target_audience = { in: ['public', 'donors'] };
+            where.target_audience = { in: ['public', 'donors', 'DONOR', 'all', 'ALL'] };
         } else {
             where.target_audience = 'public';
         }

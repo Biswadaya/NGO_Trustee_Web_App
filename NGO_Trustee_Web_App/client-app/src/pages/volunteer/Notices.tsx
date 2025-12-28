@@ -13,10 +13,8 @@ const VolunteerNotices = () => {
   useEffect(() => {
     const fetchNotices = async () => {
       try {
-        const res = await noticeAPI.list();
-        // Filter for volunteers and everyone
-        const allNotices = res.data.data.notices || [];
-        setNotices(allNotices.filter((n: any) => n.target_audience === 'volunteers' || n.target_audience === 'all'));
+        const res = await noticeAPI.getMyNotices();
+        setNotices(res.data.data.notices || []);
       } catch (error) {
         toast.error('Failed to load notices');
       } finally {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -11,14 +11,15 @@ export default function Register() {
     });
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth(); // Auto login after register?
+    const { setAuth } = useAuth(); // Auto login after register?
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const res = await api.post('/auth/register', formData);
-            const { user, token } = res.data.data;
-            login(token, user);
+            const { token } = res.data;
+            const { user } = res.data.data;
+            setAuth(token, user);
             navigate('/dashboard');
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');

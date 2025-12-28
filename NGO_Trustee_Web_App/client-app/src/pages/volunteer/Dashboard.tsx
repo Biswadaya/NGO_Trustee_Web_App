@@ -27,12 +27,17 @@ const VolunteerDashboard = () => {
     const fetchVolunteerData = async () => {
       try {
         const statsRes = await volunteerAPI.getStats();
-        setStats(statsRes.data.data.stats);
-        // Using getMyTasks if available or fallback
-        const tasksRes = await volunteerAPI.list(); // simplified for demo
-        setTasks(tasksRes.data.data.volunteers || []);
+        // Backend returns { status: 'success', data: { volunteer, stats } }
+        const { volunteer, stats: dashboardStats } = statsRes.data.data;
+        setStats(dashboardStats);
+
+        // Fetch tasks
+        if (volunteer?.id) {
+          const tasksRes = await volunteerAPI.getMyTasks(volunteer.id);
+          setTasks(tasksRes.data.data.tasks || []);
+        }
       } catch (error) {
-        console.error('Failed to fetch volunteer data');
+        console.error('Failed to fetch volunteer data', error);
         toast.error('Syncing volunteer records failed');
       } finally {
         setLoading(false);
@@ -71,7 +76,7 @@ const VolunteerDashboard = () => {
           <div className="flex items-center gap-3">
             <Badge variant="gold" className="flex items-center gap-1">
               <Star className="w-3 h-3" />
-              Silver Volunteer
+              Volunteer
             </Badge>
           </div>
         </div>
@@ -111,7 +116,7 @@ const VolunteerDashboard = () => {
                     <span>Task Completion (Goal: 10)</span>
                     <span>{stats?.tasksCompleted || 0}/10 tasks</span>
                   </div>
-                  <Progress value={((stats?.tasksCompleted || 0) / 10) * 100} className="h-3 bg-white/20" />
+                  <Progress value={Math.min(((stats?.tasksCompleted || 0) / 10) * 100, 100)} className="h-3 bg-white/20" />
                 </div>
               </div>
             </div>
@@ -122,33 +127,42 @@ const VolunteerDashboard = () => {
         <div className="grid lg:grid-cols-2 gap-6">
           <Card variant="glass">
             <CardHeader className="flex flex-row items-center justify-between border-b border-border/30 pb-4">
-              <CardTitle className="text-lg">Open Mission Tasks</CardTitle>
+              <CardTitle className="text-lg">Recent Tasks</CardTitle>
               <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
-                Apply for more <ArrowRight className="w-4 h-4 ml-1" />
+                View All <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="text-center py-10">
-                <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                <p className="text-sm text-muted-foreground">Check the 'Tasks' tab to find and join new campaigns.</p>
-              </div>
+              {tasks.length > 0 ? (
+                <div className="space-y-4">
+                  {tasks.slice(0, 3).map((task: any) => (
+                    <div key={task.id} className="p-4 rounded-xl border border-border/40 bg-card/50 flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-sm">{task.title}</p>
+                        <p className="text-xs text-muted-foreground">Status: {task.status}</p>
+                      </div>
+                      <Badge variant={task.status === 'completed' ? 'success' : 'secondary'}>{task.status}</Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10">
+                  <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground">No tasks assigned yet.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Card variant="glass">
             <CardHeader className="flex flex-row items-center justify-between border-b border-border/30 pb-4">
-              <CardTitle className="text-lg">Recent Rewards</CardTitle>
+              <CardTitle className="text-lg">Recent Certifications</CardTitle>
               <Award className="w-5 h-5 text-accent" />
             </CardHeader>
             <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-gradient-to-br from-accent/5 to-warning/5 border border-accent/10 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-sm">System Onboarding</p>
-                    <p className="text-[10px] text-muted-foreground">Verified Member Badge</p>
-                  </div>
-                  <Badge variant="glass" className="bg-accent/20 text-accent">CLAIMED</Badge>
-                </div>
+              <div className="text-center py-10">
+                <Award className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-sm text-muted-foreground">Start completing tasks to earn certificates!</p>
               </div>
             </CardContent>
           </Card>

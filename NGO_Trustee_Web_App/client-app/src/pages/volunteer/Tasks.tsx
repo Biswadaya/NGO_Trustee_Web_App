@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { volunteerAPI } from '@/api/endpoints';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -12,20 +13,36 @@ const VolunteerTasks = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        if (!user?.id) return;
-        const res = await volunteerAPI.getMyTasks(user.id);
-        setTasks(res.data.data.tasks || []);
-      } catch (error) {
-        toast.error('Failed to load tasks');
-      } finally {
-        setLoading(false);
+  const fetchTasks = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (!user?.id) {
+        console.error("No user ID found");
+        return;
       }
-    };
-    fetchTasks();
+
+      // First get the volunteer ID
+      const stats = await volunteerAPI.getStats();
+      const volunteerId = stats.data.data.volunteer?.id;
+
+      if (volunteerId) {
+        const res = await volunteerAPI.getMyTasks(volunteerId);
+        setTasks(res.data.data.tasks || []);
+      } else {
+        console.error("No volunteer profile found for user");
+        toast.error("Volunteer profile not found");
+      }
+    } catch (error) {
+      console.error("Task fetch error", error);
+      toast.error('Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
 
   const handleStatusUpdate = async (taskId: string, newStatus: string) => {
     try {
@@ -37,7 +54,7 @@ const VolunteerTasks = () => {
     }
   };
 
-  if (loading) return <DashboardLayout><div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div></DashboardLayout>;
+  if (loading && tasks.length === 0) return <DashboardLayout><div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div></DashboardLayout>;
 
   const columns = [
     { label: 'Pending', status: 'pending', icon: AlertCircle, color: 'text-warning' },
@@ -48,7 +65,12 @@ const VolunteerTasks = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-display font-bold">Task Board</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-display font-bold">Task Board</h1>
+          <Button variant="outline" size="sm" onClick={fetchTasks} disabled={loading}>
+            <Loader2 className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} /> Refresh
+          </Button>
+        </div>
         <div className="grid md:grid-cols-3 gap-6">
           {columns.map((col) => (
             <div key={col.status}>

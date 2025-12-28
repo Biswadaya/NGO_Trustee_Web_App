@@ -29,7 +29,6 @@ import {
   Shield,
   Heart,
   ClipboardList,
-  Clock,
   Award,
   MessageSquare,
   User,
@@ -50,11 +49,13 @@ interface DashboardLayoutProps {
 
 const adminNavItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
+  { icon: User, label: 'Profile', path: '/admin/profile' },
   { icon: Users, label: 'Members', path: '/admin/members' },
   { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
   { icon: DollarSign, label: 'Donations', path: '/admin/donations' },
   { icon: Calendar, label: 'Events', path: '/admin/events' },
   { icon: FileText, label: 'Projects', path: '/admin/projects' },
+  { icon: ClipboardList, label: 'Task & Teams', path: '/admin/tasks' },
   { icon: UserCheck, label: 'Verification', path: '/admin/verification' },
   { icon: CreditCard, label: 'Finance', path: '/admin/finance' },
   { icon: ScrollText, label: 'Audit Logs', path: '/admin/audit-logs' },
@@ -76,8 +77,8 @@ const memberNavItems = [
 
 const volunteerNavItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/volunteer/dashboard' },
+  { icon: User, label: 'Profile', path: '/volunteer/profile' },
   { icon: ClipboardList, label: 'Task Board', path: '/volunteer/tasks' },
-  { icon: Clock, label: 'Attendance', path: '/volunteer/attendance' },
   { icon: Award, label: 'Certificates', path: '/volunteer/certificates' },
   { icon: Bell, label: 'Notices', path: '/volunteer/notices' },
   { icon: MessageSquare, label: 'Support Chat', path: '/volunteer/support' },

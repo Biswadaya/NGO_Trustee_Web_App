@@ -22,4 +22,7 @@ router.put('/:userId/unblock',
     UserController.unblockUser
 );
 
+// Profile route
+router.get('/me', protect, UserController.getMe);
+
 export default router;

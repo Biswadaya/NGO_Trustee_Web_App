@@ -1,6 +1,8 @@
 import { prisma } from '../../utils/db';
 
 
+import * as CertificateService from '../certificates/certificate.service';
+
 export const createDonation = async (data: any) => {
     // Logic to process payment would go here (Stripe)
     // For MVP, we record the transaction directly
@@ -14,9 +16,15 @@ export const createDonation = async (data: any) => {
         },
     });
 
-    // Auto-generate certificate (Async trigger)
-    // In a real app, this might be a queue job
-    // await CertificateService.generateForDonation(donation.id);
+    // Auto-generate certificate if user is authenticated
+    if (donation.user_id) {
+        try {
+            await CertificateService.generateForDonation(donation.id);
+        } catch (error) {
+            console.error('Failed to generate certificate:', error);
+            // Don't fail the donation if certificate fails
+        }
+    }
 
     return donation;
 };

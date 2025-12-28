@@ -8,6 +8,9 @@ const router = express.Router();
 // Auth (Public for admin login)
 router.post('/login', AdminController.login);
 
+// Public Events (No Auth)
+router.get('/events/public', AdminController.getPublicEvents);
+
 router.use(protect);
 router.use(restrictTo(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.MANAGER));
 

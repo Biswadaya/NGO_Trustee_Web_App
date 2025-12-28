@@ -316,3 +316,16 @@ export const getEvent = async (id: string) => {
 export const deleteEvent = async (id: string) => {
     return prisma.notice.delete({ where: { id } });
 };
+
+export const getPublicEvents = async () => {
+    return prisma.notice.findMany({
+        where: {
+            notice_type: 'event',
+            is_active: true,
+            // Events are generally public, but we can enforce target_audience if needed
+            // target_audience: { in: ['public', 'all', 'ALL'] } 
+        },
+        orderBy: { created_at: 'desc' },
+        include: { published_by: { select: { email: true, role: true } } }
+    });
+};

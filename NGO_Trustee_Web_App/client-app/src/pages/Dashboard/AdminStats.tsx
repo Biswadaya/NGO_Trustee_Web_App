@@ -1,5 +1,5 @@
 import { useAdminDashboard } from '../../hooks/useAdminDashboard';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { Users, UserCheck, DollarSign, Award, Activity } from 'lucide-react';
 

@@ -45,3 +45,26 @@ export const unblockUser = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 };
+
+export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                volunteer_profile: true,
+                manager_permissions: true,
+            }
+        });
+
+        if (!user) {
+            return next(new AppError('User not found', 404));
+        }
+
+        res.status(200).json({ status: 'success', data: { user } });
+    } catch (error) {
+        next(error);
+    }
+};
