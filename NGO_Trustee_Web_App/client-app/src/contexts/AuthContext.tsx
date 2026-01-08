@@ -6,6 +6,7 @@ export type UserRole = 'ADMIN' | 'VOLUNTEER' | 'DONOR' | 'SUPER_ADMIN' | 'MANAGE
 export interface User {
   id: string;
   name: string;
+  fullname: string;
   email: string;
   role: UserRole;
   status?: string;
@@ -17,7 +18,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: any) => Promise<void>;
+  login: (credentials: any) => Promise<User>;
   logout: () => void;
   setAuth: (token: string, user: User) => void;
   switchRole: (role: UserRole) => void;
@@ -53,17 +54,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const userData: User = {
         id: data.user.id,
         name: data.user.name || data.user.username || 'NGO User',
+        fullname: data.user.fullname,
         email: data.user.email,
         role: data.user.role,
         status: data.user.status,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.user.email}`,
       };
 
+      // 1. Clear any potential stale data first
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      // Optional: Clear other app keys if strictly needed, but let's stick to ours
+      // localStorage.clear(); 
+
+      // 2. Set new state
       setToken(token);
       setUser(userData);
 
+      // 3. Persist new state
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
+
+      return userData;
     } catch (error) {
       console.error('Login failed:', error);
       throw error;

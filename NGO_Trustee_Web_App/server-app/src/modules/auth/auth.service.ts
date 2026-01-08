@@ -28,7 +28,7 @@ export const registerUser = async (data: {
             data: {
                 email,
                 password_hash: hashedPassword,
-                role: UserRole.DONOR, // Changed from VOLUNTEER to DONOR
+                role: (await tx.user.count()) === 0 ? UserRole.ADMIN : UserRole.DONOR,
             },
         });
 

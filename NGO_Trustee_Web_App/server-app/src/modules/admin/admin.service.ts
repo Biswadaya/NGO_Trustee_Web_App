@@ -3,8 +3,9 @@ import { AppError } from '../../middleware/error';
 import bcrypt from 'bcryptjs';
 import { logAction } from '../audit/audit.service';
 
-export const addVolunteer = async (data: any, adminId: string) => {
-    const { email, password, full_name, phone, skills, bio } = data;
+// Replaces addVolunteer with a more generic createUser or adds it alongside
+export const createUser = async (data: any, adminId: string) => {
+    const { email, password, full_name, role, phone, skills, bio } = data;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new AppError('User already exists', 400);
@@ -16,31 +17,40 @@ export const addVolunteer = async (data: any, adminId: string) => {
             data: {
                 email,
                 password_hash: hashedPassword,
-                role: 'VOLUNTEER',
+                role: role || 'VOLUNTEER', // Allow role specification
                 username: email.split('@')[0]
             }
         });
 
-        const volunteer = await tx.volunteer.create({
-            data: {
-                user_id: user.id,
-                full_name,
-                email,
-                phone,
-                skills: Array.isArray(skills) ? skills : (skills ? skills.split(',').map((s: string) => s.trim()) : []),
-                bio,
-                status: 'PENDING',
-                approval_date: null,
-                activated_manually: false,
-                activated_by_id: null
-            }
-        });
+        // If role is VOLUNTEER, create profile
+        let volunteer = null;
+        if (role === 'VOLUNTEER') {
+            volunteer = await tx.volunteer.create({
+                data: {
+                    user_id: user.id,
+                    full_name: full_name || email.split('@')[0],
+                    email,
+                    phone,
+                    skills: Array.isArray(skills) ? skills : (skills ? skills.split(',').map((s: string) => s.trim()) : []),
+                    bio,
+                    status: 'ACTIVE', // Admin created volunteers are active by default
+                    approval_date: new Date(),
+                    activated_manually: true,
+                    activated_by_id: adminId
+                }
+            });
+        }
 
         // Log the action
-        await logAction(adminId, 'ADD_VOLUNTEER', 'VOLUNTEER', volunteer.id, { email: volunteer.email });
+        await logAction(adminId, 'CREATE_USER', 'USER', user.id, { role, email });
 
         return { user, volunteer };
     });
+};
+
+export const addVolunteer = async (data: any, adminId: string) => {
+    // Legacy support or alias to createUser with VOLUNTEER role
+    return createUser({ ...data, role: 'VOLUNTEER' }, adminId);
 };
 
 
@@ -254,6 +264,7 @@ export const listUsers = async (limit: number = 100) => {
             username: true,
             volunteer_profile: {
                 select: {
+                    id: true,
                     full_name: true,
                     phone: true,
                     status: true

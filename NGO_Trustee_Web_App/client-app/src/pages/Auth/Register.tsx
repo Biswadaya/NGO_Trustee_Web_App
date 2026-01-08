@@ -20,7 +20,15 @@ export default function Register() {
             const { token } = res.data;
             const { user } = res.data.data;
             setAuth(token, user);
-            navigate('/dashboard');
+
+            // Redirect based on role
+            if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
+                navigate('/admin/dashboard');
+            } else if (user.role === 'VOLUNTEER') {
+                navigate('/dashboard/overview');
+            } else {
+                navigate('/');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         }

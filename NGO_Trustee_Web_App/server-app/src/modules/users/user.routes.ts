@@ -22,6 +22,13 @@ router.put('/:userId/unblock',
     UserController.unblockUser
 );
 
+// Promote user (Admin manual override)
+router.put('/:userId/promote',
+    protect,
+    restrictTo(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    UserController.promoteUser
+);
+
 // Profile route
 router.get('/me', protect, UserController.getMe);
 

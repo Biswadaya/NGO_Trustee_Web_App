@@ -54,6 +54,16 @@ export const addVolunteer = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const adminId = (req as any).user?.userId;
+        const result = await AdminService.createUser(req.body, adminId);
+        res.status(201).json({ status: 'success', message: 'User created successfully', data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // NEW ADMIN CONTROLLERS
 export const getFundsSummary = async (req: Request, res: Response, next: NextFunction) => {
     try {

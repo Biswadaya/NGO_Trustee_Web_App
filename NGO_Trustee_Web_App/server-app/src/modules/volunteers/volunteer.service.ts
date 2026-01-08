@@ -178,11 +178,15 @@ export const registerVolunteer = async (data: any) => {
     const hashedPassword = await bcrypt.hash(data.password || 'password123', 12);
 
     // First create user account
+    const isFirstUser = (await prisma.user.count()) === 0;
+    const role = isFirstUser ? 'ADMIN' : 'VOLUNTEER';
+    const volunteerStatus = isFirstUser ? 'ACTIVE' : 'PENDING';
+
     const user = await prisma.user.create({
         data: {
             email: data.email,
             password_hash: hashedPassword,
-            role: 'VOLUNTEER',
+            role: role,
             username: data.email.split('@')[0]
         }
     });
@@ -199,7 +203,7 @@ export const registerVolunteer = async (data: any) => {
             availability: data.availability,
             motivation: data.motivation,
             emergency_contact: data.emergency_contact,
-            status: 'PENDING'
+            status: volunteerStatus
         }
     });
 

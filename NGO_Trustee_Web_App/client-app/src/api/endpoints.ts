@@ -106,6 +106,8 @@ export const adminAPI = {
     addVolunteer: (data: any) => api.post('/admin/volunteers', data),
     approveVolunteer: (id: string) => api.put(`/admin/volunteers/${id}/approve`),
     rejectVolunteer: (id: string) => api.put(`/admin/volunteers/${id}/reject`),
+    createUser: (data: any) => api.post('/admin/users/create', data),
+    promoteUser: (id: string) => api.put(`/users/${id}/promote`),
 };
 
 export const messageAPI = {

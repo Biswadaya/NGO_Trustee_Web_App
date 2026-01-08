@@ -37,7 +37,7 @@ const AdminEvents = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    target_audience: 'All Volunteers',
+    target_audience: 'Everyone',
     expiry_date: '',
   });
 

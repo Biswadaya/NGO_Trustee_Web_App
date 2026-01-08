@@ -28,8 +28,17 @@ const VolunteerRegister = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await volunteerAPI.register(formData);
-            toast.success('Registration successful! Please wait for admin approval.');
+            const response = await volunteerAPI.register(formData);
+            const userRole = response.data?.data?.user?.role;
+            const status = response.data?.data?.volunteer?.status;
+
+            if (userRole === 'ADMIN' || status === 'ACTIVE') {
+                toast.success('Registration successful! You are the System Administrator.');
+            } else if (userRole === 'DONOR' || userRole === 'USER') {
+                toast.success('Registration successful! Welcome to the platform.');
+            } else {
+                toast.success('Registration successful! Please wait for admin approval.');
+            }
             navigate('/login');
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Registration failed. Please try again.');

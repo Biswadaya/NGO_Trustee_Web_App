@@ -1,8 +1,20 @@
+
 import { Link, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Mail, Phone, MapPin } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const PublicLayout = () => {
+    const { isAuthenticated, user } = useAuth();
+
+    // Determine dashboard path
+    const getDashboardPath = () => {
+        if (!user) return '/login';
+        if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) return '/admin/dashboard';
+        if (user.role === 'VOLUNTEER') return '/volunteer/dashboard';
+        return '/user/dashboard';
+    };
+
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
@@ -30,9 +42,15 @@ const PublicLayout = () => {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <Button variant="ghost" asChild className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50">
-                                <Link to="/login">Sign In</Link>
-                            </Button>
+                            {!isAuthenticated ? (
+                                <Button variant="ghost" asChild className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50">
+                                    <Link to="/login">Sign In</Link>
+                                </Button>
+                            ) : (
+                                <Button variant="ghost" asChild className="text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50">
+                                    <Link to={getDashboardPath()}>Dashboard</Link>
+                                </Button>
+                            )}
                             <Button className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white hover:from-indigo-700 hover:to-blue-700 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40 transition-all duration-300 hover:-translate-y-0.5" asChild>
                                 <Link to="/donate">Donate Now</Link>
                             </Button>

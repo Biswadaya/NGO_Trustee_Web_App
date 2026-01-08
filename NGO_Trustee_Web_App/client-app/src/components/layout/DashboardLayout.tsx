@@ -1,6 +1,6 @@
 import { type ReactNode, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth, type UserRole } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard,
   Users,
@@ -26,8 +25,6 @@ import {
   Search,
   Sparkles,
   CreditCard,
-  Shield,
-  Heart,
   ClipboardList,
   Award,
   MessageSquare,
@@ -50,8 +47,7 @@ interface DashboardLayoutProps {
 const adminNavItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },
   { icon: User, label: 'Profile', path: '/admin/profile' },
-  { icon: Users, label: 'Members', path: '/admin/members' },
-  { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
+  { icon: Users, label: 'User Management', path: '/admin/members' },
   { icon: DollarSign, label: 'Donations', path: '/admin/donations' },
   { icon: Calendar, label: 'Events', path: '/admin/events' },
   { icon: FileText, label: 'Projects', path: '/admin/projects' },
@@ -85,7 +81,7 @@ const volunteerNavItems = [
 ];
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
-  const { user, logout, switchRole } = useAuth();
+  const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -96,22 +92,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     : user?.role === 'VOLUNTEER'
       ? volunteerNavItems
       : memberNavItems;
-
-  const handleRoleSwitch = (role: UserRole) => {
-    // Note: switchRole is currently a mock in the UI for demo purposes
-    if (switchRole) switchRole(role);
-    switch (role) {
-      case 'ADMIN':
-        navigate('/admin/dashboard');
-        break;
-      case 'DONOR':
-        navigate('/user/dashboard');
-        break;
-      case 'VOLUNTEER':
-        navigate('/volunteer/dashboard');
-        break;
-    }
-  };
 
   const handleLogout = () => {
     logout();
@@ -243,35 +223,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Role Switcher */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Shield className="w-4 h-4" />
-                  <span className="hidden sm:inline">Switch Role</span>
-                  <ChevronDown className="w-3 h-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Demo Mode</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleRoleSwitch('ADMIN')}>
-                  <Shield className="w-4 h-4 mr-2" />
-                  Admin
-                  {user?.role === 'ADMIN' && <Badge variant="active" className="ml-auto">Active</Badge>}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleRoleSwitch('DONOR')}>
-                  <Users className="w-4 h-4 mr-2" />
-                  Member
-                  {user?.role === 'DONOR' && <Badge variant="active" className="ml-auto">Active</Badge>}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleRoleSwitch('VOLUNTEER')}>
-                  <Heart className="w-4 h-4 mr-2" />
-                  Volunteer
-                  {user?.role === 'VOLUNTEER' && <Badge variant="active" className="ml-auto">Active</Badge>}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
 
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative">

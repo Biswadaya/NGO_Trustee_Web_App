@@ -1,9 +1,20 @@
 version: '3.8'
 
 services:
-  # Managed databases are used (Aiven Postgres & Redis Cloud)
-  # Local services removed.
+  postgres:
+    image: postgres:15-alpine
+    container_name: ngo_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: ngo_trustee
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
+  postgres_data:
 
-
+#docker exec -it ngo_postgres psql -U postgres -d ngo_trustee - to start the docker 

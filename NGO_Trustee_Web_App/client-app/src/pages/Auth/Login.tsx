@@ -13,8 +13,19 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await login({ email, password });
-            navigate('/dashboard');
+            const user = await login({ email, password });
+
+            // Redirect based on role
+            // @ts-ignore
+            const role = user.role;
+
+            if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
+                navigate('/admin/dashboard');
+            } else if (user.role === 'VOLUNTEER') {
+                navigate('/dashboard/overview');
+            } else {
+                navigate('/');
+            }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         }

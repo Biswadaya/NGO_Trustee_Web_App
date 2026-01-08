@@ -212,7 +212,7 @@ const Donate = () => {
                               <User className="w-5 h-5 text-indigo-600" />
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-slate-900">Logged in as {user?.full_name || user?.email}</p>
+                              <p className="text-sm font-medium text-slate-900">Logged in as {user?.fullname || user?.email}</p>
                               <p className="text-xs text-slate-500">Certificate will be issued to this account.</p>
                             </div>
                           </div>
