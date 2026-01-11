@@ -34,6 +34,10 @@ api.interceptors.response.use(
     }
 );
 
+// export const AuthAPI : {
+//     login: (data: any) => api.post('/auth/login', data),
+// }
+
 export const dashboardAPI = {
     getOverview: () => api.get('/dashboard/overview'),
     getAnalytics: (period: string) => api.get(`/dashboard/analytics?period=${period}`),
@@ -108,6 +112,9 @@ export const adminAPI = {
     rejectVolunteer: (id: string) => api.put(`/admin/volunteers/${id}/reject`),
     createUser: (data: any) => api.post('/admin/users/create', data),
     promoteUser: (id: string) => api.put(`/users/${id}/promote`),
+    approveMember: (id: string) => api.put(`/members/${id}/approve`),
+    getMemberProfile: (id: string) => api.get(`/members/${id}/profile`), // Need this for admin to view details
+    getUsers: () => api.get('/admin/users'), // Ensure this matches backend
 };
 
 export const messageAPI = {
@@ -155,6 +162,11 @@ export const fileAPI = {
 
 export const userAPI = {
     getMe: () => api.get('/users/me'),
+};
+
+export const memberAPI = {
+    apply: (data: any) => api.post('/members/apply', data),
+    getMyProfile: () => api.get('/members/me'),
 };
 
 export const publicAPI = {

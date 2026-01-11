@@ -1,28 +1,92 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
+
 import {
-  Calendar,
-  Clock,
-  Users,
-  ArrowRight
+  Calendar, MapPin, Clock, Users, Ticket, X, CheckCircle,
+  ChevronLeft, ChevronRight, Download
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { publicAPI } from '@/api/endpoints';
 
+// Images 
+import eventsCulturalImage from '@/assets/events-cultural.jpg';
+import campaignHealthImage from '@/assets/campaign-health.jpg';
+// Fallback if not exists, we'll handle in code or ensure imports work if file exists
+// Note: We will use campaignHealthImage as fallback for missing ones if needed.
+
+interface APIEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time?: string;
+  location?: string;
+  category?: string;
+  capacity?: number;
+  registered?: number;
+  is_free?: boolean;
+  image_url?: string;
+  attachments?: string; // Fallback
+}
+
+interface UIEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  category: 'cultural' | 'health' | 'education' | 'fundraiser' | 'general';
+  capacity: number;
+  registered: number;
+  isFree: boolean;
+  image: string;
+}
+
+interface TicketData {
+  eventId: string;
+  eventTitle: string;
+  eventDate: string;
+  eventTime: string;
+  eventLocation: string;
+  ticketNumber: string;
+  userName: string;
+}
+
 const Events = () => {
-  const [events, setEvents] = useState<any[]>([]);
+  const { t } = useTranslation();
+  const [events, setEvents] = useState<UIEvent[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // UI States from Client-Demo
+  const [selectedEvent, setSelectedEvent] = useState<UIEvent | null>(null);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [ticketData, setTicketData] = useState<TicketData | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const res = await publicAPI.getEvents();
-        // Map Notice objects to Event UI model if needed, or just use as is
-        // Backend returns notices with notice_type = 'event'
-        // Fields: id, title, content (desc), published_at, expiry_date (event date), attachments
-        setEvents(res.data.data.events);
+        const apiEvents: APIEvent[] = res.data.data.events || [];
+
+        // Map API data to UI model
+        const mappedEvents: UIEvent[] = apiEvents.map((e) => ({
+          id: e.id,
+          title: e.title,
+          description: e.description,
+          date: e.date ? new Date(e.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          time: e.time || '10:00 AM',
+          location: e.location || 'Community Center, Bhubaneswar',
+          category: (e.category as any) || 'general',
+          capacity: e.capacity || 100,
+          registered: e.registered || 0,
+          isFree: e.is_free !== undefined ? e.is_free : true,
+          image: e.image_url || e.attachments || campaignHealthImage
+        }));
+
+        setEvents(mappedEvents);
       } catch (error) {
         console.error("Failed to load events", error);
       } finally {
@@ -32,152 +96,406 @@ const Events = () => {
     fetchEvents();
   }, []);
 
-  // Helpers to process event data
-  const getEventDate = (dateStr: string) => {
-    if (!dateStr) return 'TBA';
-    return new Date(dateStr).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'cultural': return 'bg-accent text-accent-foreground';
+      case 'health': return 'bg-primary text-primary-foreground';
+      case 'education': return 'bg-secondary text-secondary-foreground';
+      case 'fundraiser': return 'bg-destructive text-destructive-foreground';
+      default: return 'bg-muted text-muted-foreground';
+    }
   };
 
-  const getEventTime = (dateStr: string) => {
-    if (!dateStr) return 'TBA';
-    return new Date(dateStr).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  const getDaysInMonth = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    return { firstDay, daysInMonth };
   };
+
+  const getEventsForDate = (date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return events.filter(e => e.date === dateStr);
+  };
+
+  const handleRegister = (event: UIEvent) => {
+    // Check if user is logged in (Mock implementation for UI demo)
+    const isLoggedIn = localStorage.getItem('nhrd_user');
+
+    // For demo purposes, we will allow "Guest" registration if no user
+    const userName = isLoggedIn ? JSON.parse(isLoggedIn).name : 'Guest User';
+
+    const ticket: TicketData = {
+      eventId: event.id,
+      eventTitle: event.title,
+      eventDate: event.date,
+      eventTime: event.time,
+      eventLocation: event.location,
+      ticketNumber: `NHRD-${Date.now().toString(36).toUpperCase()}`,
+      userName: userName,
+    };
+
+    setTicketData(ticket);
+    setShowRegistrationModal(false);
+    setSelectedEvent(null);
+  };
+
+  const { firstDay, daysInMonth } = getDaysInMonth(currentMonth);
 
   if (loading) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center">Loading events...</div>;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  const upcomingEvents = events.filter(e => !e.expiry_date || new Date(e.expiry_date) > new Date());
-  const pastEvents = events.filter(e => e.expiry_date && new Date(e.expiry_date) <= new Date());
-
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-background min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-20 overflow-hidden">
-        <div className="absolute inset-0 bg-slate-50 opacity-30" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <Badge variant="outline" className="mb-6 border-slate-200 text-slate-700">Our Events</Badge>
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 text-slate-900">
-              Join Us at Our
-              <span className="block text-indigo-600">Upcoming Events</span>
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={eventsCulturalImage}
+            alt="Cultural event"
+            onError={(e) => { e.currentTarget.src = campaignHealthImage; }}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/70 to-primary/90" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center text-primary-foreground"
+          >
+            <Calendar className="w-16 h-16 mx-auto mb-6 text-accent" />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              {t('events.title', 'Upcoming Events')}
             </h1>
-            <p className="text-lg text-slate-600">
-              Be part of our community gatherings, workshops, and initiatives that bring people together for change.
+            <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto">
+              {t('events.subtitle', 'Join us in our mission through workshops, camps, and cultural celebrations')}
             </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Calendar Section */}
+      <section className="py-12 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-card rounded-2xl shadow-lg p-6">
+            {/* Calendar Header */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+              </button>
+              <h2 className="text-xl font-bold text-foreground">
+                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </h2>
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </button>
+            </div>
+
+            {/* Calendar Grid */}
+            <div className="grid grid-cols-7 gap-1">
+              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+                  {day}
+                </div>
+              ))}
+
+              {/* Empty cells for days before month starts */}
+              {Array.from({ length: firstDay }).map((_, i) => (
+                <div key={`empty-${i}`} className="aspect-square" />
+              ))}
+
+              {/* Days of the month */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), i + 1);
+                const dayEvents = getEventsForDate(date);
+                const isToday = date.toDateString() === new Date().toDateString();
+
+                return (
+                  <div
+                    key={i}
+                    className={`aspect-square p-1 rounded-lg border ${isToday ? 'border-primary bg-primary/5' : 'border-transparent'
+                      } ${dayEvents.length > 0 ? 'cursor-pointer hover:bg-muted' : ''}`}
+                    onClick={() => dayEvents.length > 0 && setSelectedEvent(dayEvents[0])}
+                  >
+                    <div className={`text-sm ${isToday ? 'font-bold text-primary' : 'text-foreground'}`}>
+                      {i + 1}
+                    </div>
+                    {dayEvents.length > 0 && (
+                      <div className="mt-1">
+                        {dayEvents.map(e => (
+                          <div
+                            key={e.id}
+                            className={`text-xs px-1 py-0.5 rounded truncate ${getCategoryColor(e.category)}`}
+                          >
+                            {e.title.substring(0, 10)}...
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Upcoming Events */}
-      <section className="py-20 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <Badge variant="outline" className="mb-2 border-indigo-200 text-indigo-700 bg-indigo-50">Upcoming</Badge>
-              <h2 className="text-2xl font-display font-bold text-slate-900">Don't Miss Out</h2>
-            </div>
-          </div>
+      {/* Events List */}
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">All Events</h2>
+            <p className="text-muted-foreground">Register for events and be part of our community</p>
+          </motion.div>
 
-          {upcomingEvents.length === 0 ? (
-            <div className="text-center py-10 text-slate-500">No upcoming events at the moment. Check back soon!</div>
+          {events.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No events found. Check back later!
+            </div>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingEvents.map((event) => (
-                <Card key={event.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300 bg-white border-slate-100">
-                  <div className="p-1">
-                    <div className="aspect-[16/10] rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center relative overflow-hidden">
-                      <Calendar className="w-16 h-16 text-white/30" />
-                      <div className="absolute top-4 left-4">
-                        <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
-                          Event
-                        </Badge>
-                      </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              {events.map((event, index) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  className="bg-card rounded-2xl shadow-lg overflow-hidden group"
+                >
+                  {/* Image */}
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={event.image || campaignHealthImage}
+                      alt={event.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(event.category)}`}>
+                        {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
+                      </span>
                     </div>
+                    {event.isFree && (
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-medium">
+                          Free Entry
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.title}</h3>
+
+                  {/* Content */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-foreground mb-2">{event.title}</h3>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{event.description}</p>
 
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Calendar className="w-4 h-4 text-indigo-600" />
-                        <span>{getEventDate(event.expiry_date)}</span>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4 text-primary" />
+                        {new Date(event.date).toLocaleDateString('en-IN', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-slate-600">
-                        <Clock className="w-4 h-4 text-indigo-600" />
-                        <span>{getEventTime(event.expiry_date)}</span>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Clock className="w-4 h-4 text-primary" />
+                        {event.time}
                       </div>
-                      {/* Location not in basic model, maybe in content or custom field. Omitting for now */}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <MapPin className="w-4 h-4 text-primary" />
+                        {event.location}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Users className="w-4 h-4 text-primary" />
+                        {event.registered}/{event.capacity} registered
+                      </div>
                     </div>
 
-                    <p className="text-sm text-slate-600 mb-4 line-clamp-3">{event.content}</p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-sm text-slate-500">
-                        <Users className="w-4 h-4" />
-                        <span>Open for all</span>
-                      </div>
-                      {/* Registration link could be in attachments */}
-                    </div>
-                  </CardContent>
-                </Card>
+                    <Button
+                      variant="default"
+                      className="w-full gap-2"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setShowRegistrationModal(true);
+                      }}
+                      disabled={event.registered >= event.capacity}
+                    >
+                      <Ticket className="w-4 h-4" />
+                      {event.registered >= event.capacity ? 'Fully Booked' : 'Register Now'}
+                    </Button>
+                  </div>
+                </motion.div>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* Past Events */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <Badge variant="outline" className="mb-2 text-slate-500">Completed</Badge>
-              <h2 className="text-2xl font-display font-bold text-slate-900">Past Events</h2>
-            </div>
-          </div>
+      {/* Registration Modal */}
+      <AnimatePresence>
+        {showRegistrationModal && selectedEvent && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowRegistrationModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-foreground">Register for Event</h3>
+                <button
+                  onClick={() => setShowRegistrationModal(false)}
+                  className="p-2 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pastEvents.map((event) => (
-              <Card key={event.id} className="bg-slate-50 border-slate-100 opacity-80 hover:opacity-100 transition-opacity">
-                <CardContent className="p-6">
-                  <Badge variant="secondary" className="mb-3 bg-slate-200 text-slate-600">Completed</Badge>
-                  <h3 className="text-lg font-semibold mb-3 text-slate-900">{event.title}</h3>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
+              <div className="space-y-4 mb-6">
+                <div className="bg-muted/50 rounded-xl p-4">
+                  <h4 className="font-semibold text-foreground mb-2">{selectedEvent.title}</h4>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
-                      <span>{getEventDate(event.expiry_date)}</span>
+                      {new Date(selectedEvent.date).toLocaleDateString('en-IN')}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      {selectedEvent.time}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <MapPin className="w-4 h-4" />
+                      {selectedEvent.location}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground">
+                  By registering, you'll receive a digital ticket that serves as your entry pass.
+                </p>
+              </div>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="default"
+                  className="flex-1 gap-2"
+                  onClick={() => handleRegister(selectedEvent)}
+                >
+                  <Ticket className="w-4 h-4" />
+                  Confirm Registration
+                </Button>
+                <Button variant="outline" onClick={() => setShowRegistrationModal(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Ticket Modal */}
+      <AnimatePresence>
+        {ticketData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setTicketData(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-card rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Ticket Header */}
+              <div className="bg-primary p-6 text-center">
+                <CheckCircle className="w-16 h-16 text-primary-foreground mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-primary-foreground mb-2">Registration Successful!</h3>
+                <p className="text-primary-foreground/80">Your ticket has been generated</p>
+              </div>
+
+              {/* Ticket Body */}
+              <div className="p-6">
+                <div className="border-2 border-dashed border-muted rounded-xl p-4 space-y-4">
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground">TICKET NUMBER</p>
+                    <p className="text-xl font-mono font-bold text-primary">{ticketData.ticketNumber}</p>
+                  </div>
+
+                  <div className="border-t border-dashed border-muted pt-4">
+                    <h4 className="font-semibold text-foreground mb-2">{ticketData.eventTitle}</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <p className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(ticketData.eventDate).toLocaleDateString('en-IN', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {ticketData.eventTime}
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        {ticketData.eventLocation}
+                      </p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500 line-clamp-2">{event.content}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden bg-white">
+                  <div className="border-t border-dashed border-muted pt-4 text-center">
+                    <p className="text-xs text-muted-foreground">ATTENDEE</p>
+                    <p className="font-semibold text-foreground">{ticketData.userName}</p>
+                  </div>
+                </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-slate-900">
-              Want to Volunteer at Events?
-            </h2>
-            <p className="text-lg text-slate-600 mb-10">
-              Join our volunteer team and help make our events successful while gaining valuable experience.
-            </p>
-            <Button size="xl" className="font-semibold shadow-lg hover:shadow-xl transition-all" asChild>
-              <Link to="/login">
-                Join as Volunteer <ArrowRight className="w-5 h-5 ml-2" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+                <div className="flex gap-3 mt-6">
+                  <Button variant="outline" className="flex-1 gap-2">
+                    <Download className="w-4 h-4" />
+                    Download Ticket
+                  </Button>
+                  <Button variant="default" onClick={() => setTicketData(null)}>
+                    Done
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

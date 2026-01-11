@@ -23,7 +23,6 @@ import {
   ChevronDown,
   Bell,
   Search,
-  Sparkles,
   CreditCard,
   ClipboardList,
   Award,
@@ -39,6 +38,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Footer from './Footer';
+import nhrdLogo from '@/assets/nhrd-logo.png';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -110,13 +110,11 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 h-20 border-b border-gray-100 bg-white/50 backdrop-blur-xl">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 ring-1 ring-white/10">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
+          <img src={nhrdLogo} alt="NHRD Logo" className="w-10 h-10 object-contain" />
           {sidebarOpen && (
             <div className="flex flex-col">
               <span className="text-xl font-display font-bold text-slate-900 tracking-tight">
-                Trust Flow
+                NHRD
               </span>
               <span className="text-[10px] text-slate-500 uppercase tracking-widest font-medium">
                 Admin Panel

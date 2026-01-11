@@ -15,7 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { volunteerAPI } from '@/api/endpoints';
 import { toast } from 'sonner';
-import { Loader2, Plus, Users, CheckCircle, Search, UserMinus } from 'lucide-react';
+import { Loader2, Plus, Users, Search, UserMinus } from 'lucide-react';
 import {
     Dialog,
     DialogContent,

@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import api from '@/api/axios';
+
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -22,10 +22,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
         setError('');
 
         try {
-            const res = await api.post('/auth/login', { email, password });
-            const { token } = res.data;
-            const { user } = res.data.data;
-            login(token, user);
+            await login({ email, password });
             if (onSuccess) onSuccess();
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');

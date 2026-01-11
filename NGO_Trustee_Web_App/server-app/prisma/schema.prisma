@@ -56,6 +56,7 @@ model User {
 
   // Relations
   volunteer_profile   Volunteer?
+  member_profile      MemberProfile?
   blocked_by          User?     @relation("UserBlockedBy", fields: [blocked_by_id], references: [id])
   blocks_issued       User[]    @relation("UserBlockedBy")
   donations           Donation[] 
@@ -68,6 +69,7 @@ model User {
   campaigns_created   Campaign[]
   files_uploaded      File[]
   transparency_reports TransparencyReport[]
+  events_created      Event[]
 
   @@map("users")
 }
@@ -351,8 +353,76 @@ model File {
   size            Int
   uploaded_by_id  String?
   created_at      DateTime  @default(now())
-
   uploaded_by     User?     @relation(fields: [uploaded_by_id], references: [id])
 
   @@map("files")
+}
+
+model MemberProfile {
+  id              String    @id @default(uuid())
+  user_id         String    @unique
+  
+  // Bank Details
+  bank_name       String
+  account_number  String
+  ifsc_code       String
+  branch_name     String?
+  account_type    String    // Savings/Current
+
+  // Nominee Details
+  nominee_name    String
+  nominee_relation String
+  nominee_dob     DateTime?
+  nominee_phone   String?
+  nominee_address String?
+  
+  // Nominee Bank Details
+  nominee_bank_name     String?
+  nominee_account_number String?
+  nominee_ifsc_code     String?
+
+  user            User      @relation(fields: [user_id], references: [id])
+  family_members  FamilyMember[]
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@map("member_profiles")
+}
+
+model FamilyMember {
+  id              String    @id @default(uuid())
+  member_id       String
+  full_name       String
+  relationship    String
+  dob             DateTime?
+  occupation      String?
+  is_dependent    Boolean   @default(false)
+
+  member          MemberProfile @relation(fields: [member_id], references: [id])
+
+  @@map("family_members")
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  date        DateTime
+  time        String?
+  location    String?
+  category    String?  // 'cultural', 'health', 'education', 'fundraiser', 'general'
+  capacity    Int      @default(100)
+  registered  Int      @default(0)
+  is_free     Boolean  @default(true)
+  image_url   String?
+  attachments Json?    // Keep compatibility for now if needed, or just use image_url
+
+  created_by_id String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  created_by  User     @relation(fields: [created_by_id], references: [id])
+
+  @@map("events")
 }

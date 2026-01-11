@@ -11,11 +11,14 @@ import PublicLayout from "./components/layout/PublicLayout";
 // Public Pages
 import PublicHome from "./pages/public/Home";
 import About from "./pages/public/About";
-import Projects from "./pages/public/Projects";
+import Campaigns from "./pages/public/Campaigns";
 import Events from "./pages/public/Events";
+import Contact from "./pages/public/Contact";
 import Donate from "./pages/public/Donate";
-import Login from "./pages/Login";
-import VolunteerRegister from "./pages/Auth/VolunteerRegister";
+import WhatWeDo from "./pages/public/WhatWeDo";
+import GetInvolved from "./pages/public/GetInvolved";
+import Auth from "./pages/Auth/Auth";
+import BecomeMember from "./pages/public/BecomeMember";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -68,11 +71,15 @@ const App = () => (
               <Route element={<PublicLayout />}>
                 <Route path="/" element={<PublicHome />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/projects" element={<Projects />} />
+                <Route path="/campaigns" element={<Campaigns />} />
+                <Route path="/what-we-do" element={<WhatWeDo />} />
                 <Route path="/events" element={<Events />} />
+                <Route path="/get-involved" element={<GetInvolved />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/donate" element={<Donate />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<VolunteerRegister />} />
+                <Route path="/login" element={<Auth initialMode="login" />} />
+                <Route path="/register" element={<Auth initialMode="register" />} />
+                <Route path="/become-member" element={<BecomeMember />} />
               </Route>
 
               {/* Admin Routes */}

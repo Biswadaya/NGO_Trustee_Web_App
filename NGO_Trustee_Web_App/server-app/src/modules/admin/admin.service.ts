@@ -284,16 +284,21 @@ export const getAuditLogs = async (limit: number = 50) => {
 };
 
 // Event management (using Notice model with event type)
+// Event management (using dedicated Event model)
 export const createEvent = async (data: any, publishedById: string) => {
-    const event = await prisma.notice.create({
+    const event = await prisma.event.create({
         data: {
             title: data.title,
-            content: data.content,
-            notice_type: 'event',
-            target_audience: data.target_audience || 'public',
-            attachments: data.attachments,
-            expiry_date: data.expiry_date,
-            published_by_id: publishedById
+            description: data.description || data.content, // Handle legacy content field
+            date: new Date(data.date || data.expiry_date), // Handle legacy expiry_date
+            time: data.time,
+            location: data.location,
+            category: data.category,
+            capacity: data.capacity ? Number(data.capacity) : 100,
+            is_free: data.is_free !== undefined ? data.is_free : true,
+            image_url: data.image_url || data.attachments, // Mapping attachments to image_url if string
+            attachments: data.attachments, // Keep compatibility
+            created_by_id: publishedById
         }
     });
 
@@ -302,22 +307,27 @@ export const createEvent = async (data: any, publishedById: string) => {
 };
 
 export const updateEvent = async (id: string, data: any) => {
-    return prisma.notice.update({
+    return prisma.event.update({
         where: { id },
         data: {
             title: data.title,
-            content: data.content,
-            target_audience: data.target_audience,
-            attachments: data.attachments,
-            expiry_date: data.expiry_date
+            description: data.description || data.content,
+            date: data.date ? new Date(data.date) : undefined,
+            time: data.time,
+            location: data.location,
+            category: data.category,
+            capacity: data.capacity ? Number(data.capacity) : undefined,
+            is_free: data.is_free,
+            image_url: data.image_url,
+            attachments: data.attachments
         }
     });
 };
 
 export const getEvent = async (id: string) => {
-    const event = await prisma.notice.findUnique({
+    const event = await prisma.event.findUnique({
         where: { id },
-        include: { published_by: { select: { email: true, role: true } } }
+        include: { created_by: { select: { email: true, role: true } } }
     });
 
     if (!event) throw new AppError('Event not found', 404);
@@ -325,18 +335,13 @@ export const getEvent = async (id: string) => {
 };
 
 export const deleteEvent = async (id: string) => {
-    return prisma.notice.delete({ where: { id } });
+    // Delete validation could be added here
+    return prisma.event.delete({ where: { id } });
 };
 
 export const getPublicEvents = async () => {
-    return prisma.notice.findMany({
-        where: {
-            notice_type: 'event',
-            is_active: true,
-            // Events are generally public, but we can enforce target_audience if needed
-            // target_audience: { in: ['public', 'all', 'ALL'] } 
-        },
-        orderBy: { created_at: 'desc' },
-        include: { published_by: { select: { email: true, role: true } } }
+    return prisma.event.findMany({
+        orderBy: { date: 'asc' }, // Sort by upcoming dates usually
+        include: { created_by: { select: { email: true, role: true } } }
     });
 };

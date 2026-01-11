@@ -1,338 +1,503 @@
+
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Mail, Loader2, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Heart,
-  Shield,
-  CreditCard,
-  Wallet,
-  Building,
-  CheckCircle,
-  User,
-  Lock
-} from 'lucide-react';
+import { toast } from 'sonner';
 import { campaignAPI } from '@/api/endpoints';
 import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import LoginForm from '@/components/auth/LoginForm';
-import RegisterForm from '@/components/auth/RegisterForm';
+
+import odishaSunrise from '@/assets/odisha-sunrise.jpg';
+import campaignEducationImage from '@/assets/campaign-education.jpg'; // Fallbacks/Placeholders
+
+const donationAmounts = [500, 1000, 2500, 5000, 10000];
+
+const impactExamples = [
+  { amount: 500, impactKey: 'donate.impact1' },
+  { amount: 1000, impactKey: 'donate.impact2' },
+  { amount: 2500, impactKey: 'donate.impact3' },
+  { amount: 5000, impactKey: 'donate.impact4' },
+  { amount: 10000, impactKey: 'donate.impact5' },
+];
+
+const bankDetails = {
+  bankName: 'State Bank of India',
+  accountName: 'NHRD - National Human Resource Development',
+  accountNumber: '3XXXXXXXXXX567',
+  ifscCode: 'SBIN0001234',
+  branch: 'Bhubaneswar Main Branch',
+  upiId: 'nhrd@sbi',
+};
 
 const Donate = () => {
+  const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const campaignIdFromUrl = searchParams.get('campaign');
   const { user, isAuthenticated } = useAuth();
-  // State for donation amount
-  const [amount, setAmount] = useState('1000');
-  const [selectedProject, setSelectedProject] = useState('general');
-  const [projects, setProjects] = useState<any[]>([]);
-  const [mode, setMode] = useState<'anonymous' | 'authenticated'>('anonymous');
 
-  // Custom form state for anonymous donors
-  const [donorName, setDonorName] = useState('');
-  const [donorEmail, setDonorEmail] = useState('');
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(1000);
+  const [customAmount, setCustomAmount] = useState('');
+  const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
+  const [donationTarget, setDonationTarget] = useState<'general' | 'campaign'>('general');
+  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(campaignIdFromUrl);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
 
+  // Form State for User Details
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
+  // Prefill user details
   useEffect(() => {
-    // Fetch active campaigns for the dropdown
+    if (isAuthenticated && user) {
+      setName(user.fullname || '');
+      setEmail(user.email || '');
+    }
+  }, [isAuthenticated, user]);
+
+  // Fetch Campaigns
+  useEffect(() => {
     const fetchProjects = async () => {
       try {
         const res = await campaignAPI.list();
-        // create a safe fallback if data structure is unexpected
-        const campaigns = res?.data?.data?.campaigns || [];
-        setProjects(campaigns);
+        setCampaigns(res?.data?.data?.campaigns || []);
       } catch (err) {
         console.error("Failed to fetch campaigns", err);
-        setProjects([]);
+      } finally {
+        setLoadingCampaigns(false);
       }
     };
     fetchProjects();
   }, []);
 
-  // Update mode if user logs in
   useEffect(() => {
-    if (isAuthenticated) {
-      setMode('authenticated');
+    if (campaignIdFromUrl) {
+      setDonationTarget('campaign');
+      setSelectedCampaign(campaignIdFromUrl);
     }
-  }, [isAuthenticated]);
+  }, [campaignIdFromUrl]);
 
-  const presetAmounts = ['500', '1000', '2500', '5000', '10000'];
+  const currentAmount = customAmount ? parseInt(customAmount) : selectedAmount;
+  const currentImpact = impactExamples.find(e => e.amount <= (currentAmount || 0));
+
+  const allocationData = [
+    { labelKey: 'donate.allocation.education', percentage: 40, color: 'bg-secondary' },
+    { labelKey: 'donate.allocation.health', percentage: 20, color: 'bg-primary' },
+    { labelKey: 'donate.allocation.women', percentage: 15, color: 'bg-accent' },
+    { labelKey: 'donate.allocation.disaster', percentage: 15, color: 'bg-destructive' },
+    { labelKey: 'donate.allocation.admin', percentage: 10, color: 'bg-muted-foreground' },
+  ];
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied to clipboard`);
+  };
 
   const handleDonate = () => {
-    // In a real app, this would integrate with Razorpay/Stripe
-    toast.success(`Processing donation of ₹${amount} for ${selectedProject === 'general' ? 'General Fund' : 'Specific Project'}!`);
-
-    if (mode === 'authenticated') {
-      toast.info("Certificate will be generated automatically.");
-    } else {
-      toast.info("Thank you for your anonymous contribution!");
+    const finalAmount = currentAmount || 0;
+    if (finalAmount <= 0) {
+      toast.error("Please select a valid donation amount");
+      return;
     }
 
-    // Here you would call donationAPI.create({ ... })
-    // For now, we simulate success
+    const campaignTitle = selectedCampaign
+      ? campaigns.find(c => c.id === selectedCampaign)?.title || 'Specific Campaign'
+      : 'General Fund';
+
+    toast.success(`Processing donation of ₹${finalAmount} for ${campaignTitle}!`);
+
+    // In a real implementation:
+    // 1. Create Order via API
+    // 2. Open Payment Gateway (Razorpay/Stripe)
+    // 3. On success, call donationAPI.verify()
   };
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-background min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 overflow-hidden">
-        <div className="absolute inset-0 bg-slate-50 opacity-30" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <Badge variant="outline" className="mb-6 border-amber-200 text-amber-700 bg-amber-50">
-              <Heart className="w-3 h-3 mr-1 fill-current" />
-              Make a Difference
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 text-slate-900">
-              Your Donation
-              <span className="block text-indigo-600">Changes Lives</span>
+      <section className="relative py-20 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={odishaSunrise}
+            alt="Sunrise over Odisha"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-accent/80 via-accent/70 to-accent/90" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center text-accent-foreground"
+          >
+            <Heart className="w-16 h-16 mx-auto mb-6" />
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+              {t('donate.heroTitle', 'Your Donation Changes Lives')}
             </h1>
-            <p className="text-lg text-slate-600">
-              Every contribution, no matter the size, helps us continue our mission to create lasting impact.
+            <p className="text-xl md:text-2xl text-accent-foreground/90 max-w-3xl mx-auto">
+              {t('donate.heroSubtitle', 'Every contribution, no matter the size, helps us continue our mission.')}
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Donation Form Section */}
-      <section className="py-16 bg-slate-50">
-        <div className="container mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            {/* Donation Form */}
-            <div className="space-y-6">
+      <section className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+            {/* Left Column - Form */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-2 bg-card p-6 md:p-8 rounded-2xl shadow-xl"
+            >
+              {/* User Context */}
+              {isAuthenticated ? (
+                <div className="mb-6 p-4 bg-primary/5 rounded-xl flex items-center gap-3 border border-primary/10">
+                  <div className="bg-primary/20 p-2 rounded-full">
+                    <User className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Welcome back, {user?.fullname}</p>
+                    <p className="text-xs text-muted-foreground">Your donation will be linked to your account for tax certificates.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">{t('donate.yourDetails', 'Your Details')}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Full Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-12"
+                    />
+                    <Input
+                      placeholder="Email Address"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2 ml-1">
+                    * Provide email to receive donation receipt.
+                    <a href="/login" className="text-primary hover:underline ml-1">Login</a> for automatic tax certificates.
+                  </p>
+                </div>
+              )}
 
-              {/* Mode Selection */}
-              <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="anonymous">Donate Anonymously</TabsTrigger>
-                  <TabsTrigger value="authenticated">Donate & Get Certificate</TabsTrigger>
-                </TabsList>
+              {/* Donation Target Selection */}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  {t('donate.donateToward', 'I want to donate toward')}
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={() => {
+                      setDonationTarget('general');
+                      setSelectedCampaign(null);
+                    }}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${donationTarget === 'general'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                      }`}
+                  >
+                    <Building2 className={`w-6 h-6 mb-2 ${donationTarget === 'general' ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <p className="font-semibold text-foreground">{t('donate.generalFund', 'General Fund')}</p>
+                    <p className="text-sm text-muted-foreground">{t('donate.generalFundDesc', 'Support NHRD operations')}</p>
+                  </button>
+                  <button
+                    onClick={() => setDonationTarget('campaign')}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${donationTarget === 'campaign'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                      }`}
+                  >
+                    <Heart className={`w-6 h-6 mb-2 ${donationTarget === 'campaign' ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <p className="font-semibold text-foreground">{t('donate.specificCampaign', 'Specific Campaign')}</p>
+                    <p className="text-sm text-muted-foreground">{t('donate.specificCampaignDesc', 'Choose a cause to support')}</p>
+                  </button>
+                </div>
+              </div>
 
-                <Card className="bg-white border-slate-200 shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="text-xl text-slate-900">
-                      {mode === 'anonymous' ? 'Anonymous Donation' : 'Authenticated Donation'}
-                    </CardTitle>
-                    <CardDescription>
-                      {mode === 'anonymous'
-                        ? 'Simple, quick, and optional details. No certificate provided.'
-                        : 'Log in to track your donations and receive tax certificates.'}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-
-                    {/* Auth Check for Authenticated Mode */}
-                    {mode === 'authenticated' && !isAuthenticated && (
-                      <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100 mb-6">
-                        <h4 className="font-semibold text-indigo-900 mb-2 flex items-center">
-                          <Lock className="w-4 h-4 mr-2" />
-                          Login Required
-                        </h4>
-                        <p className="text-sm text-indigo-700 mb-4">
-                          Please sign in or create an account to receive your donation certificate.
-                        </p>
-                        <Tabs defaultValue="login" className="w-full">
-                          <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="login">Login</TabsTrigger>
-                            <TabsTrigger value="register">Register</TabsTrigger>
-                          </TabsList>
-                          <div className="mt-4">
-                            <TabsContent value="login">
-                              <LoginForm />
-                            </TabsContent>
-                            <TabsContent value="register">
-                              <RegisterForm />
-                            </TabsContent>
-                          </div>
-                        </Tabs>
+              {/* Campaign Selection */}
+              <AnimatePresence>
+                {donationTarget === 'campaign' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-8 overflow-hidden"
+                  >
+                    <h3 className="text-lg font-semibold text-foreground mb-4">
+                      {t('donate.selectCampaign', 'Select a Campaign')}
+                    </h3>
+                    {loadingCampaigns ? (
+                      <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {campaigns.map((campaign) => (
+                          <button
+                            key={campaign.id}
+                            onClick={() => setSelectedCampaign(campaign.id)}
+                            className={`relative rounded-xl overflow-hidden aspect-square transition-all ${selectedCampaign === campaign.id
+                                ? 'ring-2 ring-primary ring-offset-2'
+                                : 'hover:opacity-80'
+                              }`}
+                          >
+                            <img
+                              src={campaign.banner_image || campaignEducationImage}
+                              alt={campaign.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.currentTarget.src = campaignEducationImage; }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-3">
+                              <p className="text-white text-xs font-medium leading-tight line-clamp-2 text-left">{campaign.title}</p>
+                            </div>
+                            {selectedCampaign === campaign.id && (
+                              <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                                <CheckCircle className="w-4 h-4 text-primary-foreground" />
+                              </div>
+                            )}
+                          </button>
+                        ))}
                       </div>
                     )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                    {/* Valid Auth State or Anonymous */}
-                    {(mode === 'anonymous' || isAuthenticated) && (
-                      <>
-                        {/* Amount Selection */}
-                        <div>
-                          <Label className="mb-3 block text-slate-700">Select Amount</Label>
-                          <div className="grid grid-cols-5 gap-2 mb-3">
-                            {presetAmounts.map((preset) => (
-                              <Button
-                                key={preset}
-                                variant={amount === preset ? 'default' : 'outline'}
-                                size="sm"
-                                onClick={() => setAmount(preset)}
-                                className={amount === preset ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "border-slate-200 text-slate-600"}
-                              >
-                                ₹{preset}
-                              </Button>
-                            ))}
-                          </div>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">₹</span>
-                            <Input
-                              type="number"
-                              value={amount}
-                              onChange={(e) => setAmount(e.target.value)}
-                              className="pl-8 border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400"
-                              placeholder="Enter custom amount"
-                            />
-                          </div>
-                        </div>
+              {/* Donation Type Toggle */}
+              <div className="flex bg-muted rounded-lg p-1 mb-8">
+                <button
+                  onClick={() => setDonationType('one-time')}
+                  className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${donationType === 'one-time'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
+                    }`}
+                >
+                  {t('donate.oneTime', 'One-time Donation')}
+                </button>
+                <button
+                  onClick={() => setDonationType('monthly')}
+                  className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${donationType === 'monthly'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground'
+                    }`}
+                >
+                  {t('donate.monthly', 'Monthly Donation')}
+                </button>
+              </div>
 
-                        {/* Project Selection */}
-                        <div>
-                          <Label className="mb-3 block text-slate-700">Donate To</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            <Button
-                              variant={selectedProject === 'general' ? 'default' : 'outline'}
-                              className={`h-auto py-3 justify-start ${selectedProject === 'general' ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'border-slate-200 text-slate-600'}`}
-                              onClick={() => setSelectedProject('general')}
-                            >
-                              <Heart className="w-4 h-4 mr-2" />
-                              General Fund
-                            </Button>
-                            {projects.slice(0, 3).map((project: any) => (
-                              <Button
-                                key={project.id}
-                                variant={selectedProject === project.id.toString() ? 'default' : 'outline'}
-                                className={`h-auto py-3 justify-start ${selectedProject === project.id.toString() ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'border-slate-200 text-slate-600'}`}
-                                onClick={() => setSelectedProject(project.id.toString())}
-                              >
-                                <span className="truncate">{project.title}</span>
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
+              {/* Amount Selection */}
+              <h3 className="text-lg font-semibold text-foreground mb-4">{t('donate.selectAmount', 'Select Amount')}</h3>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {donationAmounts.map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => {
+                      setSelectedAmount(amount);
+                      setCustomAmount('');
+                    }}
+                    className={`py-4 px-4 rounded-xl text-center font-semibold transition-all ${selectedAmount === amount && !customAmount
+                        ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                        : 'bg-muted text-foreground hover:bg-muted/80'
+                      }`}
+                  >
+                    ₹{amount.toLocaleString()}
+                  </button>
+                ))}
+              </div>
 
-                        {/* Donor Details (Only if Anonymous or Authenticated User confirms) */}
-                        {mode === 'authenticated' ? (
-                          <div className="bg-slate-50 p-4 rounded-lg flex items-center gap-3 border border-slate-200">
-                            <div className="bg-indigo-100 p-2 rounded-full">
-                              <User className="w-5 h-5 text-indigo-600" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-slate-900">Logged in as {user?.fullname || user?.email}</p>
-                              <p className="text-xs text-slate-500">Certificate will be issued to this account.</p>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <Label className="block text-slate-700">Your Details (Optional)</Label>
-                            <Input
-                              placeholder="Full Name"
-                              className="border-slate-200 bg-slate-50 text-slate-900"
-                              value={donorName}
-                              onChange={(e) => setDonorName(e.target.value)}
-                            />
-                            <Input
-                              placeholder="Email Address (for receipt)"
-                              type="email"
-                              className="border-slate-200 bg-slate-50 text-slate-900"
-                              value={donorEmail}
-                              onChange={(e) => setDonorEmail(e.target.value)}
-                            />
-                          </div>
-                        )}
-
-                        {/* Payment Methods */}
-                        <div>
-                          <Label className="mb-3 block text-slate-700">Payment Method</Label>
-                          <div className="grid grid-cols-3 gap-3">
-                            <Button variant="outline" className="h-auto py-4 flex-col border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                              <CreditCard className="w-6 h-6 mb-2" />
-                              <span className="text-xs">Card</span>
-                            </Button>
-                            <Button variant="outline" className="h-auto py-4 flex-col border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                              <Wallet className="w-6 h-6 mb-2" />
-                              <span className="text-xs">UPI</span>
-                            </Button>
-                            <Button variant="outline" className="h-auto py-4 flex-col border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600">
-                              <Building className="w-6 h-6 mb-2" />
-                              <span className="text-xs">Net Banking</span>
-                            </Button>
-                          </div>
-                        </div>
-
-                        <Button size="xl" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold" onClick={handleDonate}>
-                          Donate ₹{amount || '0'}
-                          <Heart className="w-5 h-5 ml-2 fill-current" />
-                        </Button>
-
-                        <p className="text-xs text-center text-slate-500">
-                          By donating, you agree to our terms and conditions. All donations are tax-deductible under 80G.
-                        </p>
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
-              </Tabs>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="space-y-6">
-              <Card className="overflow-hidden bg-indigo-600 border-indigo-500 text-white">
-                <div className="p-8">
-                  <h3 className="text-2xl font-display font-bold mb-4">Why Donate to Trust Flow?</h3>
-                  <ul className="space-y-4">
-                    {[
-                      '100% of donations go directly to our programs',
-                      'Tax benefits under Section 80G',
-                      'Transparent reporting and impact tracking',
-                      'Registered and audited non-profit organization',
-                    ].map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0 text-indigo-200" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Custom Amount */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  {t('donate.customAmount', 'Or Enter Custom Amount')}
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+                  <Input
+                    type="number"
+                    value={customAmount}
+                    onChange={(e) => {
+                      setCustomAmount(e.target.value);
+                      setSelectedAmount(null);
+                    }}
+                    placeholder={t('donate.enterAmount', 'Enter amount')}
+                    className="h-12 pl-8"
+                  />
                 </div>
-              </Card>
+              </div>
 
-              <Card className="bg-white border-slate-200">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                      <Shield className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-slate-900">Secure Payments</h4>
-                      <p className="text-sm text-slate-500">256-bit SSL encryption</p>
+              {/* Impact Preview */}
+              {currentAmount && currentAmount >= 500 && currentImpact && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-primary/5 rounded-xl p-4 mb-6"
+                >
+                  <p className="text-sm text-muted-foreground">{t('donate.yourDonation', 'Your donation helps us provide:')}</p>
+                  <p className="text-lg font-semibold text-primary">
+                    {t(currentImpact.impactKey, 'Impact description placeholder')}
+                  </p>
+                </motion.div>
+              )}
+
+              {/* Payment Methods */}
+              <h3 className="text-lg font-semibold text-foreground mb-4">{t('donate.paymentMethod', 'Payment Method')}</h3>
+              <div className="space-y-3 mb-8">
+                {[
+                  { icon: CreditCard, labelKey: 'donate.card', label: 'Credit / Debit Card' },
+                  { icon: Smartphone, labelKey: 'donate.upi', label: 'UPI / Wallet' },
+                  { icon: Building2, labelKey: 'donate.netBanking', label: 'Net Banking' },
+                ].map((method) => (
+                  <label
+                    key={method.labelKey}
+                    className="flex items-center gap-4 p-4 bg-muted rounded-xl cursor-pointer hover:bg-muted/80 transition-colors"
+                  >
+                    <input type="radio" name="payment" className="w-4 h-4 text-primary" defaultChecked={method.labelKey.includes('card')} />
+                    <method.icon className="w-5 h-5 text-muted-foreground" />
+                    <span className="font-medium text-foreground">{t(method.labelKey, method.label)}</span>
+                  </label>
+                ))}
+              </div>
+
+              <Button variant="cta" size="xl" className="w-full gap-2" onClick={handleDonate}>
+                <Heart className="w-5 h-5" />
+                {t('donate.completeDonation', 'Complete Donation')} - ₹{(currentAmount || 0).toLocaleString()}
+              </Button>
+
+              {/* Trust Badges */}
+              <div className="flex items-center justify-center gap-4 mt-6 text-muted-foreground text-sm">
+                <Shield className="w-4 h-4" />
+                <span>{t('donate.securePayment', 'Secure Payment')}</span>
+                <span>•</span>
+                <span>{t('donate.taxDeductible', 'Tax Deductible')}</span>
+              </div>
+            </motion.div>
+
+            {/* Right Column - Bank Details & Info */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              {/* Bank Details Card */}
+              <div className="bg-card p-6 rounded-2xl shadow-lg border border-border">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  {t('donate.bankTransfer', 'Bank Transfer Details')}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {t('donate.bankTransferDesc', 'Prefer direct bank transfer? Use these details:')}
+                </p>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">Bank</span>
+                    <span className="text-sm font-medium text-foreground">{bankDetails.bankName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">Account Name</span>
+                    <span className="text-sm font-medium text-foreground text-right max-w-[180px]">{bankDetails.accountName}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">Account No.</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.accountNumber}</span>
+                      <button
+                        onClick={() => copyToClipboard(bankDetails.accountNumber, 'Account number')}
+                        className="p-1 hover:bg-muted rounded"
+                      >
+                        <Copy className="w-3 h-3 text-muted-foreground" />
+                      </button>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-600">
-                    Your payment information is processed securely. We do not store credit card details.
-                  </p>
-                </CardContent>
-              </Card>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">IFSC Code</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.ifscCode}</span>
+                      <button
+                        onClick={() => copyToClipboard(bankDetails.ifscCode, 'IFSC code')}
+                        className="p-1 hover:bg-muted rounded"
+                      >
+                        <Copy className="w-3 h-3 text-muted-foreground" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border">
+                    <span className="text-sm text-muted-foreground">UPI ID</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.upiId}</span>
+                      <button
+                        onClick={() => copyToClipboard(bankDetails.upiId, 'UPI ID')}
+                        className="p-1 hover:bg-muted rounded"
+                      >
+                        <Copy className="w-3 h-3 text-muted-foreground" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-              <Card className="bg-white border-slate-200">
-                <CardContent className="p-6">
-                  <h4 className="font-semibold mb-4 text-slate-900">Other Ways to Give</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-sm text-slate-600">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                        <CreditCard className="w-4 h-4 text-indigo-600" />
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <p className="text-xs text-muted-foreground flex items-start gap-2">
+                    <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                    {t('donate.bankTransferNote', 'After transfer, please email your payment details to contact@nhrd.org for receipt and tax certificate.')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Where Money Goes */}
+              <div className="bg-card p-6 rounded-2xl shadow-lg">
+                <h3 className="text-lg font-bold text-foreground mb-4">
+                  {t('donate.whereMoneyGoes', 'Where Your Money Goes')}
+                </h3>
+                <div className="space-y-3">
+                  {allocationData.map((item) => (
+                    <div key={item.labelKey}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm text-foreground">{t(item.labelKey, item.labelKey.split('.')[2]?.charAt(0).toUpperCase() + item.labelKey.split('.')[2]?.slice(1))}</span>
+                        <span className="text-xs text-muted-foreground">{item.percentage}%</span>
                       </div>
-                      <span>Monthly recurring donation</span>
-                    </li>
-                    <li className="flex items-center gap-3 text-sm text-slate-600">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                        <Building className="w-4 h-4 text-indigo-600" />
+                      <div className="h-2 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${item.percentage}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1, delay: 0.2 }}
+                          className={`h-full ${item.color} rounded-full`}
+                        />
                       </div>
-                      <span>Corporate partnerships</span>
-                    </li>
-                    <li className="flex items-center gap-3 text-sm text-slate-600">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-                        <Heart className="w-4 h-4 text-indigo-600" />
-                      </div>
-                      <span>In-kind donations</span>
-                    </li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tax Benefits */}
+              <div className="bg-primary/5 p-6 rounded-xl">
+                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary" />
+                  {t('donate.taxBenefits', 'Tax Benefits')}
+                </h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{t('donate.taxBenefit1', 'Your donation is eligible for 50% tax exemption under Section 80G of Income Tax Act.')}</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>{t('donate.taxBenefit2', 'You will receive a digital 80G certificate instantly upon donation.')}</span>
+                  </li>
+                </ul>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>

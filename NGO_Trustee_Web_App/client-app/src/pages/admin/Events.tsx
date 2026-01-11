@@ -3,8 +3,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { noticeAPI, adminAPI } from '@/api/endpoints';
-import { Plus, Calendar, MapPin, Users, Loader2, Trash2 } from 'lucide-react';
+import { adminAPI, publicAPI } from '@/api/endpoints';
+import { Plus, Calendar, MapPin, Users, Loader2, Trash2, Clock, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -28,18 +28,50 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+
+interface AdminEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  category: string;
+  capacity: number;
+  registered: number;
+  is_free: boolean;
+  image_url: string;
+  created_at: string;
+}
 
 const AdminEvents = () => {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+
+  // Initial form state
+  const initialFormState = {
     title: '',
-    content: '',
-    target_audience: 'Everyone',
-    expiry_date: '',
-  });
+    description: '',
+    date: '',
+    time: '10:00',
+    location: '',
+    category: 'general',
+    capacity: 100,
+    is_free: true,
+    image_url: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
 
   // Delete state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -47,12 +79,11 @@ const AdminEvents = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await noticeAPI.getHistory();
-      // Filter for events only
-      const allNotices = res.data.data.notices || [];
-      setEvents(allNotices.filter((n: any) => n.notice_type === 'event' || n.notice_type === 'Event'));
+      const res = await publicAPI.getEvents();
+      setEvents(res.data.data.events || []);
     } catch (error) {
       toast.error('Failed to load events');
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -64,7 +95,7 @@ const AdminEvents = () => {
 
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title || !formData.content) {
+    if (!formData.title || !formData.description || !formData.date) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -73,16 +104,12 @@ const AdminEvents = () => {
     try {
       await adminAPI.createEvent({
         ...formData,
-        expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toISOString() : undefined,
+        date: new Date(formData.date).toISOString(), // Ensure ISO format
+        capacity: Number(formData.capacity)
       });
       toast.success('Event created successfully');
       setOpen(false);
-      setFormData({
-        title: '',
-        content: '',
-        target_audience: 'All Volunteers',
-        expiry_date: '',
-      });
+      setFormData(initialFormState);
       fetchEvents();
     } catch (error) {
       console.error(error);
@@ -124,64 +151,126 @@ const AdminEvents = () => {
             <DialogTrigger asChild>
               <Button variant="premium"><Plus className="w-4 h-4 mr-2" />Create Event</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Create New Event</DialogTitle>
                 <DialogDescription>
-                  Add a new event for volunteers. Click save when you're done.
+                  Add a new event details below.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleCreateEvent}>
                 <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="title" className="text-right">
-                      Title
-                    </Label>
+
+                  {/* Title & Category */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Title *</Label>
+                      <Input
+                        id="title"
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="category">Category</Label>
+                      <Select
+                        value={formData.category}
+                        onValueChange={(val) => setFormData({ ...formData, category: val })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="general">General</SelectItem>
+                          <SelectItem value="cultural">Cultural</SelectItem>
+                          <SelectItem value="health">Health</SelectItem>
+                          <SelectItem value="education">Education</SelectItem>
+                          <SelectItem value="fundraiser">Fundraiser</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  {/* Date & Time */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="date">Date *</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="time">Time</Label>
+                      <Input
+                        id="time"
+                        type="time"
+                        value={formData.time}
+                        onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Location & Capacity */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="location">Location</Label>
+                      <Input
+                        id="location"
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        placeholder="e.g. Community Hall"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="capacity">Capacity</Label>
+                      <Input
+                        id="capacity"
+                        type="number"
+                        min="1"
+                        value={formData.capacity}
+                        onChange={(e) => setFormData({ ...formData, capacity: Number(e.target.value) })}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Image URL */}
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">Image URL</Label>
                     <Input
-                      id="title"
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="col-span-3"
-                      required
+                      id="image_url"
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
                     />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="date" className="text-right">
-                      Date
-                    </Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={formData.expiry_date}
-                      onChange={(e) => setFormData({ ...formData, expiry_date: e.target.value })}
-                      className="col-span-3"
-                      required
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="audience" className="text-right">
-                      Audience
-                    </Label>
-                    <Input
-                      id="audience"
-                      value={formData.target_audience}
-                      onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
-                      className="col-span-3"
-                      placeholder="e.g. All Volunteers"
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="content" className="text-right">
-                      Details
-                    </Label>
+
+                  {/* Details */}
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description *</Label>
                     <Textarea
-                      id="content"
-                      value={formData.content}
-                      onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                      className="col-span-3"
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       required
+                      placeholder="Event details..."
                     />
                   </div>
+
+                  {/* Is Free Switch */}
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Switch
+                      id="is_free"
+                      checked={formData.is_free}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked })}
+                    />
+                    <Label htmlFor="is_free">This event is free for entry</Label>
+                  </div>
+
                 </div>
                 <DialogFooter>
                   <Button type="button" variant="outline" onClick={() => setOpen(false)}>
@@ -196,34 +285,58 @@ const AdminEvents = () => {
             </DialogContent>
           </Dialog>
         </div>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((e) => (
             <Card key={e.id} variant="glass" className="hover:shadow-premium transition-all">
               <CardContent className="p-6 relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-4 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDeleteClick(e.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-                <Badge variant={e.is_active ? 'active' : 'inactive'} className="mb-3">
-                  {e.is_active ? 'Upcoming' : 'Past'}
-                </Badge>
-                <h3 className="font-semibold mb-2">{e.title}</h3>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2"><Calendar className="w-4 h-4" />{new Date(e.created_at).toLocaleDateString()}</div>
-                  <div className="flex items-center gap-2"><MapPin className="w-4 h-4" />Online / Physical</div>
-                  <div className="flex items-center gap-2 font-medium text-primary"><Users className="w-4 h-4" />{e.target_audience || 'All Volunteers'}</div>
-                  <p className="text-xs mt-2 line-clamp-3">{e.content}</p>
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => handleDeleteClick(e.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
+
+                <Badge variant={new Date(e.date) > new Date() ? 'active' : 'secondary'} className="mb-3">
+                  {e.category.toUpperCase()}
+                </Badge>
+
+                <h3 className="font-semibold mb-2 text-lg">{e.title}</h3>
+
+                <div className="space-y-2 text-sm text-muted-foreground mt-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-primary" />
+                    {new Date(e.date).toLocaleDateString()}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-primary" />
+                    {e.time}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    {e.location || 'Online'}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-primary" />
+                    {e.registered} / {e.capacity} Registered
+                  </div>
+                  {!e.is_free && (
+                    <div className="flex items-center gap-2 text-green-600 font-medium">
+                      Paid Event
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs mt-4 line-clamp-2 text-muted-foreground/80">{e.description}</p>
               </CardContent>
             </Card>
           ))}
           {events.length === 0 && (
             <div className="col-span-full text-center py-20 text-muted-foreground border-2 border-dashed rounded-2xl">
-              No active events found. Click "Create Event" to start one.
+              No events found. Click "Create Event" to add one.
             </div>
           )}
         </div>
