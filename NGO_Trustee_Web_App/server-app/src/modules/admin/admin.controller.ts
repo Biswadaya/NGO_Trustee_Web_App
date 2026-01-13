@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as AdminService from './admin.service';
 import * as AuthController from '../auth/auth.controller';
+import * as MemberService from '../member/member.service';
 
 export const login = AuthController.login;
 
@@ -59,6 +60,29 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
         const adminId = (req as any).user?.userId;
         const result = await AdminService.createUser(req.body, adminId);
         res.status(201).json({ status: 'success', message: 'User created successfully', data: result });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createMember = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // Admin creates member, bypassing payment steps usually handled by client
+        // Ensure default membership fee if not provided? Or let service handle it.
+        const result = await MemberService.registerMember(req.body, true);
+        res.status(201).json({ status: 'success', message: 'Member created successfully', data: result });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export const deleteMember = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        await MemberService.deleteMember(id); // id here is userId based on how we list them, or memberId? 
+        // Admin lists Users. So id is userId. `deleteMember` expects userId.
+        res.status(200).json({ status: 'success', message: 'Member removed successfully' });
     } catch (error) {
         next(error);
     }
@@ -218,6 +242,21 @@ export const getPublicEvents = async (req: Request, res: Response, next: NextFun
     try {
         const events = await AdminService.getPublicEvents();
         res.status(200).json({ status: 'success', data: { events } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const generateReport = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { resource, status, startDate, endDate } = req.query;
+        const data = await AdminService.generateReport(
+            resource as string,
+            status as string,
+            startDate as string,
+            endDate as string
+        );
+        res.status(200).json({ status: 'success', results: data.length, data });
     } catch (error) {
         next(error);
     }

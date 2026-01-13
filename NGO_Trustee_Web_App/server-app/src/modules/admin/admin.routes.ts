@@ -45,12 +45,17 @@ router.put('/users/:id/block', AdminController.blockUser);
 router.put('/users/:id/unblock', AdminController.unblockUser);
 router.get('/users/blocked-users', AdminController.getBlockedUsers);
 router.post('/users/create', AdminController.createUser);
+router.post('/members/create', AdminController.createMember);
+router.delete('/members/:id', AdminController.deleteMember);
 
 // Events
 router.post('/events/create', AdminController.createEvent);
 router.get('/events/:id', AdminController.getEvent);
 router.put('/events/:id', AdminController.updateEvent);
 router.delete('/events/:id', AdminController.deleteEvent);
+
+// Reports
+router.get('/reports/generate', AdminController.generateReport);
 
 // Audit logs
 router.get('/audit-logs', AdminController.getAuditLogs);

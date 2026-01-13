@@ -38,8 +38,10 @@ export const registerMember = async (data: {
     };
 
     // Payment (Mock)
+    // Payment (Mock)
     membership_fee: number;
-}) => {
+    password?: string;
+}, isPaid: boolean = false) => {
     const {
         email,
         full_name,
@@ -50,6 +52,7 @@ export const registerMember = async (data: {
         nominee,
         bank_details,
         membership_fee,
+        password,
     } = data;
 
     // Check if user exists
@@ -65,14 +68,9 @@ export const registerMember = async (data: {
     }
 
     // Create User + Member + Relations
-    // Since we don't have a password in the form plan, we'll generate a random one or ask for it.
-    // The plan implies a "registration form", usually includes password. I'll assume we need to auto-generate or use a default, 
-    // OR update the plan to ask for password. 
-    // Let's assume a default password for now or that the frontend sends one.
-    // Actually, standard auth usually requires password. I'll add a 'password' field to the input.
-
-    const tempPassword = 'Member@123'; // In real app, send email with set password link
-    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    // Uses provided password or falls back to default if not provided (though frontend should enforce it)
+    const finalPassword = password || 'Member@123';
+    const hashedPassword = await bcrypt.hash(finalPassword, 12);
 
     const result = await prisma.$transaction(async (tx) => {
         // 1. Create User
@@ -80,6 +78,7 @@ export const registerMember = async (data: {
             data: {
                 email,
                 username: email.split('@')[0] + Math.floor(Math.random() * 1000),
+                full_name, // Added full_name mapping
                 password_hash: hashedPassword,
                 role: UserRole.MEMBER,
                 is_active: true,
@@ -87,7 +86,6 @@ export const registerMember = async (data: {
             },
         });
 
-        // 2. Create Member Profile
         // 2. Create Member Profile
         const newMember = await tx.memberProfile.create({
             data: {
@@ -98,9 +96,9 @@ export const registerMember = async (data: {
                 address,
                 occupation,
                 membership_fee: new Prisma.Decimal(membership_fee),
-                is_paid: true, // Mock payment success (would come from payment gateway)
-                payment_date: new Date(),
-                payment_reference: `MOCK_PAY_${Date.now()}`,
+                is_paid: isPaid,
+                payment_date: isPaid ? new Date() : null,
+                payment_reference: isPaid ? `ADMIN_MANUAL_${Date.now()}` : null, // MOCK_PAY removed for public
 
                 // Flattened Bank Details
                 bank_name: bank_details?.bank_name || '',
@@ -238,4 +236,17 @@ export const approveMember = async (userId: string) => {
 
         return { user: updatedUser, member };
     });
+};
+
+export const deleteMember = async (userId: string) => {
+    // Soft Delete: Deactivate the user
+    // This allows keeping all related records (MemberProfile, Donations etc.)
+    const user = await prisma.user.update({
+        where: { id: userId },
+        data: { is_active: false }
+    });
+
+    if (!user) throw new AppError('User not found', 404);
+
+    return user;
 };

@@ -7,9 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { adminAPI } from '@/api/endpoints';
-import { Loader2, Search, Eye, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Loader2, Search, Eye, CheckCircle, ShieldCheck, CreditCard, UserPlus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import IDCardModal from '@/components/admin/IDCardModal';
+import MemberRegistrationModal from '@/components/admin/MemberRegistrationModal';
 
 const AdminMembers = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -18,6 +20,10 @@ const AdminMembers = () => {
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [isIdCardOpen, setIsIdCardOpen] = useState(false);
+  const [idCardUser, setIdCardUser] = useState<any>(null);
+
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -57,7 +63,7 @@ const AdminMembers = () => {
       // But I didn't add that route to backend. Quick fix needed in backend if this call fails.
       // Let's assume I will add it.
       const res = await adminAPI.getMemberProfile(user.id);
-      setSelectedMember({ ...user, profile: res.data.data });
+      setSelectedMember({ ...user, profile: res.data.data.member });
       setIsDetailsOpen(true);
     } catch (error) {
       toast.error("Could not fetch member details or user has no profile.");
@@ -93,6 +99,10 @@ const AdminMembers = () => {
           <h1 className="text-3xl font-display font-bold">Member Management</h1>
           <p className="text-muted-foreground">Verify and manage NGO members.</p>
         </div>
+        <Button onClick={() => setIsRegistrationOpen(true)}>
+          <UserPlus className="w-4 h-4 mr-2" />
+          Add Member
+        </Button>
       </div>
 
       <Card className="mb-6">
@@ -153,6 +163,19 @@ const AdminMembers = () => {
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={() => handleViewDetails(user)}>
                         <Eye className="w-4 h-4 mr-2" /> View
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setIdCardUser(user); setIsIdCardOpen(true); }}>
+                        <CreditCard className="w-4 h-4 mr-2" /> ID Card
+                      </Button>
+                      <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => {
+                        if (confirm(`Are you sure you want to remove ${user.full_name}? This action cannot be undone.`)) {
+                          adminAPI.deleteMember(user.id).then(() => {
+                            toast.success("Member removed successfully");
+                            fetchUsers();
+                          }).catch(() => toast.error("Failed to remove member"));
+                        }
+                      }}>
+                        <Trash2 className="w-4 h-4 mr-2" /> Remove
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -245,6 +268,18 @@ const AdminMembers = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <IDCardModal
+        isOpen={isIdCardOpen}
+        onClose={() => setIsIdCardOpen(false)}
+        user={idCardUser}
+      />
+
+      <MemberRegistrationModal
+        isOpen={isRegistrationOpen}
+        onClose={() => setIsRegistrationOpen(false)}
+        onSuccess={fetchUsers}
+      />
     </DashboardLayout>
   );
 };

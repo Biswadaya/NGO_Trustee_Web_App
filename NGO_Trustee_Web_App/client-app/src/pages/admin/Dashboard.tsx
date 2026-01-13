@@ -28,21 +28,26 @@ import {
   Bar,
 } from 'recharts';
 import { toast } from 'sonner';
+import ReportGenerationModal from '@/components/admin/ReportGenerationModal';
 
 const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
   const [recentLogs, setRecentLogs] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      // ... existing fetch ...
       try {
         const [overviewRes, logsRes, analyticsRes] = await Promise.all([
           dashboardAPI.getOverview(),
           adminAPI.getAuditLogs(10),
           dashboardAPI.getAnalytics('30d')
         ]);
+        console.log('Overview Response:', overviewRes.data);
+        console.log('Logs Response:', logsRes.data);
         setData(overviewRes.data.data);
         setRecentLogs(logsRes.data.data.logs || []);
         setAnalytics(analyticsRes.data.data);
@@ -67,10 +72,13 @@ const AdminDashboard = () => {
     );
   }
 
+  // Process stats for display
+  const stats = data?.stats || data || {};
+
   const statCards = [
     {
       title: 'Total Members',
-      value: data?.totalVolunteers?.toLocaleString() || '0',
+      value: stats?.users?.length?.toLocaleString() || '0',
       change: `+2.4%`,
       trend: 'up',
       icon: Users,
@@ -78,7 +86,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Active Volunteers',
-      value: data?.totalActiveVolunteers?.toString() || '0',
+      value: stats?.volunteers?.active?.toString() || '0',
       change: '+5.1%',
       trend: 'up',
       icon: Heart,
@@ -86,15 +94,15 @@ const AdminDashboard = () => {
     },
     {
       title: 'Total Donations',
-      value: `₹${((data?.totalDonationAmount || 0) / 1000).toFixed(1)}K`,
+      value: `₹${((stats?.funds?.total || 0) / 1000).toFixed(1)}K`,
       change: '+12.3%',
       trend: 'up',
       icon: DollarSign,
       color: 'from-accent to-warning'
     },
     {
-      title: 'Pending Campaigns',
-      value: data?.totalCampaigns?.toString() || '0',
+      title: 'Active Campaigns',
+      value: stats?.campaigns?.active?.toString() || '0',
       change: 'Active',
       trend: 'up',
       icon: FileText,
@@ -127,7 +135,7 @@ const AdminDashboard = () => {
               <Calendar className="w-4 h-4 mr-2" />
               Dec 2025
             </Button>
-            <Button variant="premium">
+            <Button variant="premium" onClick={() => setIsReportOpen(true)}>
               <FileText className="w-4 h-4 mr-2" />
               Generate Report
             </Button>
@@ -252,6 +260,7 @@ const AdminDashboard = () => {
             </div>
           </CardContent>
         </Card>
+        <ReportGenerationModal isOpen={isReportOpen} onClose={() => setIsReportOpen(false)} />
       </div>
     </DashboardLayout>
   );

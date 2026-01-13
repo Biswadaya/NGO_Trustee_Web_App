@@ -117,6 +117,9 @@ export const adminAPI = {
     approveMember: (id: string) => api.put(`/members/${id}/approve`),
     getMemberProfile: (id: string) => api.get(`/members/${id}/profile`), // Need this for admin to view details
     getUsers: () => api.get('/admin/users'), // Ensure this matches backend
+    createMember: (data: any) => api.post('/admin/members/create', data),
+    deleteMember: (id: string) => api.delete(`/admin/members/${id}`),
+    generateReport: (params: any) => api.get('/admin/reports/generate', { params }),
 };
 
 export const messageAPI = {

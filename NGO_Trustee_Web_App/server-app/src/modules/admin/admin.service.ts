@@ -61,6 +61,7 @@ export const getDashboardStats = async () => {
         totalFunds,
         donationsCount,
         certificatesIssued,
+        activeCampaigns,
         allUsers
     ] = await Promise.all([
         prisma.volunteer.count({ where: { status: 'ACTIVE' } }),
@@ -68,6 +69,7 @@ export const getDashboardStats = async () => {
         prisma.campaign.aggregate({ _sum: { raised_amount: true } }),
         prisma.donation.count(),
         prisma.certificate.count(),
+        prisma.campaign.count({ where: { status: 'ACTIVE' } }),
         prisma.user.findMany({
             where: {
                 role: {
@@ -104,6 +106,9 @@ export const getDashboardStats = async () => {
         },
         certificates: {
             total: certificatesIssued,
+        },
+        campaigns: {
+            active: activeCampaigns,
         },
         users: allUsers,
         recentActivity: [],
@@ -378,6 +383,126 @@ export const getEvent = async (id: string) => {
 export const deleteEvent = async (id: string) => {
     // Delete validation could be added here
     return prisma.event.delete({ where: { id } });
+};
+
+export const generateReport = async (resource: string, status?: string, startDate?: string, endDate?: string) => {
+    const where: any = {};
+
+    // Date Filter
+    // Date Filter
+    if (startDate || endDate) {
+        where.created_at = {};
+        if (startDate && startDate !== '') where.created_at.gte = new Date(startDate);
+        if (endDate && endDate !== '') {
+            // Set end date to end of the day
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999);
+            where.created_at.lte = end;
+        }
+
+        // Clean up empty object if no valid dates
+        if (Object.keys(where.created_at).length === 0) {
+            delete where.created_at;
+        }
+    }
+
+    // Status Filter (dependent on resource)
+    if (status && status !== 'ALL') {
+        if (resource === 'users' || resource === 'members') {
+            if (status === 'active') where.is_active = true;
+            if (status === 'inactive') where.is_active = false;
+        } else if (resource === 'volunteers') {
+            where.status = status;
+        } else if (resource === 'donations') {
+            where.status = status; // completed, pending, failed
+        }
+    }
+
+    let data: any[] = [];
+
+    switch (resource) {
+        case 'users':
+        case 'members':
+            const users = await prisma.user.findMany({
+                where: {
+                    ...where,
+                    role: { notIn: ['ADMIN', 'SUPER_ADMIN'] }
+                },
+                select: {
+                    id: true,
+                    full_name: true,
+                    email: true,
+                    // phone: true, // Removed as it does not exist on User
+                    role: true,
+                    is_active: true,
+                    created_at: true,
+                    member_profile: {
+                        select: {
+                            phone: true,
+                            membership_fee: true,
+                            is_paid: true
+                        }
+                    }
+                },
+                orderBy: { created_at: 'desc' }
+            });
+
+            data = users.map((u: any) => ({
+                ID: u.id,
+                Name: u.full_name,
+                Email: u.email,
+                Phone: u.member_profile?.phone || 'N/A',
+                Role: u.role,
+                Status: u.is_active ? 'Active' : 'Inactive',
+                'Joined Date': u.created_at,
+                'Membership Paid': u.member_profile?.is_paid ? 'Yes' : 'No'
+            }));
+            break;
+
+        case 'volunteers':
+            const volunteers = await prisma.volunteer.findMany({
+                where,
+                include: {
+                    user: { select: { email: true, created_at: true } }
+                },
+                orderBy: { created_at: 'desc' }
+            });
+            data = volunteers.map((v: any) => ({
+                ID: v.id,
+                Name: v.full_name,
+                Email: v.email,
+                Phone: v.phone || 'N/A',
+                Status: v.status,
+                'Join Date': v.join_date || v.created_at,
+                'Membership Status': v.membership_status
+            }));
+            break;
+
+        case 'donations':
+            const donations = await prisma.donation.findMany({
+                where,
+                include: {
+                    campaign: { select: { title: true } }
+                },
+                orderBy: { created_at: 'desc' }
+            });
+            data = donations.map((d: any) => ({
+                'Transaction ID': d.transaction_id,
+                'Donor Name': d.donor_name || 'Anonymous',
+                'Amount': Number(d.amount),
+                'Currency': d.currency,
+                'Campaign': d.campaign?.title || 'General',
+                'Status': d.status,
+                'Date': d.created_at,
+                'Payment Method': d.payment_method
+            }));
+            break;
+
+        default:
+            throw new AppError('Invalid resource type for report', 400);
+    }
+
+    return data;
 };
 
 export const getPublicEvents = async () => {
