@@ -44,10 +44,10 @@ const NewsletterSection = () => {
 
                     {/* Heading */}
                     <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-                        {t('newsletter.title', 'Stay Updated')}
+                        {t('newsletter.title', 'Subscribe to Our Newsletter')}
                     </h2>
                     <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
-                        {t('newsletter.description', 'Subscribe to our newsletter to receive updates about our impact, new programs, and ways you can help.')}
+                        {t('newsletter.description', 'Stay updated with our latest impact stories, events, and opportunities to get involved.')}
                     </p>
 
                     {/* Form */}
@@ -64,7 +64,7 @@ const NewsletterSection = () => {
                         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-4 max-w-md mx-auto">
                             <Input
                                 type="email"
-                                placeholder={t('newsletter.placeholder', 'Enter your email address')}
+                                placeholder={t('newsletter.placeholder', 'Enter your email')}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -77,7 +77,7 @@ const NewsletterSection = () => {
                                 disabled={isSubmitting}
                                 className="w-full sm:w-auto whitespace-nowrap"
                             >
-                                {isSubmitting ? 'Subscribing...' : t('newsletter.button', 'Subscribe Now')}
+                                {isSubmitting ? 'Subscribing...' : t('newsletter.button', 'Subscribe')}
                             </Button>
                         </form>
                     )}

@@ -79,10 +79,10 @@ const ImpactStats = () => {
                     className="text-center mb-12 md:mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        {t('impact.title')}
+                        {t('impact.title', 'Our Impact at a Glance')}
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        {t('impact.subtitle')}
+                        {t('impact.subtitle', 'Measured results from our ongoing initiatives across Odisha')}
                     </p>
                 </motion.div>
 
@@ -104,7 +104,7 @@ const ImpactStats = () => {
                                 <AnimatedCounter end={stat.value} suffix={stat.suffix} isInView={isInView} />
                             </div>
                             <p className="text-sm md:text-base text-muted-foreground font-medium">
-                                {t(stat.labelKey)}
+                                {t(stat.labelKey, stat.labelKey.split('.')[1])}
                             </p>
                         </motion.div>
                     ))}

@@ -44,7 +44,7 @@ const About = () => {
   ];
 
   return (
-    <div className="bg-background min-h-screen">
+    <>
       {/* Hero Section with Image */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
@@ -63,10 +63,10 @@ const About = () => {
             className="text-center text-primary-foreground"
           >
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              {t('about.heroTitle')}
+              {t('about.heroTitle', 'About NHRD')}
             </h1>
             <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto">
-              {t('about.heroSubtitle')}
+              {t('about.heroSubtitle', 'Dedicated to holistic rural development in Odisha since 2000')}
             </p>
           </motion.div>
         </div>
@@ -86,10 +86,10 @@ const About = () => {
                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Target className="w-7 h-7 text-primary" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('about.visionTitle')}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('about.visionTitle', 'Our Vision')}</h2>
               </div>
               <p className="text-lg text-muted-foreground leading-relaxed italic">
-                "{t('about.visionText')}"
+                "{t('about.visionText', 'To create a just, equitable, and sustainable society where every individual has the opportunity to thrive.')}"
               </p>
             </motion.div>
 
@@ -103,10 +103,10 @@ const About = () => {
                 <div className="w-14 h-14 rounded-xl bg-accent/10 flex items-center justify-center">
                   <Lightbulb className="w-7 h-7 text-accent" />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('about.missionTitle')}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t('about.missionTitle', 'Our Mission')}</h2>
               </div>
               <p className="text-lg text-muted-foreground leading-relaxed italic">
-                "{t('about.missionText')}"
+                "{t('about.missionText', 'To empower rural communities through education, healthcare, and livelihood opportunities, fostering self-reliance and sustainable development.')}"
               </p>
             </motion.div>
           </div>
@@ -225,8 +225,8 @@ const About = () => {
             viewport={{ once: true }}
             className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('about.journeyTitle')}</h2>
-            <p className="text-muted-foreground text-lg">{t('about.journeySubtitle')}</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('about.journeyTitle', 'Our Journey')}</h2>
+            <p className="text-muted-foreground text-lg">{t('about.journeySubtitle', 'Milestones in our path of service')}</p>
           </motion.div>
 
           <div className="space-y-8">
@@ -248,8 +248,8 @@ const About = () => {
                   )}
                 </div>
                 <div className="flex-1 pb-8">
-                  <h3 className="text-xl font-bold text-foreground mb-2">{t(`about.timeline.${year}.title`)}</h3>
-                  <p className="text-muted-foreground">{t(`about.timeline.${year}.description`)}</p>
+                  <h3 className="text-xl font-bold text-foreground mb-2">{t(`about.timeline.${year}.title`, `Milestone ${year}`)}</h3>
+                  <p className="text-muted-foreground">{t(`about.timeline.${year}.description`, 'Description of milestone achieved in this year.')}</p>
                 </div>
               </motion.div>
             ))}
@@ -266,8 +266,8 @@ const About = () => {
             viewport={{ once: true }}
             className="text-center mb-12 md:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('about.valuesTitle')}</h2>
-            <p className="text-muted-foreground text-lg">{t('about.valuesSubtitle')}</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('about.valuesTitle', 'Core Values')}</h2>
+            <p className="text-muted-foreground text-lg">{t('about.valuesSubtitle', 'The principles that guide our work every day')}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -283,8 +283,8 @@ const About = () => {
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 mb-4">
                   <value.icon className="w-7 h-7 text-primary" />
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">{t(value.titleKey)}</h3>
-                <p className="text-sm text-muted-foreground">{t(value.descKey)}</p>
+                <h3 className="text-lg font-bold text-foreground mb-2">{t(value.titleKey, value.titleKey.split('.')[2])}</h3>
+                <p className="text-sm text-muted-foreground">{t(value.descKey, 'Description of value')}</p>
               </motion.div>
             ))}
           </div>
@@ -300,8 +300,8 @@ const About = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{t('about.certTitle')}</h2>
-            <p className="text-primary-foreground/80 text-lg">{t('about.certSubtitle')}</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{t('about.certTitle', 'Recognitions & Certifications')}</h2>
+            <p className="text-primary-foreground/80 text-lg">{t('about.certSubtitle', 'We maintain the highest standards of transparency and compliance')}</p>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -323,6 +323,47 @@ const About = () => {
         </div>
       </section>
 
+      {/* Team Section */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('about.teamTitle', 'Our Leadership')}</h2>
+            <p className="text-muted-foreground text-lg">{t('about.teamSubtitle', 'Guided by experienced and dedicated professionals')}</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { key: 'chairman', initials: 'BP', name: 'Bibhuti Bhusan Pattnaik', role: 'Chairman', desc: 'Leading with vision for rural development.' },
+              { key: 'viceChairman', initials: 'RS', name: 'Rabindra Nath Sahoo', role: 'Vice-Chairman', desc: 'Driving operational excellence.' },
+              { key: 'secretary1', initials: 'PN', name: 'Pravasini Nayak', role: 'Secretary', desc: 'Coordinating programs and outreach.' },
+              { key: 'secretary2', initials: 'SD', name: 'Satyabhoama Das', role: 'Joint Secretary', desc: 'Strengthening community ties.' },
+              { key: 'treasurer', initials: 'GM', name: 'Gitanjali Moharana', role: 'Treasurer', desc: 'Ensuring financial integrity.' },
+            ].map((member, index) => (
+              <motion.div
+                key={member.key}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-card p-6 rounded-xl shadow-md text-center"
+              >
+                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-primary">{member.initials}</span>
+                </div>
+                <h3 className="text-lg font-bold text-foreground">{t(`about.team.${member.key}.name`, member.name)}</h3>
+                <p className="text-sm text-primary font-medium mb-2">{t(`about.team.${member.key}.role`, member.role)}</p>
+                <p className="text-sm text-muted-foreground">{t(`about.team.${member.key}.description`, member.desc)}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-accent">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -335,7 +376,7 @@ const About = () => {
               {t('about.joinUs', 'Join Our Mission')}
             </h2>
             <p className="text-accent-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-              {t('about.joinUsSubtitle', 'Whether through donations, volunteering, or spreading awareness, your support helps us create lasting change in rural Odisha.')}
+              {t('about.joinUsSubtitle', 'Whether through donations, membership, or spreading awareness, your support helps us create lasting change in rural Odisha.')}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/donate">
@@ -344,17 +385,17 @@ const About = () => {
                   {t('cta.donateNow', 'Donate Now')}
                 </Button>
               </Link>
-              <Link to="/get-involved">
+              <Link to="/auth">
                 <Button variant="heroOutline" size="xl" className="gap-2 border-accent-foreground text-accent-foreground hover:bg-accent-foreground hover:text-accent">
                   <Users className="w-5 h-5" />
-                  {t('cta.volunteer', 'Volunteer')}
+                  {t('cta.volunteer', 'Become a Member')}
                 </Button>
               </Link>
             </div>
           </motion.div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 

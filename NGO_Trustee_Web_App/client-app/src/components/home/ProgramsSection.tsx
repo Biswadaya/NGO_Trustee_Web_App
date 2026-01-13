@@ -1,56 +1,101 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { GraduationCap, Heart, Droplets, Briefcase, Wheat, ShieldAlert, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-const programs = [
-    {
-        icon: GraduationCap,
-        titleKey: 'programs.education.title',
-        descKey: 'programs.education.description',
-        color: 'bg-secondary/10 text-secondary',
-        href: '/programs/education',
-    },
-    {
-        icon: Heart,
-        titleKey: 'programs.women.title',
-        descKey: 'programs.women.description',
-        color: 'bg-accent/10 text-accent',
-        href: '/programs/women-empowerment',
-    },
-    {
-        icon: Droplets,
-        titleKey: 'programs.health.title',
-        descKey: 'programs.health.description',
-        color: 'bg-primary/10 text-primary',
-        href: '/programs/health',
-    },
-    {
-        icon: Briefcase,
-        titleKey: 'programs.livelihood.title',
-        descKey: 'programs.livelihood.description',
-        color: 'bg-earth/10 text-earth',
-        href: '/programs/livelihood',
-    },
-    {
-        icon: Wheat,
-        titleKey: 'programs.agriculture.title',
-        descKey: 'programs.agriculture.description',
-        color: 'bg-primary/10 text-primary',
-        href: '/programs/agriculture',
-    },
-    {
-        icon: ShieldAlert,
-        titleKey: 'programs.disaster.title',
-        descKey: 'programs.disaster.description',
-        color: 'bg-destructive/10 text-destructive',
-        href: '/programs/disaster-response',
-    },
-];
+import ProgramDetailModal from '@/components/ProgramDetailModal';
+import childrenImage from '@/assets/children-classroom.jpg';
+import womenImage from '@/assets/women-shg-meeting.jpg';
+import healthImage from '@/assets/campaign-health.jpg';
+import waterImage from '@/assets/campaign-water.jpg';
+import villageImage from '@/assets/hero-odisha-village.jpg';
+import eventsImage from '@/assets/events-cultural.jpg';
 
 const ProgramsSection = () => {
     const { t } = useTranslation();
+    const [selectedProgram, setSelectedProgram] = useState<typeof programs[0] | null>(null);
+
+    const programs = [
+        {
+            id: 'education',
+            icon: GraduationCap,
+            titleKey: 'programs.education.title',
+            descKey: 'programs.education.description',
+            color: 'bg-secondary/10 text-secondary',
+            image: childrenImage,
+            stats: [
+                { label: 'Children Educated', value: '1,000+' },
+                { label: 'Free Services', value: '5' },
+            ],
+            features: ['Free uniforms', 'Free meals', 'Free transport', 'Health checkups', 'Quality teachers'],
+        },
+        {
+            id: 'women-empowerment',
+            icon: Heart,
+            titleKey: 'programs.women.title',
+            descKey: 'programs.women.description',
+            color: 'bg-accent/10 text-accent',
+            image: womenImage,
+            stats: [
+                { label: 'SHGs Formed', value: '4,481' },
+                { label: 'Microfinance Linked', value: '₹80M' },
+            ],
+            features: ['SHG formation', 'Capacity building', 'Microfinance access', 'Entrepreneurship', 'Leadership training'],
+        },
+        {
+            id: 'health',
+            icon: Droplets,
+            titleKey: 'programs.health.title',
+            descKey: 'programs.health.description',
+            color: 'bg-primary/10 text-primary',
+            image: healthImage,
+            stats: [
+                { label: 'Villages ODF', value: '472' },
+                { label: 'Health Camps', value: '200+' },
+            ],
+            features: ['ODF certification', 'Clean water access', 'Hygiene education', 'Sanitation facilities', 'Health awareness'],
+        },
+        {
+            id: 'livelihood',
+            icon: Briefcase,
+            titleKey: 'programs.livelihood.title',
+            descKey: 'programs.livelihood.description',
+            color: 'bg-earth/10 text-earth',
+            image: waterImage,
+            stats: [
+                { label: 'Masons Trained', value: '1,660' },
+                { label: 'Dairy Units', value: '500+' },
+            ],
+            features: ['Dairy farming', 'Fish farming', 'Masonry training', 'Skills development', 'Market linkage'],
+        },
+        {
+            id: 'agriculture',
+            icon: Wheat,
+            titleKey: 'programs.agriculture.title',
+            descKey: 'programs.agriculture.description',
+            color: 'bg-primary/10 text-primary',
+            image: villageImage,
+            stats: [
+                { label: 'Farmer Groups', value: '500+' },
+                { label: 'Farmers Trained', value: '10,000+' },
+            ],
+            features: ['Farmer groups', 'Organic practices', 'Crop support', 'Training programs', 'Market access'],
+        },
+        {
+            id: 'disaster-response',
+            icon: ShieldAlert,
+            titleKey: 'programs.disaster.title',
+            descKey: 'programs.disaster.description',
+            color: 'bg-destructive/10 text-destructive',
+            image: eventsImage,
+            stats: [
+                { label: 'Cyclone Fani Relief', value: '4,500 families' },
+                { label: 'COVID Response', value: '10,000+' },
+            ],
+            features: ['Emergency relief', 'Food distribution', 'Shelter support', 'COVID response', 'Community resilience'],
+        },
+    ];
 
     return (
         <section className="py-16 md:py-24 bg-muted/50">
@@ -81,8 +126,11 @@ const ProgramsSection = () => {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
                         >
-                            <Link to={program.href} className="block h-full">
-                                <div className="program-card h-full p-6 md:p-8 flex flex-col group bg-card border border-border/50 rounded-xl hover:shadow-lg transition-all duration-300">
+                            <div
+                                className="block h-full cursor-pointer"
+                                onClick={() => setSelectedProgram(program)}
+                            >
+                                <div className="program-card h-full p-6 md:p-8 flex flex-col group">
                                     {/* Icon */}
                                     <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${program.color} mb-5 group-hover:scale-110 transition-transform`}>
                                         <program.icon className="w-7 h-7" />
@@ -90,10 +138,10 @@ const ProgramsSection = () => {
 
                                     {/* Content */}
                                     <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                                        {t(program.titleKey)}
+                                        {t(program.titleKey, program.titleKey.split('.')[1])}
                                     </h3>
                                     <p className="text-muted-foreground leading-relaxed flex-grow text-sm md:text-base">
-                                        {t(program.descKey)}
+                                        {t(program.descKey, 'Description of program...')}
                                     </p>
 
                                     {/* Link */}
@@ -102,7 +150,7 @@ const ProgramsSection = () => {
                                         <ArrowRight className="w-4 h-4" />
                                     </div>
                                 </div>
-                            </Link>
+                            </div>
                         </motion.div>
                     ))}
                 </div>
@@ -115,7 +163,7 @@ const ProgramsSection = () => {
                     transition={{ delay: 0.5, duration: 0.5 }}
                     className="text-center mt-12"
                 >
-                    <Link to="/programs">
+                    <Link to="/what-we-do">
                         <Button variant="outline" size="lg" className="gap-2">
                             {t('common.viewAll', 'View All Programs')}
                             <ArrowRight className="w-4 h-4" />
@@ -123,6 +171,14 @@ const ProgramsSection = () => {
                     </Link>
                 </motion.div>
             </div>
+
+            {/* Program Detail Modal */}
+            {selectedProgram && (
+                <ProgramDetailModal
+                    program={selectedProgram}
+                    onClose={() => setSelectedProgram(null)}
+                />
+            )}
         </section>
     );
 };

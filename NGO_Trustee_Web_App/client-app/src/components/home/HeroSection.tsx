@@ -3,9 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Heart, Users, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-// Using a placeholder or existing image if the specific one is missing, 
-// but for now attempting to use the same import assuming I will check/fix assets.
-// If missing, I will need to add it.
 import heroImage from '@/assets/hero-odisha-village.jpg';
 
 const HeroSection = () => {
@@ -41,7 +38,7 @@ const HeroSection = () => {
                     >
                         <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                         <span className="text-white text-sm font-medium">
-                            {t('hero.badge', 'Transforming Rural Lives')}
+                            {t('hero.badge', 'Empowering Rural Odisha')}
                         </span>
                     </motion.div>
 
@@ -52,7 +49,7 @@ const HeroSection = () => {
                         transition={{ delay: 0.3, duration: 0.6 }}
                         className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                     >
-                        {t('hero.title', 'Empowering Communities, Driving Change')}
+                        {t('hero.title', 'Transforming Lives Through Community Action')}
                     </motion.h1>
 
                     {/* Subtitle Stats */}
@@ -62,7 +59,7 @@ const HeroSection = () => {
                         transition={{ delay: 0.4, duration: 0.6 }}
                         className="text-xl sm:text-2xl text-white/90 font-medium"
                     >
-                        {t('hero.subtitle', '12+ Years • 100,000+ Lives Impacted • 500+ Villages')}
+                        {t('hero.subtitle', '24+ Years of Service • 100,000+ Lives Impacted')}
                     </motion.p>
 
                     {/* Description */}
@@ -72,7 +69,7 @@ const HeroSection = () => {
                         transition={{ delay: 0.5, duration: 0.6 }}
                         className="max-w-2xl mx-auto text-base sm:text-lg text-white/80 leading-relaxed"
                     >
-                        {t('hero.description', 'Join us in our mission to create sustainable development and equal opportunities for rural communities in Odisha through education, healthcare, and livelihood support.')}
+                        {t('hero.description', 'Join us in building a sustainable future where every individual has access to education, healthcare, and livelihood opportunities.')}
                     </motion.p>
 
                     {/* CTA Buttons */}
@@ -88,10 +85,10 @@ const HeroSection = () => {
                                 {t('hero.ctaDonate', 'Donate Now')}
                             </Button>
                         </Link>
-                        <Link to="/get-involved">
+                        <Link to="/auth">
                             <Button variant="heroSecondary" size="xl" className="gap-2 min-w-[200px]">
                                 <Users className="w-5 h-5" />
-                                {t('hero.ctaVolunteer', 'Become a Volunteer')}
+                                {t('hero.ctaVolunteer', 'Join as Volunteer')}
                             </Button>
                         </Link>
                         <Link to="/about">

@@ -9,7 +9,7 @@ const Footer = () => {
 
     const quickLinks = [
         { path: '/about', label: t('nav.about', 'About Us') },
-        { path: '/programs', label: t('nav.programs', 'Programs') },
+        { path: '/what-we-do', label: t('nav.programs', 'Programs') },
         { path: '/impact', label: t('nav.impact', 'Impact') },
         { path: '/stories', label: t('nav.stories', 'Stories') },
         { path: '/donate', label: t('nav.donate', 'Donate') },

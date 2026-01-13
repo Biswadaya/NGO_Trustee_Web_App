@@ -1,0 +1,392 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "programs": "What We Do",
+    "impact": "Our Impact",
+    "stories": "Stories",
+    "donate": "Donate",
+    "getInvolved": "Get Involved",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "campaigns": "Campaigns",
+    "events": "Events"
+  },
+  "hero": {
+    "badge": "24 Years of Trust",
+    "title": "Transforming Rural Odisha",
+    "subtitle": "100,000+ Lives Touched | 500+ Villages",
+    "description": "Converting visionary thoughts into reality through community participation and involvement of programme participants in each project activity.",
+    "ctaDonate": "Make a Donation",
+    "ctaVolunteer": "Become a Member",
+    "ctaLearnMore": "Learn Our Story"
+  },
+  "impact": {
+    "title": "Our Impact in Numbers",
+    "subtitle": "24 years of dedication to rural development",
+    "years": "Years of Trust",
+    "lives": "Lives Reached",
+    "villages": "Villages",
+    "shgs": "SHGs Formed",
+    "microfinance": "Microfinance Linked",
+    "masons": "Masons Trained",
+    "odf": "Villages ODF-Certified",
+    "farmers": "Farmer Groups"
+  },
+  "programs": {
+    "title": "How We Transform Lives",
+    "subtitle": "Integrated programs addressing education, health, livelihoods, and more",
+    "learnMore": "Learn More",
+    "education": {
+      "title": "Education",
+      "description": "Free school model (LSE) providing quality education to 1000+ children with free uniforms, meals, transport, and health checkups."
+    },
+    "women": {
+      "title": "Women Empowerment",
+      "description": "4,481 Self-Help Groups formed, ₹80 million microfinance linked, empowering women through capacity building and training."
+    },
+    "health": {
+      "title": "Health & Sanitation",
+      "description": "472 villages certified ODF (Open Defecation Free), clean water access, hygiene promotion, and health awareness programs."
+    },
+    "livelihood": {
+      "title": "Livelihood Support",
+      "description": "Dairy, fish farming, masonry training (1,660 trained), and skills development for sustainable income generation."
+    },
+    "agriculture": {
+      "title": "Agricultural Support",
+      "description": "500+ farmer groups supported with improved farming techniques, organic practices, and crop support."
+    },
+    "disaster": {
+      "title": "Disaster Response",
+      "description": "Emergency response including Cyclone Fani relief (4,500 families) and COVID-19 support for affected communities."
+    },
+    "microfinance": {
+      "title": "Microfinance & Bank Linkage",
+      "description": "Facilitating ₹80 million in microfinance linkages, empowering 45,000+ beneficiaries with financial access and literacy."
+    },
+    "supportTitle": "Support Our Programs",
+    "supportSubtitle": "Your contribution helps us continue transforming lives across rural Odisha"
+  },
+  "stories": {
+    "title": "Stories of Transformation",
+    "subtitle": "Real people, real change, real impact",
+    "readMore": "Read Full Story",
+    "publishedOn": "Published on",
+    "by": "By",
+    "readTime": "min read",
+    "relatedStories": "Related Stories",
+    "backToStories": "Back to Stories"
+  },
+  "support": {
+    "title": "Why Support NHRD?",
+    "trust": {
+      "title": "24 Years of Trust",
+      "description": "Government registered, 80G certified, with transparent operations and documented impact."
+    },
+    "impact": {
+      "title": "Measurable Impact",
+      "description": "Every rupee creates real change - education, health, livelihoods for rural communities."
+    },
+    "transparency": {
+      "title": "Complete Transparency",
+      "description": "Annual reports, impact metrics, and regular updates on how your support makes a difference."
+    }
+  },
+  "newsletter": {
+    "title": "Stay Updated with Our Work",
+    "description": "Get monthly updates on our impact, stories from the field, and ways to get involved.",
+    "placeholder": "Enter your email address",
+    "button": "Subscribe",
+    "privacy": "We respect your privacy. No spam, ever.",
+    "success": "Thank you for subscribing!"
+  },
+  "footer": {
+    "about": "About NHRD",
+    "aboutText": "National Humanity & Rural Development has been transforming rural communities in Odisha since 2000 through integrated development programs.",
+    "quickLinks": "Quick Links",
+    "contact": "Contact Us",
+    "followUs": "Follow Us",
+    "address": "AT/PO-Balipatna, Via-Bhubaneswar, Dist-Khordha, Odisha-752102",
+    "phone": "Phone",
+    "email": "Email",
+    "copyright": "© 2026 National Humanity & Rural Development. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "registered": "Registered & Certified"
+  },
+  "cta": {
+    "donateNow": "Donate Now",
+    "volunteer": "Become a Member",
+    "partner": "Partner With Us",
+    "joinTeam": "Join Our Team"
+  },
+  "common": {
+    "readMore": "Read More",
+    "learnMore": "Learn More",
+    "viewAll": "View All",
+    "backToHome": "Back to Home"
+  },
+  "about": {
+    "heroTitle": "About Us",
+    "heroSubtitle": "24 Years of Transforming Lives Through Community Participation",
+    "visionTitle": "Our Vision",
+    "visionText": "Creation of an equitable society in which the poor people of unprivileged & marginalized communities will be able to live with dignity enjoying their rights & privileges to ensure a better quality of life.",
+    "missionTitle": "Our Mission",
+    "missionText": "Converting the visionary thoughts into reality through community participation and involvement of programme participants in each project activity.",
+    "journeyTitle": "Our Journey",
+    "journeySubtitle": "24 years of dedication to rural development",
+    "valuesTitle": "Core Values",
+    "valuesSubtitle": "The principles that guide our work",
+    "certTitle": "Trusted & Transparent",
+    "certSubtitle": "Our registrations and certifications",
+    "teamTitle": "Meet Our Team",
+    "teamSubtitle": "Dedicated leaders driving our mission forward",
+    "team": {
+      "chairman": {
+        "name": "Sri Bhagirathi Pradhan",
+        "role": "Chairman & CEO",
+        "description": "Founder of NHRD, a celebrated social activist leading rural development initiatives in Odisha since 2000."
+      },
+      "viceChairman": {
+        "name": "Sri Ramesh Kumar Sahoo",
+        "role": "Vice Chairman",
+        "description": "Overseeing program implementation and strategic partnerships for sustainable community development."
+      },
+      "secretary1": {
+        "name": "Sri Prakash Chandra Nayak",
+        "role": "General Secretary",
+        "description": "Managing day-to-day operations and coordinating with government agencies and stakeholders."
+      },
+      "secretary2": {
+        "name": "Smt. Sarojini Devi",
+        "role": "Joint Secretary",
+        "description": "Leading women empowerment initiatives and self-help group coordination across villages."
+      },
+      "treasurer": {
+        "name": "Sri Gopinath Mohanty",
+        "role": "Treasurer",
+        "description": "Ensuring financial transparency, compliance, and responsible stewardship of resources."
+      }
+    },
+    "values": {
+      "inclusion": { "title": "Inclusion", "description": "Ensuring all community members have equal access to programs and opportunities." },
+      "equity": { "title": "Social Equity", "description": "Working towards fair distribution of resources and opportunities." },
+      "gender": { "title": "Gender Equity", "description": "Promoting equal participation and benefits for all genders." },
+      "sustainability": { "title": "Sustainability", "description": "Building programs that create lasting, self-sustaining change." },
+      "accountability": { "title": "Accountability", "description": "Transparent operations and responsible use of resources." },
+      "empowerment": { "title": "Empowerment", "description": "Enabling communities to drive their own development." }
+    },
+    "timeline": {
+      "2000": { "title": "NHRD Founded", "description": "Established by Bhagirathi Pradhan with a vision to transform rural communities." },
+      "2008": { "title": "London School of Education", "description": "Free school model launched, providing quality education to underprivileged children." },
+      "2015": { "title": "SHG Movement", "description": "Crossed 3,000 Self-Help Groups, empowering thousands of women." },
+      "2019": { "title": "Cyclone Fani Response", "description": "Emergency relief to 4,500+ families affected by the devastating cyclone." },
+      "2024": { "title": "100,000+ Lives Impacted", "description": "Reached a milestone of transforming over 100,000 lives across 500+ villages." }
+    }
+  },
+  "campaigns": {
+    "title": "Our Campaigns",
+    "subtitle": "Support specific causes that create lasting change in rural Odisha communities",
+    "donateNow": "Donate Now",
+    "details": "Details",
+    "aboutCampaign": "About This Campaign",
+    "recentUpdates": "Recent Updates",
+    "beneficiaries": "Beneficiaries",
+    "funded": "funded",
+    "donateToCampaign": "Donate to This Campaign",
+    "close": "Close",
+    "raisedOf": "raised of",
+    "goal": "goal",
+    "endDate": "Ends",
+    "started": "Started",
+    "location": "Location"
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "subtitle": "Join us in our mission through workshops, camps, and cultural celebrations",
+    "allEvents": "All Events",
+    "registerNow": "Register Now",
+    "fullyBooked": "Fully Booked",
+    "freeEntry": "Free Entry",
+    "registerForEvent": "Register for Event",
+    "confirmRegistration": "Confirm Registration",
+    "cancel": "Cancel",
+    "registrationSuccess": "Registration Successful!",
+    "ticketGenerated": "Your ticket has been generated",
+    "ticketNumber": "Ticket Number",
+    "downloadTicket": "Download Ticket",
+    "close": "Close",
+    "registered": "registered",
+    "registrationNote": "By registering, you'll receive a digital ticket that serves as your entry pass. Please login or create an account to complete registration."
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "welcomeBack": "Welcome back!",
+    "createAccount": "Create your account",
+    "loginSubtitle": "Enter your credentials to access your account",
+    "signupSubtitle": "Fill in your details to get started",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Log In",
+    "signupButton": "Create Account",
+    "continueGoogle": "Continue with Google",
+    "backToHome": "Back to NHRD Home",
+    "enterName": "Enter your full name",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "reenterPassword": "Re-enter your password",
+    "or": "or",
+    "joinMessage": "Join us in transforming rural Odisha",
+    "joinSubtext": "Create an account to register for events, track your donations, and stay connected with our community development initiatives.",
+    "supportersCount": "Join 5,000+ supporters making a difference"
+  },
+  "donate": {
+    "heroTitle": "Support Our Work",
+    "heroSubtitle": "Every donation creates lasting change in rural communities. Your support matters.",
+    "oneTime": "One-Time",
+    "monthly": "Monthly",
+    "selectAmount": "Select Amount",
+    "customAmount": "Or enter custom amount",
+    "enterAmount": "Enter amount",
+    "yourDonation": "Your donation can provide:",
+    "paymentMethod": "Payment Method",
+    "card": "Credit/Debit Card",
+    "upi": "UPI (Recommended)",
+    "netBanking": "Net Banking",
+    "completeDonation": "Complete Donation",
+    "securePayment": "Secure Payment",
+    "taxDeductible": "80G Tax Deductible",
+    "whereMoneyGoes": "Where Your Money Goes",
+    "taxBenefits": "Tax Benefits",
+    "taxBenefit1": "80G exemption: 50% deduction on taxable income",
+    "taxBenefit2": "12A registration: Organization exempt from income tax",
+    "taxBenefit3": "Instant tax certificate via email",
+    "trustMessage": "Every rupee you donate goes directly to transforming lives. With 24 years of trust and complete transparency, we ensure your generosity creates maximum impact.",
+    "donateToward": "I want to donate toward",
+    "generalFund": "General Fund",
+    "generalFundDesc": "Support NHRD operations",
+    "specificCampaign": "Specific Campaign",
+    "specificCampaignDesc": "Choose a cause to support",
+    "selectCampaign": "Select a Campaign",
+    "bankTransfer": "Bank Transfer Details",
+    "bankTransferDesc": "Prefer direct bank transfer? Use these details:",
+    "bankTransferNote": "After transfer, please email your payment details to contact@nhrd.org for receipt and tax certificate.",
+    "impact1": "1 day school for 10 children",
+    "impact2": "SHG training for 5 women",
+    "impact3": "1 month meals for 15 children",
+    "impact4": "Water purification system",
+    "impact5": "1 month education for 20 children",
+    "allocation": {
+      "education": "Education Programs",
+      "health": "Health & Sanitation",
+      "women": "Women Empowerment",
+      "disaster": "Disaster Response",
+      "admin": "Administration"
+    }
+  },
+  "contact": {
+    "heroTitle": "Get In Touch",
+    "heroSubtitle": "We'd love to hear from you. Reach out with questions, feedback, or partnership inquiries.",
+    "sendMessage": "Send Us a Message",
+    "contactInfo": "Contact Information",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone (Optional)",
+    "category": "Category",
+    "selectCategory": "Select a category",
+    "message": "Message",
+    "yourName": "Your full name",
+    "yourEmail": "your@email.com",
+    "yourPhone": "+91 9876543210",
+    "howCanWeHelp": "How can we help you?",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "messageSent": "Message Sent!",
+    "thankYou": "Thank you for reaching out. We'll respond within 24 hours.",
+    "sendAnother": "Send Another Message",
+    "ourAddress": "Our Address",
+    "officeHours": "Office Hours",
+    "officeHoursText": "Mon-Fri: 9AM-5PM | Sat: 10AM-3PM",
+    "faqTitle": "Frequently Asked Questions",
+    "categories": {
+      "donation": "Donation Query",
+      "volunteer": "Membership Inquiry",
+      "partnership": "Partnership",
+      "general": "General Inquiry",
+      "feedback": "Feedback"
+    },
+    "faqs": {
+      "q1": "How is my donation used?",
+      "a1": "Your donation directly funds our programs in education, health, women empowerment, and more. We maintain complete transparency with detailed annual reports.",
+      "q2": "Can I join as a member remotely?",
+      "a2": "Yes! We have opportunities for remote members in areas like content creation, social media, and fundraising support.",
+      "q3": "How do I get a donation receipt?",
+      "a3": "Donation receipts are automatically sent to your email. You can also request 80G certificates for tax exemption.",
+      "q4": "Is the organization registered?",
+      "a4": "Yes, NHRD is registered under the Societies Registration Act and holds 80G, 12A, FCRA, and NITI Aayog certifications."
+    }
+  },
+  "getInvolved": {
+    "heroTitle": "Multiple Ways to Help",
+    "heroSubtitle": "Find your role in this movement for rural transformation",
+    "volunteer": {
+      "title": "Become a Member",
+      "description": "Join our 11,600+ members making direct impact in villages across Odisha.",
+      "point1": "No experience needed",
+      "point2": "Flexible involvement options",
+      "point3": "Free training provided",
+      "point4": "Certificates & recognition",
+      "button": "Join Our Team"
+    },
+    "donation": {
+      "title": "Support with a Donation",
+      "description": "One-time or monthly support for programs that matter to you.",
+      "point1": "80G tax deductible",
+      "point2": "Transparent reporting",
+      "point3": "Impact updates",
+      "point4": "Donation receipts",
+      "button": "Donate Now"
+    },
+    "csr": {
+      "title": "CSR Partnership",
+      "description": "Align your company's CSR goals with community development.",
+      "point1": "Customized programs",
+      "point2": "Employee engagement",
+      "point3": "Visibility & recognition",
+      "point4": "Impact measurement",
+      "button": "Partner With Us"
+    },
+    "careers": {
+      "title": "Work With Us",
+      "description": "Careers in rural development, education, health, and more.",
+      "point1": "Meaningful work",
+      "point2": "Competitive salary",
+      "point3": "Professional growth",
+      "point4": "Mission-driven team",
+      "button": "View Openings"
+    },
+    "whyVolunteer": "Why Join NHRD?",
+    "whyVolunteerSubtitle": "Join 11,600+ members who have found purpose in community service",
+    "memberBenefits": {
+      "title": "Benefits of Membership",
+      "subtitle": "Be part of a community making real change",
+      "network": "Connect with like-minded changemakers across Odisha",
+      "impact": "See the direct impact of your contributions in real communities",
+      "growth": "Develop leadership and social skills through hands-on experience",
+      "recognition": "Earn certificates and recognition for your service",
+      "purpose": "Find purpose by contributing to meaningful social causes"
+    },
+    "benefits": {
+      "certificates": { "title": "Certificates", "description": "Earn recognized certificates for your service" },
+      "flexible": { "title": "Flexible Hours", "description": "Choose your own schedule and commitment level" },
+      "impact": { "title": "Direct Impact", "description": "See the change you create in real communities" }
+    },
+    "stayUpdated": "Stay Updated",
+    "stayUpdatedSubtitle": "Get monthly updates on our work, stories from the field, and ways to get involved."
+  }
+}

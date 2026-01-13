@@ -1,125 +1,121 @@
-
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     GraduationCap, Heart, Droplets, Briefcase, Wheat, ShieldAlert, Banknote,
     ArrowRight, Users, CheckCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import ProgramDetailModal from '@/components/ProgramDetailModal';
 import childrenImage from '@/assets/children-classroom.jpg';
+import womenImage from '@/assets/women-shg-meeting.jpg';
+import healthImage from '@/assets/campaign-health.jpg';
+import waterImage from '@/assets/campaign-water.jpg';
+import villageImage from '@/assets/hero-odisha-village.jpg';
+import shgImage from '@/assets/campaign-women-shg.jpg';
+import eventsImage from '@/assets/events-cultural.jpg';
 
 const WhatWeDo = () => {
     const { t } = useTranslation();
-
-    // Ideally these translations would exist in local files, keeping keys for now. 
-    // If keys are missing, fallback text is provided via defaults in t() or ensuring en.json has them.
-    // For now, assuming keys might exist or we rely on the keys themselves if strict mode is off, 
-    // but better to provide defaults or use the existing structure if copied from demo.
+    const [selectedProgram, setSelectedProgram] = useState<any>(null);
 
     const programs = [
         {
             id: 'education',
             icon: GraduationCap,
             titleKey: 'programs.education.title',
-            titleDefault: 'Education',
             descKey: 'programs.education.description',
-            descDefault: 'Providing quality education to underprivileged children through our village schools and scholarship programs.',
             stats: [
-                { label: 'Children Educated', value: '1,000+' },
-                { label: 'Free Services', value: '5' },
+                { label: t('programs.stats.childrenEducated', 'Children Educated'), value: '1,000+' },
+                { label: t('programs.stats.freeServices', 'Free Services'), value: '5' },
             ],
-            features: ['Free uniforms', 'Free meals', 'Free transport', 'Health checkups', 'Quality teachers'],
+            features: [t('programs.features.uniforms', 'Free uniforms'), t('programs.features.meals', 'Free meals'), t('programs.features.transport', 'Free transport'), t('programs.features.healthCheckups', 'Health checkups'), t('programs.features.teachers', 'Quality teachers')],
             color: 'bg-secondary',
+            image: childrenImage,
         },
         {
             id: 'women-empowerment',
             icon: Heart,
             titleKey: 'programs.women.title',
-            titleDefault: 'Women Empowerment',
             descKey: 'programs.women.description',
-            descDefault: 'Empowering women through Self-Help Groups (SHGs) and microfinance initiatives to foster financial independence.',
             stats: [
-                { label: 'SHGs Formed', value: '4,481' },
-                { label: 'Microfinance Linked', value: '₹80M' },
+                { label: t('programs.stats.shgsFormed', 'SHGs Formed'), value: '4,481' },
+                { label: t('programs.stats.microfinanceLinked', 'Microfinance Linked'), value: '₹80M' },
             ],
-            features: ['SHG formation', 'Capacity building', 'Microfinance access', 'Entrepreneurship', 'Leadership training'],
+            features: [t('programs.features.shgFormation', 'SHG formation'), t('programs.features.capacityBuilding', 'Capacity building'), t('programs.features.microfinanceAccess', 'Microfinance access'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.leadershipTraining', 'Leadership training')],
             color: 'bg-accent',
+            image: womenImage,
         },
         {
             id: 'health',
             icon: Droplets,
             titleKey: 'programs.health.title',
-            titleDefault: 'Health & Sanitation',
             descKey: 'programs.health.description',
-            descDefault: 'Improving community health through sanitation drives, clean water access, and regular health camps.',
             stats: [
-                { label: 'Villages ODF', value: '472' },
-                { label: 'Health Camps', value: '200+' },
+                { label: t('programs.stats.villagesOdf', 'Villages ODF'), value: '472' },
+                { label: t('programs.stats.healthCamps', 'Health Camps'), value: '200+' },
             ],
-            features: ['ODF certification', 'Clean water access', 'Hygiene education', 'Sanitation facilities', 'Health awareness'],
+            features: [t('programs.features.odfCertification', 'ODF certification'), t('programs.features.cleanWater', 'Clean water access'), t('programs.features.hygieneEducation', 'Hygiene education'), t('programs.features.sanitation', 'Sanitation facilities'), t('programs.features.healthAwareness', 'Health awareness')],
             color: 'bg-primary',
+            image: healthImage,
         },
         {
             id: 'livelihood',
             icon: Briefcase,
             titleKey: 'programs.livelihood.title',
-            titleDefault: 'Livelihood Support',
             descKey: 'programs.livelihood.description',
-            descDefault: 'Creating sustainable livelihood opportunities through vocational training and skill development programs.',
             stats: [
-                { label: 'Masons Trained', value: '1,660' },
-                { label: 'Dairy Units', value: '500+' },
+                { label: t('programs.stats.masonsTrained', 'Masons Trained'), value: '1,660' },
+                { label: t('programs.stats.dairyUnits', 'Dairy Units'), value: '500+' },
             ],
-            features: ['Dairy farming', 'Fish farming', 'Masonry training', 'Skills development', 'Market linkage'],
-            color: 'bg-orange-500', // customized from 'bg-earth' which might not exist in client-app config
+            features: [t('programs.features.dairyFarming', 'Dairy farming'), t('programs.features.fishFarming', 'Fish farming'), t('programs.features.masonryTraining', 'Masonry training'), t('programs.features.skillsDev', 'Skills development'), t('programs.features.marketLinkage', 'Market linkage')],
+            color: 'bg-earth',
+            image: waterImage,
         },
         {
             id: 'agriculture',
             icon: Wheat,
             titleKey: 'programs.agriculture.title',
-            titleDefault: 'Agriculture',
             descKey: 'programs.agriculture.description',
-            descDefault: 'Supporting farmers with organic farming techniques, crop management, and market access.',
             stats: [
-                { label: 'Farmer Groups', value: '500+' },
-                { label: 'Farmers Trained', value: '10,000+' },
+                { label: t('programs.stats.farmerGroups', 'Farmer Groups'), value: '500+' },
+                { label: t('programs.stats.farmersTrained', 'Farmers Trained'), value: '10,000+' },
             ],
-            features: ['Farmer groups', 'Organic practices', 'Crop support', 'Training programs', 'Market access'],
-            color: 'bg-green-600',
+            features: [t('programs.features.farmerGroups', 'Farmer groups'), t('programs.features.organicPractices', 'Organic practices'), t('programs.features.cropSupport', 'Crop support'), t('programs.features.trainingPrograms', 'Training programs'), t('programs.features.marketAccess', 'Market access')],
+            color: 'bg-primary',
+            image: villageImage,
         },
         {
             id: 'microfinance',
             icon: Banknote,
             titleKey: 'programs.microfinance.title',
-            titleDefault: 'Microfinance',
             descKey: 'programs.microfinance.description',
-            descDefault: 'Facilitating financial inclusion by linking community groups with formal banking systems.',
             stats: [
-                { label: 'Credit Linked', value: '₹80M' },
-                { label: 'Beneficiaries', value: '45,000+' },
+                { label: t('programs.stats.creditLinked', 'Credit Linked'), value: '₹80M' },
+                { label: t('programs.stats.beneficiaries', 'Beneficiaries'), value: '45,000+' },
             ],
-            features: ['Bank linkages', 'Credit facilitation', 'Financial literacy', 'Entrepreneurship', 'Savings groups'],
-            color: 'bg-blue-500',
+            features: [t('programs.features.bankLinkages', 'Bank linkages'), t('programs.features.creditFacilitation', 'Credit facilitation'), t('programs.features.financialLiteracy', 'Financial literacy'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.savingsGroups', 'Savings groups')],
+            color: 'bg-secondary',
+            image: shgImage,
         },
         {
             id: 'disaster-response',
             icon: ShieldAlert,
             titleKey: 'programs.disaster.title',
-            titleDefault: 'Disaster Response',
             descKey: 'programs.disaster.description',
-            descDefault: 'Providing immediate relief and long-term rehabilitation support during natural disasters.',
             stats: [
-                { label: 'Cyclone Fani Relief', value: '4,500 families' },
-                { label: 'COVID Response', value: '10,000+' },
+                { label: t('programs.stats.cycloneFaniRelief', 'Cyclone Fani Relief'), value: '4,500 families' },
+                { label: t('programs.stats.covidResponse', 'COVID Response'), value: '10,000+' },
             ],
-            features: ['Emergency relief', 'Food distribution', 'Shelter support', 'COVID response', 'Community resilience'],
+            features: [t('programs.features.emergencyRelief', 'Emergency relief'), t('programs.features.food distribution', 'Food distribution'), t('programs.features.shelterSupport', 'Shelter support'), t('programs.features.covidResponse', 'COVID response'), t('programs.features.communityResilience', 'Community resilience')],
             color: 'bg-destructive',
+            image: eventsImage,
         },
     ];
 
     return (
-        <div className="bg-background min-h-screen">
+        <>
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 overflow-hidden">
                 <div className="absolute inset-0">
@@ -138,10 +134,10 @@ const WhatWeDo = () => {
                         className="text-center text-primary-foreground"
                     >
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                            {t('programs.title', 'Our Impact Areas')}
+                            {t('programs.title', 'Our Programs')}
                         </h1>
                         <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto">
-                            {t('programs.subtitle', 'Comprehensive development through education, health, and livelihood support.')}
+                            {t('programs.subtitle', 'Comprehensive solutions for sustainable rural development')}
                         </p>
                     </motion.div>
                 </div>
@@ -164,16 +160,13 @@ const WhatWeDo = () => {
                                 <div className="flex-1 space-y-6">
                                     <div className="flex items-center gap-4">
                                         <div className={`w-14 h-14 rounded-xl ${program.color} bg-opacity-10 flex items-center justify-center`}>
-                                            <program.icon className={`w-7 h-7 text-foreground`} />
-                                            {/* Note: In demo, text color was dynamic. Simplified here for reliability or use ${program.color.replace('bg-', 'text-')} if strict colors exist */}
+                                            <program.icon className={`w-7 h-7 ${program.color.replace('bg-', 'text-')}`} />
                                         </div>
-                                        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-                                            {t(program.titleKey, program.titleDefault)}
-                                        </h2>
+                                        <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t(program.titleKey, program.titleKey.split('.')[1])}</h2>
                                     </div>
 
                                     <p className="text-muted-foreground text-lg leading-relaxed">
-                                        {t(program.descKey, program.descDefault)}
+                                        {t(program.descKey, 'Description...')}
                                     </p>
 
                                     {/* Stats */}
@@ -196,21 +189,27 @@ const WhatWeDo = () => {
                                         ))}
                                     </div>
 
-                                    {/* Not linking to deeper pages since we haven't migrated individual program details yet, or we can link to contact/donate */}
-                                    <div className="pt-4">
-                                        <Link to="/donate">
-                                            <Button variant="outline" className="gap-2">
-                                                Support this Cause
-                                                <ArrowRight className="w-4 h-4" />
-                                            </Button>
-                                        </Link>
-                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        className="gap-2 mt-4"
+                                        onClick={() => setSelectedProgram(program)}
+                                    >
+                                        {t('programs.learnMore', 'Learn More')}
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Button>
                                 </div>
 
-                                {/* Visual Card */}
+                                {/* Visual Card with Image */}
                                 <div className="flex-1 w-full lg:w-auto">
-                                    <div className={`${program.color} bg-opacity-10 rounded-2xl p-8 md:p-12 aspect-[4/3] flex items-center justify-center bg-slate-100`}>
-                                        <program.icon className={`w-24 h-24 md:w-32 md:h-32 text-primary opacity-20`} />
+                                    <div
+                                        className="rounded-2xl overflow-hidden aspect-[4/3] cursor-pointer group"
+                                        onClick={() => setSelectedProgram(program)}
+                                    >
+                                        <img
+                                            src={program.image}
+                                            alt={t(program.titleKey)}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
                                     </div>
                                 </div>
                             </motion.div>
@@ -228,29 +227,37 @@ const WhatWeDo = () => {
                         viewport={{ once: true }}
                     >
                         <h2 className="text-3xl md:text-4xl font-bold text-accent-foreground mb-6">
-                            {t('programs.supportTitle', 'Be the Change You Wish to See')}
+                            {t('programs.supportTitle', 'Support Our Programs')}
                         </h2>
                         <p className="text-accent-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
-                            {t('programs.supportSubtitle', 'Join hands with NHRD to transform lives in rural Odisha.')}
+                            {t('programs.supportSubtitle', 'Your contribution helps us continue transforming lives across rural Odisha')}
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                             <Link to="/donate">
-                                <Button variant="default" size="lg" className="gap-2 bg-white text-accent hover:bg-white/90">
+                                <Button variant="heroSecondary" size="xl" className="gap-2">
                                     <Heart className="w-5 h-5" />
                                     {t('cta.donateNow', 'Donate Now')}
                                 </Button>
                             </Link>
                             <Link to="/get-involved">
-                                <Button variant="outline" size="lg" className="gap-2 border-accent-foreground text-accent-foreground hover:bg-accent-foreground hover:text-accent">
+                                <Button variant="heroOutline" size="xl" className="gap-2 border-accent-foreground text-accent-foreground hover:bg-accent-foreground hover:text-accent">
                                     <Users className="w-5 h-5" />
-                                    {t('cta.volunteer', 'Become a Volunteer')}
+                                    {t('cta.volunteer', 'Volunteer')}
                                 </Button>
                             </Link>
                         </div>
                     </motion.div>
                 </div>
             </section>
-        </div>
+
+            {/* Program Detail Modal */}
+            {selectedProgram && (
+                <ProgramDetailModal
+                    program={selectedProgram}
+                    onClose={() => setSelectedProgram(null)}
+                />
+            )}
+        </>
     );
 };
 

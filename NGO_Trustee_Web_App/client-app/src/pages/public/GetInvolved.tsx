@@ -1,4 +1,3 @@
-
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -21,25 +20,24 @@ const GetInvolved = () => {
             titleKey: 'getInvolved.volunteer.title',
             descKey: 'getInvolved.volunteer.description',
             points: [
-                t('getInvolved.volunteer.point1', 'Join our volunteer network'),
-                t('getInvolved.volunteer.point2', 'Participate in local events'),
-                t('getInvolved.volunteer.point3', 'Skill-based volunteering'),
-                t('getInvolved.volunteer.point4', 'Certificate of appreciation'),
+                t('getInvolved.volunteer.point1', 'Join our team'),
+                t('getInvolved.volunteer.point2', 'Community outreach'),
+                t('getInvolved.volunteer.point3', 'Skill sharing'),
+                t('getInvolved.volunteer.point4', 'Make new friends'),
             ],
             buttonKey: 'getInvolved.volunteer.button',
             buttonVariant: 'default' as const,
             color: 'bg-primary/10 text-primary',
-            href: '/register', // Link to volunteer registration
         },
         {
             icon: Heart,
             titleKey: 'getInvolved.donation.title',
             descKey: 'getInvolved.donation.description',
             points: [
-                t('getInvolved.donation.point1', 'Support specific campaigns'),
-                t('getInvolved.donation.point2', 'Tax benefits under 80G'),
-                t('getInvolved.donation.point3', 'Transparent utilization'),
-                t('getInvolved.donation.point4', 'Regular impact reports'),
+                t('getInvolved.donation.point1', 'One-time donation'),
+                t('getInvolved.donation.point2', 'Monthly giving'),
+                t('getInvolved.donation.point3', 'Sponsor a child'),
+                t('getInvolved.donation.point4', 'Tax benefits'),
             ],
             buttonKey: 'getInvolved.donation.button',
             buttonVariant: 'cta' as const,
@@ -53,28 +51,26 @@ const GetInvolved = () => {
             points: [
                 t('getInvolved.csr.point1', 'Corporate partnerships'),
                 t('getInvolved.csr.point2', 'Employee engagement'),
-                t('getInvolved.csr.point3', 'Sustainable impact projects'),
-                t('getInvolved.csr.point4', 'Brand visibility'),
+                t('getInvolved.csr.point3', 'Project sponsorship'),
+                t('getInvolved.csr.point4', 'Sustainability goals'),
             ],
             buttonKey: 'getInvolved.csr.button',
             buttonVariant: 'outline' as const,
             color: 'bg-secondary/10 text-secondary',
-            href: '/contact', // Assuming contact page or similar
         },
         {
             icon: Briefcase,
             titleKey: 'getInvolved.careers.title',
             descKey: 'getInvolved.careers.description',
             points: [
-                t('getInvolved.careers.point1', 'Full-time opportunities'),
-                t('getInvolved.careers.point2', 'Internship programs'),
-                t('getInvolved.careers.point3', 'Fellowships'),
-                t('getInvolved.careers.point4', 'Research collaborations'),
+                t('getInvolved.careers.point1', 'Work with purpose'),
+                t('getInvolved.careers.point2', 'Professional growth'),
+                t('getInvolved.careers.point3', 'Field experience'),
+                t('getInvolved.careers.point4', 'Competitive benefits'),
             ],
             buttonKey: 'getInvolved.careers.button',
             buttonVariant: 'outline' as const,
             color: 'bg-earth/10 text-earth',
-            href: '/contact', // Assuming contact page or similar
         },
     ];
 
@@ -85,7 +81,7 @@ const GetInvolved = () => {
     ];
 
     return (
-        <div className="bg-background min-h-screen">
+        <>
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 overflow-hidden">
                 <div className="absolute inset-0">
@@ -104,10 +100,10 @@ const GetInvolved = () => {
                         className="text-center text-primary-foreground"
                     >
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                            {t('getInvolved.heroTitle', 'Join Our Mission')}
+                            {t('getInvolved.heroTitle', 'Get Involved')}
                         </h1>
                         <p className="text-xl md:text-2xl text-primary-foreground/90 max-w-3xl mx-auto">
-                            {t('getInvolved.heroSubtitle', 'Together we can create lasting change in rural communities')}
+                            {t('getInvolved.heroSubtitle', 'Join us in making a difference in the lives of thousands')}
                         </p>
                     </motion.div>
                 </div>
@@ -131,10 +127,10 @@ const GetInvolved = () => {
                                 </div>
 
                                 <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
-                                    {t(option.titleKey, option.titleKey.split('.')[1].charAt(0).toUpperCase() + option.titleKey.split('.')[1].slice(1))}
+                                    {t(option.titleKey, option.titleKey.split('.')[1])}
                                 </h3>
                                 <p className="text-muted-foreground mb-5">
-                                    {t(option.descKey, 'Learn more about how you can contribute.')}
+                                    {t(option.descKey, 'Description...')}
                                 </p>
 
                                 <ul className="space-y-2 mb-6">
@@ -154,10 +150,12 @@ const GetInvolved = () => {
                                         </Button>
                                     </Link>
                                 ) : (
-                                    <Button variant={option.buttonVariant} className="w-full gap-2">
-                                        {t(option.buttonKey, 'Learn More')}
-                                        <ArrowRight className="w-4 h-4" />
-                                    </Button>
+                                    <Link to="/auth">
+                                        <Button variant={option.buttonVariant} className="w-full gap-2">
+                                            {t(option.buttonKey, 'Get Started')}
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Button>
+                                    </Link>
                                 )}
                             </motion.div>
                         ))}
@@ -178,7 +176,7 @@ const GetInvolved = () => {
                             {t('getInvolved.whyVolunteer', 'Why Volunteer With Us?')}
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                            {t('getInvolved.whyVolunteerSubtitle', 'Be part of a community that cares')}
+                            {t('getInvolved.whyVolunteerSubtitle', 'Experience the joy of giving back while growing personally and professionally')}
                         </p>
                     </motion.div>
 
@@ -195,8 +193,8 @@ const GetInvolved = () => {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
                                     <benefit.icon className="w-8 h-8 text-primary" />
                                 </div>
-                                <h3 className="text-xl font-bold text-foreground mb-2">{t(benefit.titleKey, benefit.titleKey.split('.')[2]?.charAt(0).toUpperCase() + benefit.titleKey.split('.')[2]?.slice(1) || 'Benefit')}</h3>
-                                <p className="text-muted-foreground">{t(benefit.descKey, 'Experience the joy of giving back.')}</p>
+                                <h3 className="text-xl font-bold text-foreground mb-2">{t(benefit.titleKey, benefit.titleKey.split('.')[2])}</h3>
+                                <p className="text-muted-foreground">{t(benefit.descKey, 'Benefit description')}</p>
                             </motion.div>
                         ))}
                     </div>
@@ -216,13 +214,13 @@ const GetInvolved = () => {
                             {t('getInvolved.stayUpdated', 'Stay Updated')}
                         </h2>
                         <p className="text-primary-foreground/80 text-lg mb-8 max-w-xl mx-auto">
-                            {t('getInvolved.stayUpdatedSubtitle', 'Subscribe to our newsletter for the latest updates and stories.')}
+                            {t('getInvolved.stayUpdatedSubtitle', 'Sign up for our newsletter to receive updates on our impact and opportunities.')}
                         </p>
 
                         <form className="flex flex-col sm:flex-row items-center gap-4 max-w-md mx-auto">
                             <Input
                                 type="email"
-                                placeholder={t('newsletter.placeholder', 'Your Email Address')}
+                                placeholder={t('newsletter.placeholder', 'Enter your email')}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 className="h-12 px-5 bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/60"
@@ -234,7 +232,7 @@ const GetInvolved = () => {
                     </motion.div>
                 </div>
             </section>
-        </div>
+        </>
     );
 };
 

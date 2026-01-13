@@ -46,7 +46,7 @@ const StoriesSection = () => {
                     className="text-center mb-12 md:mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        {t('stories.title', 'Stories of Change')}
+                        {t('stories.title', 'Voices of Change')}
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         {t('stories.subtitle', 'Real stories of transformation from the communities we serve')}
@@ -62,7 +62,7 @@ const StoriesSection = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.1, duration: 0.5 }}
-                            className="story-card overflow-hidden group bg-card rounded-xl shadow-sm border border-border/50"
+                            className="story-card overflow-hidden group"
                         >
                             {/* Image */}
                             <div className="relative aspect-[4/3] overflow-hidden">
@@ -73,7 +73,7 @@ const StoriesSection = () => {
                                     loading="lazy"
                                 />
                                 <div className="absolute top-4 left-4">
-                                    <span className="badge-accent text-xs px-2 py-1 rounded bg-accent text-accent-foreground font-medium">
+                                    <span className="badge-accent text-xs">
                                         {story.program}
                                     </span>
                                 </div>

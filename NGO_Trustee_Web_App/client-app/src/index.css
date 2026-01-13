@@ -1,15 +1,35 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Oriya:wght@400;500;600;700&display=swap');
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-display: "Playfair Display", serif;
+  --font-sans: "Inter", "Noto Sans Devanagari", "Noto Sans Oriya", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
 
   --radius-lg: 0.75rem;
   --radius-md: calc(0.75rem - 2px);
   --radius-sm: calc(0.75rem - 4px);
 
+  /* Primary - Forest Green */
+  --color-primary: hsl(145 45% 33%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-light: hsl(145 45% 95%);
+  --color-primary-dark: hsl(145 55% 20%);
+
+  /* Accent - Warm Orange */
+  --color-accent: hsl(28 80% 52%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-accent-light: hsl(28 80% 96%);
+
+  /* Secondary - Hopeful Blue */
+  --color-secondary: hsl(204 70% 53%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+
+  /* Earth - Connection to agriculture */
+  --color-earth: hsl(30 35% 41%);
+  --color-earth-foreground: hsl(0 0% 100%);
+
+  /* Backgrounds */
   --color-background: hsl(40 20% 98%);
   --color-foreground: hsl(0 0% 15%);
 
@@ -19,31 +39,17 @@
   --color-popover: hsl(0 0% 100%);
   --color-popover-foreground: hsl(0 0% 15%);
 
-  --color-primary: hsl(145 45% 33%);
-  --color-primary-foreground: hsl(0 0% 100%);
-
-  --color-secondary: hsl(204 70% 53%);
-  --color-secondary-foreground: hsl(0 0% 100%);
-
   --color-muted: hsl(40 15% 95%);
   --color-muted-foreground: hsl(0 0% 40%);
-
-  --color-accent: hsl(28 80% 52%);
-  --color-accent-foreground: hsl(0 0% 100%);
-
-  --color-destructive: hsl(0 72% 51%);
-  --color-destructive-foreground: hsl(0 0% 100%);
-
-  --color-success: hsl(145 45% 33%);
-  --color-success-foreground: hsl(0 0% 100%);
-
-  --color-warning: hsl(28 80% 52%);
-  --color-warning-foreground: hsl(0 0% 100%);
 
   --color-border: hsl(40 15% 88%);
   --color-input: hsl(40 15% 88%);
   --color-ring: hsl(145 45% 33%);
 
+  --color-destructive: hsl(0 72% 51%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+
+  /* Sidebar */
   --color-sidebar-background: hsl(0 0% 98%);
   --color-sidebar-foreground: hsl(0 0% 15%);
   --color-sidebar-primary: hsl(145 45% 33%);
@@ -53,265 +59,69 @@
   --color-sidebar-border: hsl(40 15% 88%);
   --color-sidebar-ring: hsl(145 45% 33%);
 
-  --animate-shimmer: shimmer 2s infinite;
-  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
-  --animate-float: float 6s ease-in-out infinite;
+  /* Animations */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
   --animate-fade-in-up: fadeInUp 0.6s ease-out forwards;
-  --animate-scale-in: scaleIn 0.4s ease-out forwards;
-  --animate-slide-in-left: slideInLeft 0.5s ease-out forwards;
-  --animate-slide-in-right: slideInRight 0.5s ease-out forwards;
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+  --animate-scale-in: scaleIn 0.3s ease-out forwards;
+  --animate-slide-in-right: slideInRight 0.3s ease-out;
+  --animate-count-up: countUp 0.3s ease-out forwards;
 
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
   }
-
-  @keyframes pulse-glow {
-
-    0%,
-    100% {
-      box-shadow: 0 0 20px hsl(221 83% 53% / 0.3);
-    }
-
-    50% {
-      box-shadow: 0 0 40px hsl(221 83% 53% / 0.5);
-    }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
   }
-
-  @keyframes float {
-
-    0%,
-    100% {
-      transform: translateY(0px);
-    }
-
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
   @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
   }
-
-  @keyframes slideInLeft {
-    from {
-      opacity: 0;
-      transform: translateX(-30px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-
   @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(30px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes countUp {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 
+/* Base Styles */
 @layer base {
   :root {
-    /* Primary Colors - Forest Green (Trust, Growth) */
-    --primary: 145 45% 33%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 145 45% 95%;
-    --primary-dark: 145 55% 20%;
-
-    /* Accent Colors - Warm Orange (Action, Energy) */
-    --accent: 28 80% 52%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 28 80% 96%;
-
-    /* Secondary - Hopeful Blue */
-    --secondary: 204 70% 53%;
-    --secondary-foreground: 0 0% 100%;
-
-    /* Earth Brown - Connection to agriculture */
-    --earth: 30 35% 41%;
-    --earth-foreground: 0 0% 100%;
-
-    /* Backgrounds */
-    --background: 40 20% 98%;
-    --foreground: 0 0% 15%;
-
-    /* Cards & Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 15%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 15%;
-
-    /* Muted */
-    --muted: 40 15% 95%;
-    --muted-foreground: 0 0% 40%;
-
-    /* Borders & Inputs */
-    --border: 40 15% 88%;
-    --input: 40 15% 88%;
-    --ring: 145 45% 33%;
-
-    /* Destructive */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* Radius */
-    --radius: 0.75rem;
-
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-
-    /* Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(145 45% 33%) 0%, hsl(145 55% 25%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(28 80% 52%) 0%, hsl(28 85% 45%) 100%);
     --gradient-overlay: linear-gradient(180deg, hsl(0 0% 0% / 0.5) 0%, hsl(0 0% 0% / 0.7) 100%);
-
-    /* Sidebar - keeping for compatibility */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 15%;
-    --sidebar-primary: 145 45% 33%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 145 45% 95%;
-    --sidebar-accent-foreground: 145 45% 33%;
-    --sidebar-border: 40 15% 88%;
-    --sidebar-ring: 145 45% 33%;
   }
-
-  .dark {
-    --primary: 145 45% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 145 45% 15%;
-    --primary-dark: 145 45% 60%;
-
-    --accent: 28 80% 55%;
-    --accent-foreground: 0 0% 100%;
-    --accent-light: 28 80% 15%;
-
-    --secondary: 204 70% 55%;
-    --secondary-foreground: 0 0% 100%;
-
-    --earth: 30 35% 50%;
-    --earth-foreground: 0 0% 100%;
-
-    --background: 0 0% 8%;
-    --foreground: 0 0% 95%;
-
-    --card: 0 0% 12%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 12%;
-    --popover-foreground: 0 0% 95%;
-
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 145 45% 45%;
-
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --sidebar-background: 0 0% 10%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 145 45% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 145 45% 20%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: 145 45% 45%;
-  }
-
+  
   * {
     @apply border-border;
   }
-
+  
   html {
     scroll-behavior: smooth;
   }
-
+  
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Oriya', system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
-  /* Language-specific font weights */
-  html[lang="hi"] body,
-  html[lang="or"] body {
-    font-weight: 400;
-    line-height: 1.8;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-bold tracking-tight;
-  }
-
-  h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl;
-  }
-
-  h2 {
-    @apply text-3xl md:text-4xl;
-  }
-
-  h3 {
-    @apply text-2xl md:text-3xl;
-  }
-
-  /* Focus states for accessibility */
-  *:focus-visible {
-    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-  }
-
-  /* Skip link for accessibility */
-  .skip-link {
-    @apply absolute -top-10 left-0 bg-primary text-primary-foreground px-4 py-2 z-50;
-    @apply focus:top-0 transition-all;
   }
 }
 
+/* Components */
 @layer components {
-
   /* Hero Section */
   .hero-gradient {
     background: var(--gradient-hero);
@@ -393,106 +203,19 @@
   .link-animated:hover::after {
     @apply scale-x-100 origin-bottom-left;
   }
-
-  /* Language selector */
-  .lang-btn {
-    @apply px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200;
-  }
-
-  .lang-btn-active {
-    @apply bg-primary text-primary-foreground;
-  }
-
-  .lang-btn-inactive {
-    @apply text-muted-foreground hover:text-foreground hover:bg-muted;
-  }
 }
 
+/* Utilities */
 @layer utilities {
-
-  /* Animation utilities */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease-out forwards;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.3s ease-out forwards;
-  }
-
-  .animate-counter {
-    animation: counter 2s ease-out forwards;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* Stagger children */
-  .stagger-children>* {
+  .stagger-children > * {
     opacity: 0;
     animation: fadeInUp 0.6s ease-out forwards;
   }
 
-  .stagger-children>*:nth-child(1) {
-    animation-delay: 0.1s;
-  }
-
-  .stagger-children>*:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-
-  .stagger-children>*:nth-child(3) {
-    animation-delay: 0.3s;
-  }
-
-  .stagger-children>*:nth-child(4) {
-    animation-delay: 0.4s;
-  }
-
-  .stagger-children>*:nth-child(5) {
-    animation-delay: 0.5s;
-  }
-
-  .stagger-children>*:nth-child(6) {
-    animation-delay: 0.6s;
-  }
-
-  /* Touch target size for accessibility */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px];
-  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0.1s; }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.2s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.3s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.4s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.5s; }
+  .stagger-children > *:nth-child(6) { animation-delay: 0.6s; }
 }

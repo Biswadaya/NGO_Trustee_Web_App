@@ -38,7 +38,7 @@ const WhySupportSection = () => {
                     className="text-center mb-12 md:mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        {t('support.title')}
+                        {t('support.title', 'Why Support NHRD?')}
                     </h2>
                 </motion.div>
 
@@ -60,10 +60,10 @@ const WhySupportSection = () => {
 
                             {/* Content */}
                             <h3 className="text-xl font-bold text-foreground mb-3">
-                                {t(reason.titleKey)}
+                                {t(reason.titleKey, reason.titleKey.split('.')[1])}
                             </h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                {t(reason.descKey)}
+                                {t(reason.descKey, 'Description of why you should support us.')}
                             </p>
                         </motion.div>
                     ))}
