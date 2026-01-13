@@ -11,7 +11,7 @@ router.post('/register', VolunteerController.register);
 // Protected routes
 router.use(protect);
 
-router.get('/list', VolunteerController.list);
+// router.get('/list', VolunteerController.list);
 router.get('/stats', VolunteerController.getStats);
 router.get('/id-card/list', VolunteerController.listIdCards);
 router.get('/:id/personal-info', VolunteerController.getPersonalInfo);

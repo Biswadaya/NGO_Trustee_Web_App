@@ -51,14 +51,14 @@ export const payMembership = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-export const list = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const volunteers = await VolunteerService.getVolunteers();
-        res.status(200).json({ status: 'success', data: { volunteers } });
-    } catch (error) {
-        next(error);
-    }
-};
+// export const list = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const volunteers = await VolunteerService.getVolunteers();
+//         res.status(200).json({ status: 'success', data: { volunteers } });
+//     } catch (error) {
+//         next(error);
+//     }
+// };
 
 export const getPersonalInfo = async (req: Request, res: Response, next: NextFunction) => {
     try {

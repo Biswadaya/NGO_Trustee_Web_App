@@ -126,3 +126,17 @@ export const promoteUser = async (req: Request, res: Response, next: NextFunctio
         next(error);
     }
 };
+
+export const getMyTasks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        // @ts-ignore
+        const userId = req.user.userId;
+        const tasks = await prisma.task.findMany({
+            where: { user_id: userId },
+            orderBy: { created_at: 'desc' }
+        });
+        res.status(200).json({ status: 'success', data: { tasks } });
+    } catch (error) {
+        next(error);
+    }
+};

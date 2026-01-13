@@ -11,7 +11,8 @@ import {
   Heart,
   Loader2,
   DownloadCloud,
-  ArrowRight
+  ArrowRight,
+  Ticket
 } from 'lucide-react';
 import { donationAPI, noticeAPI, eventAPI } from '@/api/endpoints';
 import { useAuth } from '@/contexts/AuthContext';
@@ -35,6 +36,11 @@ const UserDashboard = () => {
           noticeAPI.getHistory(),
           eventAPI.getMyRegistrations()
         ]);
+        console.log('User Dashboard Data:', {
+          donations: donationsRes.data,
+          notices: noticesRes.data,
+          registrations: registrationsRes.data
+        });
         setDonations(donationsRes.data.data.donations || []);
         setNotices(noticesRes.data.data.notices || []);
         setRegistrations(registrationsRes.data.data.registrations || []);
@@ -205,16 +211,37 @@ const UserDashboard = () => {
         </div>
 
         {/* My Events Section */}
-        {registrations.length > 0 && (
-          <div className="space-y-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">My Upcoming Events</h2>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/events">Browse Events</Link>
+            </Button>
+          </div>
+
+          {registrations.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {registrations.map((reg) => (
                 <TicketCard key={reg.id} registration={reg} />
               ))}
             </div>
-          </div>
-        )}
+          ) : (
+            <Card variant="glass" className="border-dashed">
+              <CardContent className="flex flex-col items-center justify-center p-6 text-center h-[200px]">
+                <div className="p-3 bg-muted/30 rounded-full mb-3">
+                  <Ticket className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="font-semibold text-lg">No Tickets Yet</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mb-4">
+                  You haven't registered for any events. Join our upcoming activities to see your tickets here.
+                </p>
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/events">Register Now</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
         {/* Transaction History */}
         <Card variant="glass">

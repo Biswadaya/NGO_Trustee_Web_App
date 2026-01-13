@@ -39,6 +39,7 @@ import AdminSettings from "./pages/admin/Settings";
 import UserDashboard from "./pages/user/Dashboard";
 import UserProfile from "./pages/user/Profile";
 import UserIdCard from "./pages/user/IdCard";
+import UserTasks from "./pages/user/Tasks";
 import UserCertificates from "./pages/user/Certificates";
 import UserAppointment from "./pages/user/Appointment";
 import UserReceipts from "./pages/user/Receipts";
@@ -97,16 +98,17 @@ const App = () => (
               <Route path="/admin/notices" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminNotices /></RouteGuard>} />
               <Route path="/admin/settings" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminSettings /></RouteGuard>} />
 
-              {/* User/Member Routes (DONOR) */}
-              <Route path="/user/dashboard" element={<RouteGuard allowedRoles={['DONOR']}><UserDashboard /></RouteGuard>} />
-              <Route path="/user/profile" element={<RouteGuard allowedRoles={['DONOR']}><UserProfile /></RouteGuard>} />
-              <Route path="/user/id-card" element={<RouteGuard allowedRoles={['DONOR']}><UserIdCard /></RouteGuard>} />
-              <Route path="/user/certificates" element={<RouteGuard allowedRoles={['DONOR']}><UserCertificates /></RouteGuard>} />
-              <Route path="/user/appointment" element={<RouteGuard allowedRoles={['DONOR']}><UserAppointment /></RouteGuard>} />
-              <Route path="/user/receipts" element={<RouteGuard allowedRoles={['DONOR']}><UserReceipts /></RouteGuard>} />
-              <Route path="/user/membership" element={<RouteGuard allowedRoles={['DONOR']}><UserMembership /></RouteGuard>} />
-              <Route path="/user/notices" element={<RouteGuard allowedRoles={['DONOR']}><UserNotices /></RouteGuard>} />
-              <Route path="/user/support" element={<RouteGuard allowedRoles={['DONOR']}><UserSupport /></RouteGuard>} />
+              {/* User/Member Routes (DONOR & MEMBER) */}
+              <Route path="/user/dashboard" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserDashboard /></RouteGuard>} />
+              <Route path="/user/profile" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserProfile /></RouteGuard>} />
+              <Route path="/user/id-card" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserIdCard /></RouteGuard>} />
+              <Route path="/user/tasks" element={<RouteGuard allowedRoles={['MEMBER', 'DONOR']}><UserTasks /></RouteGuard>} />
+              <Route path="/user/certificates" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserCertificates /></RouteGuard>} />
+              <Route path="/user/appointment" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserAppointment /></RouteGuard>} />
+              <Route path="/user/receipts" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserReceipts /></RouteGuard>} />
+              <Route path="/user/membership" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserMembership /></RouteGuard>} />
+              <Route path="/user/notices" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserNotices /></RouteGuard>} />
+              <Route path="/user/support" element={<RouteGuard allowedRoles={['DONOR', 'MEMBER']}><UserSupport /></RouteGuard>} />
 
               {/* Volunteer Routes */}
               <Route path="/volunteer/dashboard" element={<RouteGuard allowedRoles={['VOLUNTEER']}><VolunteerDashboard /></RouteGuard>} />

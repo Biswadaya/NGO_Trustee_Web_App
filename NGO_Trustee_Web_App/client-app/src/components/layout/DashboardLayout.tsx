@@ -35,10 +35,12 @@ import {
   Send,
   Globe,
   UserCheck,
+  Home,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Footer from './Footer';
 import nhrdLogo from '@/assets/nhrd-logo.png';
+import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -87,11 +89,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = user?.role === 'ADMIN'
-    ? adminNavItems
-    : user?.role === 'VOLUNTEER'
-      ? volunteerNavItems
-      : memberNavItems;
+  let navItems = user?.role === 'ADMIN' ? adminNavItems : user?.role === 'VOLUNTEER' ? volunteerNavItems : memberNavItems;
+
+  if (user?.role === 'MEMBER') {
+    navItems = memberNavItems.map(item =>
+      item.label === 'Membership'
+        ? { icon: ClipboardList, label: 'My Tasks', path: '/user/tasks' }
+        : item
+    );
+  }
 
   const handleLogout = () => {
     logout();
@@ -150,6 +156,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-gray-200 space-y-2">
+          <Button
+            variant="ghost"
+            asChild
+            className={cn(
+              "w-full justify-start text-slate-600 hover:text-primary hover:bg-primary/10",
+              !sidebarOpen && "justify-center"
+            )}
+          >
+            <Link to="/">
+              <Home className="w-5 h-5 flex-shrink-0" />
+              {sidebarOpen && <span className="ml-3">Back to Home</span>}
+            </Link>
+          </Button>
+
           <Button
             variant="ghost"
             className={cn(
@@ -234,7 +254,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center gap-2 px-2">
                   <Avatar className="w-8 h-8">
-                    <AvatarImage src={user?.avatar} />
+                    <AvatarImage src={user?.avatar || DEFAULT_USER_AVATAR} />
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {user?.name?.charAt(0) || 'U'}
                     </AvatarFallback>

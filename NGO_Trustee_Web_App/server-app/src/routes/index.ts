@@ -13,6 +13,7 @@ import transparencyRoutes from '../modules/admin/transparency.routes';
 import dashboardRoutes from '../modules/dashboard/dashboard.routes';
 import memberRoutes from '../modules/member/member.routes';
 import eventRoutes from '../modules/events/event.routes';
+import donorRoutes from '../modules/donor/donor.routes';
 
 const router = express.Router();
 
@@ -27,9 +28,9 @@ router.use('/admin', adminRoutes);
 router.use('/notices', noticeRoutes);
 router.use('/files', fileRoutes);
 router.use('/transparency', transparencyRoutes);
-router.use('/transparency', transparencyRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/members', memberRoutes);
 router.use('/events', eventRoutes);
+router.use('/donors', donorRoutes);
 
 export default router;

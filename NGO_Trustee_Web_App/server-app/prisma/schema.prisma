@@ -73,6 +73,10 @@ model User {
   transparency_reports TransparencyReport[]
   events_created      Event[]
   event_registrations EventRegistration[]
+  
+  // Task & Group Relations
+  tasks               Task[]
+  groups              UserGroup[]   @relation("UserGroups")
 
   @@map("users")
 }
@@ -115,22 +119,20 @@ model Volunteer {
 
   user                User      @relation(fields: [user_id], references: [id])
   certificates        Certificate[]
-  tasks               VolunteerTask[]
-  groups              VolunteerGroup[]  @relation("VolunteerGroups")
 
   @@map("volunteers")
 }
 
-model VolunteerGroup {
+model UserGroup {
   id          String      @id @default(uuid())
   name        String      @unique
   description String?
   created_at  DateTime    @default(now())
   updated_at  DateTime    @updatedAt
   
-  volunteers  Volunteer[] @relation("VolunteerGroups")
+  users       User[]      @relation("UserGroups")
 
-  @@map("volunteer_groups")
+  @@map("user_groups")
 }
 
 model ManagerPermission {
@@ -319,9 +321,9 @@ model AuditLog {
   @@map("audit_logs")
 }
 
-model VolunteerTask {
+model Task {
   id              String    @id @default(uuid())
-  volunteer_id    String
+  user_id         String
   title           String
   description     String?
   status          String    @default("pending")
@@ -329,9 +331,9 @@ model VolunteerTask {
   completed_at    DateTime?
   created_at      DateTime  @default(now())
 
-  volunteer       Volunteer @relation(fields: [volunteer_id], references: [id])
+  user            User      @relation(fields: [user_id], references: [id])
 
-  @@map("volunteer_tasks")
+  @@map("tasks")
 }
 
 model TransparencyReport {

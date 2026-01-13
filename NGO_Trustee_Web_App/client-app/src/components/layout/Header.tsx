@@ -7,6 +7,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { Button } from '@/components/ui/button';
 import nhrdLogo from '@/assets/nhrd-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
+import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
 const Header = () => {
     const { t } = useTranslation();
@@ -145,7 +146,7 @@ const Header = () => {
                                     </div>
                                     <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-white/20 ring-1 ring-black/5">
                                         <img
-                                            src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}`}
+                                            src={user?.avatar || DEFAULT_USER_AVATAR}
                                             alt={user?.name}
                                             className="h-full w-full object-cover"
                                         />

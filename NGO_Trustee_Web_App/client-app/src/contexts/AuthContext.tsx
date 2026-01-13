@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { AuthAPI } from '../api/endpoints';
+import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
-export type UserRole = 'ADMIN' | 'VOLUNTEER' | 'DONOR' | 'SUPER_ADMIN' | 'MANAGER';
+export type UserRole = 'ADMIN' | 'VOLUNTEER' | 'DONOR' | 'SUPER_ADMIN' | 'MANAGER' | 'MEMBER';
 
 export interface User {
   id: string;
@@ -59,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         email: data.user.email,
         role: data.user.role,
         status: data.user.status,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.user.email}`,
+        avatar: data.user.profile_photo || data.user.avatar || DEFAULT_USER_AVATAR,
       };
 
       // 1. Clear any potential stale data first

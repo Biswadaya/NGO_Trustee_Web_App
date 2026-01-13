@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -48,7 +48,8 @@ export const dashboardAPI = {
 
 export const donationAPI = {
     create: (data: any) => api.post('/donations', data),
-    list: () => api.get('/donations'),
+    list: () => api.get('/donations/my-donations'), // Changed default to user specific
+    listAll: () => api.get('/donations'), // Admin only
     getById: (id: string) => api.get(`/donations/${id}`),
     getByTransactionId: (txId: string) => api.get(`/donations/transaction/${txId}`),
     getStats: () => api.get('/donations/stats'),
@@ -137,7 +138,8 @@ export const noticeAPI = {
     create: (data: any) => api.post('/notices/admin/notices/create', data),
     list: () => api.get('/notices/notices/list'),
     getMyNotices: () => api.get('/notices/my-notices'),
-    getHistory: () => api.get('/notices/admin/notice/history'),
+    getHistory: () => api.get('/notices/my-notices'), // Changed to user specific for dashboard
+    getAdminHistory: () => api.get('/notices/admin/notice/history'), // Admin specific
     update: (id: string, data: any) => api.put(`/notices/admin/notice/${id}/edit`, data),
     delete: (id: string) => api.delete(`/notices/admin/notice/${id}`),
 };
@@ -167,11 +169,16 @@ export const fileAPI = {
 
 export const userAPI = {
     getMe: () => api.get('/users/me'),
+    getMyTasks: () => api.get('/users/my-tasks'),
 };
 
 export const memberAPI = {
     apply: (data: any) => api.post('/members/register', data),
     getMyProfile: () => api.get('/members/me'),
+};
+
+export const donorAPI = {
+    getIdCard: () => api.get('/donors/id-card'),
 };
 
 export const publicAPI = {

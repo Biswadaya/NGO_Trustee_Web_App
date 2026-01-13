@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { volunteerAPI } from '@/api/endpoints';
+import { volunteerAPI, adminAPI } from '@/api/endpoints';
 import { toast } from 'sonner';
 import { Loader2, Plus, Users, Search, UserMinus } from 'lucide-react';
 import {
@@ -31,7 +31,7 @@ import { Badge } from '@/components/ui/badge';
 const AdminTasks = () => {
     const [activeTab, setActiveTab] = useState('assign');
     const [loading, setLoading] = useState(false);
-    const [volunteers, setVolunteers] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]); // Renamed from volunteers to users
     const [groups, setGroups] = useState<any[]>([]);
 
     // Task Assignment State
@@ -39,7 +39,7 @@ const AdminTasks = () => {
         title: '',
         description: '',
         due_date: '',
-        target_type: 'individual', // individual, group, all
+        target_type: 'individual', // individual, group
         target_id: ''
     });
 
@@ -64,12 +64,12 @@ const AdminTasks = () => {
 
     const fetchInitialData = async () => {
         try {
-            const [volRes, groupRes, taskRes] = await Promise.all([
-                volunteerAPI.list(),
+            const [userRes, groupRes, taskRes] = await Promise.all([
+                adminAPI.listUsers(), // Fetch all users (members)
                 volunteerAPI.listGroups(),
                 volunteerAPI.listAllTasks()
             ]);
-            setVolunteers(volRes.data.data.volunteers || []);
+            setUsers(userRes.data.data.users || []);
             setGroups(groupRes.data.data.groups || []);
             setAllTasks(taskRes.data.data.tasks || []);
         } catch (error) {
@@ -81,7 +81,7 @@ const AdminTasks = () => {
     const fetchGroupMembers = async (groupId: string) => {
         try {
             const res = await volunteerAPI.getGroupMembers(groupId);
-            setGroupMembers(res.data.data.members || []);
+            setGroupMembers(res.data.data.members || []); // API returns 'members' which are users now
         } catch (error) {
             toast.error("Failed to load group members");
         }
@@ -112,21 +112,23 @@ const AdminTasks = () => {
                 return;
             }
 
+            // taskForm.target_id is now a userId
             await volunteerAPI.assignTaskBulk(taskForm);
             toast.success('Task assigned successfully');
             setTaskForm({ title: '', description: '', due_date: '', target_type: 'individual', target_id: '' });
             fetchInitialData();
         } catch (error: any) {
+            console.error(error);
             toast.error(error.response?.data?.message || 'Failed to assign task');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleAddMemberToGroup = async (volunteerId: string) => {
+    const handleAddMemberToGroup = async (userId: string) => {
         if (!selectedGroup) return;
         try {
-            await volunteerAPI.addMembersToGroup(selectedGroup.id, [volunteerId]);
+            await volunteerAPI.addMembersToGroup(selectedGroup.id, [userId]);
             toast.success("Member added");
             fetchGroupMembers(selectedGroup.id);
             fetchInitialData(); // update counts
@@ -135,10 +137,10 @@ const AdminTasks = () => {
         }
     }
 
-    const handleRemoveMemberFromGroup = async (volunteerId: string) => {
+    const handleRemoveMemberFromGroup = async (userId: string) => {
         if (!selectedGroup) return;
         try {
-            await volunteerAPI.removeMemberFromGroup(selectedGroup.id, volunteerId);
+            await volunteerAPI.removeMemberFromGroup(selectedGroup.id, userId);
             toast.success("Member removed");
             fetchGroupMembers(selectedGroup.id);
             fetchInitialData();
@@ -182,7 +184,12 @@ const AdminTasks = () => {
                                             {allTasks.map(task => (
                                                 <tr key={task.id} className="hover:bg-muted/20">
                                                     <td className="p-3 font-medium">{task.title}</td>
-                                                    <td className="p-3">{task.volunteer?.full_name || 'Unknown'}</td>
+                                                    <td className="p-3">
+                                                        <div className="flex flex-col">
+                                                            <span className="font-medium">{task.user?.full_name || 'Unknown'}</span>
+                                                            <span className="text-xs text-muted-foreground">{task.user?.email}</span>
+                                                        </div>
+                                                    </td>
                                                     <td className="p-3">
                                                         <Badge variant={task.status === 'completed' ? 'success' : task.status === 'in-progress' ? 'default' : 'secondary'}>
                                                             {task.status}
@@ -251,9 +258,8 @@ const AdminTasks = () => {
                                                         <SelectValue />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="individual">Individual Volunteer</SelectItem>
-                                                        <SelectItem value="group">Volunteer Group</SelectItem>
-                                                        <SelectItem value="all">All Active Volunteers</SelectItem>
+                                                        <SelectItem value="individual">Individual Member</SelectItem>
+                                                        <SelectItem value="group">Member Group</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
@@ -261,18 +267,18 @@ const AdminTasks = () => {
 
                                         {taskForm.target_type === 'individual' && (
                                             <div className="space-y-2 animate-fade-in-up">
-                                                <Label>Select Volunteer</Label>
+                                                <Label>Select Member</Label>
                                                 <Select
                                                     value={taskForm.target_id}
                                                     onValueChange={(val) => setTaskForm({ ...taskForm, target_id: val })}
                                                 >
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Search volunteer..." />
+                                                        <SelectValue placeholder="Search member..." />
                                                     </SelectTrigger>
-                                                    <SelectContent>
-                                                        {volunteers.map(v => (
-                                                            <SelectItem key={v.id} value={v.id}>
-                                                                {v.full_name} ({v.email})
+                                                    <SelectContent className="max-h-60 overflow-y-auto">
+                                                        {users.map(u => (
+                                                            <SelectItem key={u.id} value={u.id}>
+                                                                {u.full_name} ({u.email}) - <span className="text-xs uppercase text-muted-foreground">{u.role}</span>
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
@@ -293,7 +299,7 @@ const AdminTasks = () => {
                                                     <SelectContent>
                                                         {groups.map(g => (
                                                             <SelectItem key={g.id} value={g.id}>
-                                                                {g.name} ({g._count?.volunteers || 0} members)
+                                                                {g.name} ({g._count?.users || 0} members)
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
@@ -314,9 +320,9 @@ const AdminTasks = () => {
                                     <CardContent className="p-6">
                                         <h3 className="font-bold text-lg mb-2">Assignment Tips</h3>
                                         <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground">
-                                            <li>Tasks assigned to 'All Active Volunteers' will create duplicate task entries for each user.</li>
-                                            <li>Volunteers receive notifications immediately upon assignment.</li>
-                                            <li>You can track completion status in the main volunteer list or individual profiles.</li>
+                                            <li>Members will receive notification upon assignment.</li>
+                                            <li>Groups help organize members (e.g., 'Volunteers', 'Board Members').</li>
+                                            <li>Tasks are now visible in the Member Dashboard.</li>
                                         </ul>
                                     </CardContent>
                                 </Card>
@@ -338,8 +344,8 @@ const AdminTasks = () => {
                                         </DialogTrigger>
                                         <DialogContent>
                                             <DialogHeader>
-                                                <DialogTitle>Create Volunteer Group</DialogTitle>
-                                                <DialogDescription>Group volunteers for easier management and task assignment.</DialogDescription>
+                                                <DialogTitle>Create Member Group</DialogTitle>
+                                                <DialogDescription>Group members for easier management and task assignment.</DialogDescription>
                                             </DialogHeader>
                                             <form onSubmit={handleCreateGroup}>
                                                 <div className="space-y-4 py-4">
@@ -380,7 +386,7 @@ const AdminTasks = () => {
                                             <div className="flex items-center gap-4">
                                                 <Badge variant="secondary" className="flex items-center gap-1">
                                                     <Users className="w-3 h-3" />
-                                                    {group._count?.volunteers || 0}
+                                                    {group._count?.users || 0}
                                                 </Badge>
                                                 <Button variant="ghost" size="sm">Manage</Button>
                                             </div>
@@ -395,28 +401,28 @@ const AdminTasks = () => {
                                                     <div className="relative flex-1">
                                                         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                                         <Input
-                                                            placeholder="Search to add volunteer..."
+                                                            placeholder="Search to add member..."
                                                             className="pl-8"
                                                             value={memberSearch}
                                                             onChange={(e) => setMemberSearch(e.target.value)}
                                                         />
                                                         {memberSearch && (
                                                             <div className="absolute top-10 w-full bg-popover border rounded-md shadow-lg z-10 max-h-40 overflow-y-auto">
-                                                                {volunteers
-                                                                    .filter(v =>
-                                                                        v.full_name.toLowerCase().includes(memberSearch.toLowerCase()) &&
-                                                                        !groupMembers.find(m => m.id === v.id)
+                                                                {users
+                                                                    .filter(u =>
+                                                                        u.full_name.toLowerCase().includes(memberSearch.toLowerCase()) &&
+                                                                        !groupMembers.find(m => m.id === u.id)
                                                                     )
-                                                                    .map(v => (
+                                                                    .map(u => (
                                                                         <div
-                                                                            key={v.id}
+                                                                            key={u.id}
                                                                             className="p-2 hover:bg-accent cursor-pointer text-sm"
                                                                             onClick={() => {
-                                                                                handleAddMemberToGroup(v.id);
+                                                                                handleAddMemberToGroup(u.id);
                                                                                 setMemberSearch('');
                                                                             }}
                                                                         >
-                                                                            {v.full_name}
+                                                                            {u.full_name} ({u.email})
                                                                         </div>
                                                                     ))}
                                                             </div>

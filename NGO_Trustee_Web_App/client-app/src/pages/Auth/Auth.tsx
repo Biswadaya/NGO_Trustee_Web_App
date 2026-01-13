@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AuthAPI } from '@/api/endpoints';
 import authBackground from '@/assets/auth-background.jpg';
 import nhrdLogo from '@/assets/nhrd-logo.png';
+import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
 interface AuthProps {
     initialMode?: 'login' | 'register';
@@ -33,7 +34,8 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
         full_name: '',
         email: '',
         phone: '',
-        password: ''
+        password: '',
+        profile_photo: ''
     });
 
     const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -82,7 +84,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
             email: userData.user.email,
             role: userData.user.role,
             status: userData.user.status,
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.user.email}`,
+            avatar: userData.user.profile_photo || userData.user.avatar || DEFAULT_USER_AVATAR,
         };
 
         // Call context setter
@@ -98,15 +100,14 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
         toast.success('Welcome back!');
 
         if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
-            // For specific roles we could still redirect to dashboard if needed, 
-            // but user requested generic redirect to home.
+            window.location.href = '/admin/dashboard';
+        } else if (user.role === 'VOLUNTEER') {
+            window.location.href = '/volunteer/dashboard';
+        } else if (['DONOR', 'MEMBER'].includes(user.role)) {
+            window.location.href = '/user/dashboard';
+        } else {
+            window.location.href = '/';
         }
-
-        // Generic redirect to home as requested
-        // Generic redirect to home as requested
-        // Using window.location.href to force a full reload and ensure we land on home
-        // This also helps clear any stale state if that's the issue
-        window.location.href = '/';
     };
 
     const handleRegisterSubmit = async (e: React.FormEvent) => {
@@ -115,7 +116,9 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
         try {
             await AuthAPI.register(registerData);
             toast.success('Account created successfully! Please login.');
+            toast.success('Account created successfully! Please login.');
             setLoginData({ email: registerData.email, password: '', otp: '' });
+            setRegisterData({ full_name: '', email: '', phone: '', password: '', profile_photo: '' });
             setIsLogin(true);
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Registration failed');
@@ -320,6 +323,18 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                             value={registerData.password}
                                             onChange={e => setRegisterData({ ...registerData, password: e.target.value })}
                                             required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Profile Image URL (Optional)</Label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                        <Input
+                                            placeholder="https://..."
+                                            className="pl-10"
+                                            value={registerData.profile_photo}
+                                            onChange={e => setRegisterData({ ...registerData, profile_photo: e.target.value })}
                                         />
                                     </div>
                                 </div>
