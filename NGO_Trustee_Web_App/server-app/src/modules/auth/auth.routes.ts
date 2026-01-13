@@ -1,11 +1,13 @@
-import express from 'express';
+import { Router } from 'express';
 import * as AuthController from './auth.controller';
-import { validate } from '../../middleware/validate';
-import { registerSchema, loginSchema } from './auth.schema';
+import { protect } from '../../middleware/auth';
 
-const router = express.Router();
+const router = Router();
 
-router.post('/register', validate(registerSchema), AuthController.register);
-router.post('/login', validate(loginSchema), AuthController.login);
+router.post('/register', AuthController.register);
+router.post('/login', AuthController.login);
+router.post('/verify-otp', AuthController.verifyOtp);
+
+// ... other routes if any ...
 
 export default router;

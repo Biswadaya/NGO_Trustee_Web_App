@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { adminAPI } from '../api/endpoints';
+import { AuthAPI } from '../api/endpoints';
 
 export type UserRole = 'ADMIN' | 'VOLUNTEER' | 'DONOR' | 'SUPER_ADMIN' | 'MANAGER';
 
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (credentials: any) => {
     try {
-      const response = await adminAPI.login(credentials);
+      const response = await AuthAPI.login(credentials);
       const { token, data } = response.data;
 
       const userData: User = {

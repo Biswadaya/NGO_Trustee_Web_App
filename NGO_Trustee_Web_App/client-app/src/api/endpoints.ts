@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -34,9 +34,11 @@ api.interceptors.response.use(
     }
 );
 
-// export const AuthAPI : {
-//     login: (data: any) => api.post('/auth/login', data),
-// }
+export const AuthAPI = {
+    login: (data: any) => api.post('/auth/login', data),
+    register: (data: any) => api.post('/auth/register', data),
+    verifyOtp: (data: any) => api.post('/auth/verify-otp', data),
+};
 
 export const dashboardAPI = {
     getOverview: () => api.get('/dashboard/overview'),
@@ -165,7 +167,7 @@ export const userAPI = {
 };
 
 export const memberAPI = {
-    apply: (data: any) => api.post('/members/apply', data),
+    apply: (data: any) => api.post('/members/register', data),
     getMyProfile: () => api.get('/members/me'),
 };
 

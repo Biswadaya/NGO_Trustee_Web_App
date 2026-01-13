@@ -27,6 +27,7 @@ export const registerUser = async (data: {
         const newUser = await tx.user.create({
             data: {
                 email,
+                full_name,
                 password_hash: hashedPassword,
                 role: (await tx.user.count()) === 0 ? UserRole.ADMIN : UserRole.DONOR,
             },
@@ -45,7 +46,8 @@ export const registerUser = async (data: {
     return result;
 };
 
-export const loginUser = async (data: { email: string; password: string }) => {
+// Validates credentials ONLY (Does not issue token)
+export const validateUser = async (data: { email: string; password: string }) => {
     const { email, password } = data;
 
     const user = await prisma.user.findUnique({
@@ -59,6 +61,14 @@ export const loginUser = async (data: { email: string; password: string }) => {
     if (user.is_blocked) {
         throw new AppError(`Account blocked: ${user.blocked_reason}`, 403);
     }
+
+    return user;
+};
+
+// Generates tokens for a verified user (via Email)
+export const generateTokens = async (email: string) => {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) throw new AppError('User not found', 404);
 
     let status = 'ACTIVE';
     if (user.role === UserRole.VOLUNTEER) {
@@ -77,4 +87,10 @@ export const loginUser = async (data: { email: string; password: string }) => {
         token,
         refreshToken
     };
+};
+
+export const loginUser = async (data: { email: string; password: string }) => {
+    // Legacy support or fallback
+    const user = await validateUser(data);
+    return generateTokens(user.email);
 };

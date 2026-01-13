@@ -13,6 +13,7 @@ enum UserRole {
   MANAGER
   VOLUNTEER
   DONOR
+  MEMBER
 }
 
 enum VolunteerStatus {
@@ -39,6 +40,7 @@ enum CertificateType {
 model User {
   id                  String    @id @default(uuid())
   username            String?   @unique
+  full_name           String?
   email               String    @unique
   password_hash       String
   role                UserRole  @default(VOLUNTEER)
@@ -362,12 +364,25 @@ model MemberProfile {
   id              String    @id @default(uuid())
   user_id         String    @unique
   
+  // Personal Details
+  full_name       String
+  email           String?
+  phone           String?
+  address         String?
+  occupation      String?
+
+  // Payment Details
+  membership_fee  Decimal   @db.Decimal(10, 2)
+  is_paid         Boolean   @default(false)
+  payment_date    DateTime?
+  payment_reference String?
+
   // Bank Details
   bank_name       String
   account_number  String
   ifsc_code       String
   branch_name     String?
-  account_type    String    // Savings/Current
+  account_type    String?    // Savings/Current
 
   // Nominee Details
   nominee_name    String
