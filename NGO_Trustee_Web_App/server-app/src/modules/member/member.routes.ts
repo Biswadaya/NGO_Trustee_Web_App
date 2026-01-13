@@ -15,5 +15,7 @@ router.use(restrictTo(UserRole.ADMIN, UserRole.MANAGER));
 router.get('/', memberController.getAllMembers);
 router.get('/:id', memberController.getMemberById);
 router.post('/:id/promote', memberController.promoteToVolunteer);
+router.get('/:id/profile', memberController.getMemberProfileByUserId);
+router.put('/:id/approve', memberController.approveMember);
 
 export default router;

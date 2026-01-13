@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
+import { useState } from 'react';
+import { useForm, useFieldArray } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, CreditCard, Users, Landmark, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { User, CreditCard, Users, Landmark, Eye, EyeOff } from 'lucide-react';
 import { useMember } from '../../hooks/useMember';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 type FormValues = {
     // Step 1: Personal

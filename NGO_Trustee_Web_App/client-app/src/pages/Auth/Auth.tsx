@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Heart, Loader2, Phone, Shield } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Heart, Loader2, Phone, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,7 +16,6 @@ interface AuthProps {
 }
 
 const Auth = ({ initialMode = 'login' }: AuthProps) => {
-    const navigate = useNavigate();
     const { setAuth } = useAuth();
 
     const [isLogin, setIsLogin] = useState(initialMode === 'login');
@@ -74,11 +73,12 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
 
 
         const { token, data: userData } = data;
+        console.log('Login Response Data:', userData);
 
         const userObj = {
             id: userData.user.id,
-            name: userData.user.name || userData.user.username || 'User',
-            fullname: userData.user.fullname,
+            name: userData.user.full_name || userData.user.name || userData.user.username || userData.user.email?.split('@')[0] || 'User',
+            fullname: userData.user.full_name,
             email: userData.user.email,
             role: userData.user.role,
             status: userData.user.status,
@@ -98,12 +98,15 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
         toast.success('Welcome back!');
 
         if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
-            navigate('/admin/dashboard');
-        } else if (user.role === 'VOLUNTEER') {
-            navigate('/volunteer/dashboard');
-        } else {
-            navigate('/user/dashboard');
+            // For specific roles we could still redirect to dashboard if needed, 
+            // but user requested generic redirect to home.
         }
+
+        // Generic redirect to home as requested
+        // Generic redirect to home as requested
+        // Using window.location.href to force a full reload and ensure we land on home
+        // This also helps clear any stale state if that's the issue
+        window.location.href = '/';
     };
 
     const handleRegisterSubmit = async (e: React.FormEvent) => {

@@ -31,7 +31,9 @@ const AdminMembers = () => {
       // The API response might include membership details or we assume Role=DONOR is applied member.
       // Let's rely on role or if backend returns profile flag.
       // For now, assume all non-admins.
-      setUsers(res.data.data.filter((u: any) => u.role !== 'ADMIN'));
+      console.log(res.data.data);
+      const userList = res.data.data.users || [];
+      setUsers(userList.filter((u: any) => u.role !== 'ADMIN'));
     } catch (error) {
       toast.error("Failed to fetch users");
     } finally {

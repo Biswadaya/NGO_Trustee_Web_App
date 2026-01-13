@@ -10,6 +10,7 @@ export const getDashboardOverview = async () => {
     totalMessages,
     totalNotices,
     donationSum,
+    allUsers
   ] = await Promise.all([
     prisma.donation.count(),
     prisma.campaign.count(),
@@ -21,6 +22,29 @@ export const getDashboardOverview = async () => {
     prisma.donation.aggregate({
       _sum: { amount: true },
     }),
+    prisma.user.findMany({
+      where: {
+        role: {
+          notIn: ['ADMIN', 'SUPER_ADMIN']
+        }
+      },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        full_name: true,
+        created_at: true,
+        is_active: true,
+        is_blocked: true,
+        volunteer_profile: {
+          select: { status: true, full_name: true }
+        },
+        member_profile: {
+          select: { is_paid: true, full_name: true }
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    })
   ]);
 
   const activeCampaigns = await prisma.campaign.findMany({
@@ -43,6 +67,7 @@ export const getDashboardOverview = async () => {
     totalCertificates,
     totalMessages,
     totalNotices,
+    users: allUsers,
     activeCampaigns,
   };
 };

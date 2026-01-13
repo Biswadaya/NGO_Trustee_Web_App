@@ -13,8 +13,9 @@ import {
   DownloadCloud,
   ArrowRight
 } from 'lucide-react';
-import { donationAPI, noticeAPI } from '@/api/endpoints';
+import { donationAPI, noticeAPI, eventAPI } from '@/api/endpoints';
 import { useAuth } from '@/contexts/AuthContext';
+import TicketCard from '@/components/events/TicketCard';
 
 import { Link } from 'react-router-dom';
 
@@ -24,16 +25,19 @@ const UserDashboard = () => {
   const [data, setData] = useState<any>(null);
   const [notices, setNotices] = useState<any[]>([]);
   const [donations, setDonations] = useState<any[]>([]);
+  const [registrations, setRegistrations] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const [donationsRes, noticesRes] = await Promise.all([
+        const [donationsRes, noticesRes, registrationsRes] = await Promise.all([
           donationAPI.list(), // Filtered by user on backend usually
-          noticeAPI.getHistory()
+          noticeAPI.getHistory(),
+          eventAPI.getMyRegistrations()
         ]);
         setDonations(donationsRes.data.data.donations || []);
         setNotices(noticesRes.data.data.notices || []);
+        setRegistrations(registrationsRes.data.data.registrations || []);
 
         // Mocking stats aggregate for the summary cards
         const total = donationsRes.data.data.donations?.reduce((acc: number, d: any) => acc + d.amount, 0) || 0;
@@ -199,6 +203,18 @@ const UserDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* My Events Section */}
+        {registrations.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold">My Upcoming Events</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {registrations.map((reg) => (
+                <TicketCard key={reg.id} registration={reg} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Transaction History */}
         <Card variant="glass">

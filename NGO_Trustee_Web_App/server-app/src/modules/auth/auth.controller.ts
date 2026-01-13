@@ -19,6 +19,7 @@ export const register = async (
                 user: {
                     id: user.id,
                     email: user.email,
+                    full_name: user.full_name,
                     role: user.role,
                 },
             },
@@ -98,7 +99,15 @@ export const verifyOtp = async (
             status: 'success',
             token,
             refreshToken,
-            data: { user }
+            data: {
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    full_name: user.full_name,
+                    role: user.role,
+                    status: user.status
+                }
+            }
         });
     } catch (error) {
         next(error);

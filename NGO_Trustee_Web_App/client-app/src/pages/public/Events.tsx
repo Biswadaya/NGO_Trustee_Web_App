@@ -7,7 +7,10 @@ import {
   ChevronLeft, ChevronRight, Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { publicAPI } from '@/api/endpoints';
+import { publicAPI, eventAPI } from '@/api/endpoints';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 // Images 
 import eventsCulturalImage from '@/assets/events-cultural.jpg';
@@ -119,26 +122,44 @@ const Events = () => {
     return events.filter(e => e.date === dateStr);
   };
 
-  const handleRegister = (event: UIEvent) => {
-    // Check if user is logged in (Mock implementation for UI demo)
-    const isLoggedIn = localStorage.getItem('nhrd_user');
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
-    // For demo purposes, we will allow "Guest" registration if no user
-    const userName = isLoggedIn ? JSON.parse(isLoggedIn).name : 'Guest User';
+  const handleRegister = async (event: UIEvent) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to register for events");
+      // Redirect to login with return url
+      navigate('/login', { state: { from: '/events' } });
+      return;
+    }
 
-    const ticket: TicketData = {
-      eventId: event.id,
-      eventTitle: event.title,
-      eventDate: event.date,
-      eventTime: event.time,
-      eventLocation: event.location,
-      ticketNumber: `NHRD-${Date.now().toString(36).toUpperCase()}`,
-      userName: userName,
-    };
+    try {
+      const res = await eventAPI.register(event.id);
+      const registration = res.data.data.registration;
 
-    setTicketData(ticket);
-    setShowRegistrationModal(false);
-    setSelectedEvent(null);
+      const ticket: TicketData = {
+        eventId: event.id,
+        eventTitle: event.title,
+        eventDate: event.date,
+        eventTime: event.time,
+        eventLocation: event.location,
+        ticketNumber: registration.ticket_id,
+        userName: user?.fullname || user?.email || 'User',
+      };
+
+      setTicketData(ticket);
+      setShowRegistrationModal(false);
+      setSelectedEvent(null);
+      toast.success("Successfully registered for event!");
+
+      // Update local state to reflect capacity change
+      setEvents(prev => prev.map(e =>
+        e.id === event.id ? { ...e, registered: e.registered + 1 } : e
+      ));
+
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Registration failed");
+    }
   };
 
   const { firstDay, daysInMonth } = getDaysInMonth(currentMonth);

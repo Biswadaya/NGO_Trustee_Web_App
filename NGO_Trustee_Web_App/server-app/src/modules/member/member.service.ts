@@ -203,3 +203,39 @@ export const promoteToVolunteer = async (memberId: string) => {
         return { user: updatedUser, volunteer: newVolunteer };
     });
 };
+
+export const getMemberProfileByUserId = async (userId: string) => {
+    const member = await prisma.memberProfile.findUnique({
+        where: { user_id: userId },
+        include: {
+            family_members: true,
+        }
+    });
+
+    if (!member) throw new AppError('Member profile not found for this user', 404);
+    return member;
+};
+
+export const approveMember = async (userId: string) => {
+    // 1. Get Member to verify existence
+    const member = await prisma.memberProfile.findUnique({
+        where: { user_id: userId },
+        include: { user: true }
+    });
+
+    if (!member) throw new AppError('Member not found', 404);
+
+    // 2. Approve
+    return await prisma.$transaction(async (tx) => {
+        // Activate user
+        const updatedUser = await tx.user.update({
+            where: { id: userId },
+            data: { is_active: true }
+        });
+
+        // If member profile has a status field (it doesn't currently, only is_paid), we'd update it here.
+        // Assuming approval means activating the user account.
+
+        return { user: updatedUser, member };
+    });
+};

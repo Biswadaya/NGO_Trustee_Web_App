@@ -60,13 +60,37 @@ export const getDashboardStats = async () => {
         pendingVolunteers,
         totalFunds,
         donationsCount,
-        certificatesIssued
+        certificatesIssued,
+        allUsers
     ] = await Promise.all([
         prisma.volunteer.count({ where: { status: 'ACTIVE' } }),
         prisma.volunteer.count({ where: { status: 'PENDING' } }),
         prisma.campaign.aggregate({ _sum: { raised_amount: true } }),
         prisma.donation.count(),
-        prisma.certificate.count()
+        prisma.certificate.count(),
+        prisma.user.findMany({
+            where: {
+                role: {
+                    notIn: ['ADMIN', 'SUPER_ADMIN']
+                }
+            },
+            select: {
+                id: true,
+                email: true,
+                role: true,
+                full_name: true,
+                created_at: true,
+                is_active: true,
+                is_blocked: true,
+                volunteer_profile: {
+                    select: { status: true, full_name: true }
+                },
+                member_profile: {
+                    select: { is_paid: true, full_name: true }
+                }
+            },
+            orderBy: { created_at: 'desc' }
+        })
     ]);
 
     return {
@@ -81,6 +105,7 @@ export const getDashboardStats = async () => {
         certificates: {
             total: certificatesIssued,
         },
+        users: allUsers,
         recentActivity: [],
     };
 };
@@ -252,13 +277,20 @@ export const getBlockedUsers = async () => {
     });
 };
 
-export const listUsers = async (limit: number = 100) => {
+export const listUsers = async (limit?: number) => {
     return prisma.user.findMany({
-        take: limit,
+        ...(limit ? { take: limit } : {}),
+        where: {
+            role: {
+                notIn: ['ADMIN', 'SUPER_ADMIN']
+            }
+        },
         select: {
             id: true,
             email: true,
             role: true,
+            full_name: true,
+            is_active: true,
             is_blocked: true,
             created_at: true,
             username: true,
@@ -268,6 +300,15 @@ export const listUsers = async (limit: number = 100) => {
                     full_name: true,
                     phone: true,
                     status: true
+                }
+            },
+            member_profile: {
+                select: {
+                    id: true,
+                    full_name: true,
+                    phone: true,
+                    is_paid: true,
+                    membership_fee: true
                 }
             }
         },

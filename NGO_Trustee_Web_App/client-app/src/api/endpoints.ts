@@ -175,4 +175,10 @@ export const publicAPI = {
     getEvents: () => api.get('/admin/events/public'),
 };
 
+export const eventAPI = {
+    register: (eventId: string) => api.post('/events/register', { eventId }),
+    getMyRegistrations: () => api.get('/events/my-registrations'),
+    getEventRegistrations: (eventId: string) => api.get(`/events/${eventId}/registrations`),
+};
+
 export default api;

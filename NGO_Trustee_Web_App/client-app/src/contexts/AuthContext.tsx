@@ -50,11 +50,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const response = await AuthAPI.login(credentials);
       const { token, data } = response.data;
+      console.log('AuthContext Login Response:', data);
 
       const userData: User = {
         id: data.user.id,
-        name: data.user.name || data.user.username || 'NGO User',
-        fullname: data.user.fullname,
+        name: data.user.full_name || data.user.name || data.user.username || data.user.email?.split('@')[0] || 'NGO User',
+        fullname: data.user.full_name,
         email: data.user.email,
         role: data.user.role,
         status: data.user.status,

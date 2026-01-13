@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMember } from '../../hooks/useMember';
 import {
     Table,
@@ -11,7 +11,7 @@ import {
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
-import { Loader2, UserCheck, Shield } from "lucide-react";
+import { Loader2, Shield } from "lucide-react";
 import { toast } from 'sonner';
 
 const MembersList = () => {

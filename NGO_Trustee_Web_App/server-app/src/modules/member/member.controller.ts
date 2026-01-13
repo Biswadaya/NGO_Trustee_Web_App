@@ -94,3 +94,28 @@ export const promoteToVolunteer = async (req: Request, res: Response, next: Next
         next(error);
     }
 };
+
+export const getMemberProfileByUserId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const member = await memberService.getMemberProfileByUserId(req.params.id);
+        res.status(200).json({
+            status: 'success',
+            data: { member: member } // Ensure response structure matches frontend expectation
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const approveMember = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await memberService.approveMember(req.params.id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Member approved successfully',
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+};

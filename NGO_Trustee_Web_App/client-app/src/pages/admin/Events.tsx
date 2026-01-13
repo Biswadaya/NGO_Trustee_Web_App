@@ -3,8 +3,8 @@ import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { adminAPI, publicAPI } from '@/api/endpoints';
-import { Plus, Calendar, MapPin, Users, Loader2, Trash2, Clock, Image as ImageIcon } from 'lucide-react';
+import { adminAPI, publicAPI, eventAPI } from '@/api/endpoints';
+import { Plus, Calendar, MapPin, Users, Loader2, Trash2, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -77,6 +77,12 @@ const AdminEvents = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
 
+  // Registrations state
+  const [registrationsOpen, setRegistrationsOpen] = useState(false);
+  const [currentEventRegistrations, setCurrentEventRegistrations] = useState<any[]>([]);
+  const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+  const [selectedEventTitle, setSelectedEventTitle] = useState('');
+
   const fetchEvents = async () => {
     try {
       const res = await publicAPI.getEvents();
@@ -138,6 +144,20 @@ const AdminEvents = () => {
   const handleDeleteClick = (id: string) => {
     setEventToDelete(id);
     setDeleteDialogOpen(true);
+  };
+
+  const handleViewRegistrations = async (event: AdminEvent) => {
+    setSelectedEventTitle(event.title);
+    setRegistrationsOpen(true);
+    setLoadingRegistrations(true);
+    try {
+      const res = await eventAPI.getEventRegistrations(event.id);
+      setCurrentEventRegistrations(res.data.data.registrations || []);
+    } catch (error) {
+      toast.error('Failed to load registrations');
+    } finally {
+      setLoadingRegistrations(false);
+    }
   };
 
   if (loading) return <DashboardLayout><div className="flex justify-center p-20"><Loader2 className="animate-spin" /></div></DashboardLayout>;
@@ -324,6 +344,9 @@ const AdminEvents = () => {
                     <Users className="w-4 h-4 text-primary" />
                     {e.registered} / {e.capacity} Registered
                   </div>
+                  <Button variant="link" className="p-0 h-auto text-primary" onClick={() => handleViewRegistrations(e)}>
+                    View List
+                  </Button>
                   {!e.is_free && (
                     <div className="flex items-center gap-2 text-green-600 font-medium">
                       Paid Event
@@ -359,6 +382,46 @@ const AdminEvents = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog open={registrationsOpen} onOpenChange={setRegistrationsOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Registrations: {selectedEventTitle}</DialogTitle>
+            <DialogDescription>List of users registered for this event.</DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto py-4">
+            {loadingRegistrations ? (
+              <div className="flex justify-center p-8"><Loader2 className="animate-spin" /></div>
+            ) : currentEventRegistrations.length === 0 ? (
+              <div className="text-center p-8 text-muted-foreground">No registrations found.</div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="p-2 text-left">Ticket ID</th>
+                    <th className="p-2 text-left">User</th>
+                    <th className="p-2 text-left">Email</th>
+                    <th className="p-2 text-left">Role</th>
+                    <th className="p-2 text-left">Registered At</th>
+                    <th className="p-2 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentEventRegistrations.map((reg) => (
+                    <tr key={reg.id} className="border-b">
+                      <td className="p-2 font-mono">{reg.ticket_id}</td>
+                      <td className="p-2">{reg.user?.full_name || 'N/A'}</td>
+                      <td className="p-2">{reg.user?.email}</td>
+                      <td className="p-2"><Badge variant="outline">{reg.user?.role}</Badge></td>
+                      <td className="p-2">{new Date(reg.registered_at).toLocaleDateString()}</td>
+                      <td className="p-2"><Badge variant={reg.status === 'confirmed' ? 'success' : 'secondary'}>{reg.status}</Badge></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

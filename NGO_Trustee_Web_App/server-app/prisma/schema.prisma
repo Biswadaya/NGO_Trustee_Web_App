@@ -72,6 +72,7 @@ model User {
   files_uploaded      File[]
   transparency_reports TransparencyReport[]
   events_created      Event[]
+  event_registrations EventRegistration[]
 
   @@map("users")
 }
@@ -438,6 +439,22 @@ model Event {
   updated_at  DateTime @updatedAt
 
   created_by  User     @relation(fields: [created_by_id], references: [id])
+  registrations EventRegistration[]
 
   @@map("events")
+}
+
+model EventRegistration {
+  id          String   @id @default(uuid())
+  event_id    String
+  user_id     String
+  ticket_id   String   @unique // EVT-2025-XXXX
+  status      String   @default("confirmed") // confirmed, cancelled, attended
+  registered_at DateTime @default(now())
+
+  event       Event    @relation(fields: [event_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@unique([event_id, user_id]) // Prevent duplicate registration
+  @@map("event_registrations")
 }

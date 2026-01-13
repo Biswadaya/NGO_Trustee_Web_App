@@ -104,6 +104,7 @@ const Header = () => {
                     <div className="flex items-center gap-2 md:gap-4">
                         <LanguageSwitcher isTransparent={isHomePage && !isScrolled} />
 
+
                         {/* Auth Buttons - Desktop */}
                         {!isAuthenticated ? (
                             <Link to="/login" className="hidden md:block">
@@ -118,17 +119,39 @@ const Header = () => {
                                 </Button>
                             </Link>
                         ) : (
-                            <Link to={getDashboardPath()} className="hidden md:block">
-                                <Button
-                                    variant="ghost"
-                                    className={isHomePage && !isScrolled
-                                        ? "text-white hover:text-white hover:bg-white/20"
-                                        : "text-foreground hover:bg-accent/10 hover:text-accent"
-                                    }
-                                >
-                                    Dashboard
-                                </Button>
-                            </Link>
+                            <div className="hidden md:flex items-center gap-3">
+                                {/* Dashboard Button */}
+                                <Link to={getDashboardPath()}>
+                                    <Button
+                                        variant="ghost"
+                                        className={isHomePage && !isScrolled
+                                            ? "text-white hover:text-white hover:bg-white/20"
+                                            : "text-foreground hover:bg-accent/10 hover:text-accent"
+                                        }
+                                    >
+                                        Dashboard
+                                    </Button>
+                                </Link>
+
+                                {/* User Profile */}
+                                <div className="flex items-center gap-2 pl-2 border-l border-border/20">
+                                    <div className="flex flex-col items-end">
+                                        <span className={`text-sm font-medium ${isHomePage && !isScrolled ? 'text-white' : 'text-foreground'}`}>
+                                            {user?.name || user?.fullname || 'User'}
+                                        </span>
+                                        <span className={`text-[10px] uppercase tracking-wider ${isHomePage && !isScrolled ? 'text-white/70' : 'text-muted-foreground'}`}>
+                                            {user?.role}
+                                        </span>
+                                    </div>
+                                    <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-white/20 ring-1 ring-black/5">
+                                        <img
+                                            src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}`}
+                                            alt={user?.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {/* Donate Button - Desktop */}
