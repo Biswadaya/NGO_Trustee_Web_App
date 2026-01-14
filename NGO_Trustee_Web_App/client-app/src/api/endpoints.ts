@@ -175,6 +175,8 @@ export const userAPI = {
 export const memberAPI = {
     apply: (data: any) => api.post('/members/register', data),
     getMyProfile: () => api.get('/members/me'),
+    getAllMembers: () => api.get('/members'),
+    promoteMember: (id: string) => api.post(`/members/${id}/promote`),
 };
 
 export const donorAPI = {

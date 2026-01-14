@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { toast } from 'sonner';
-
-const API_URL = 'http://localhost:5000/api/v1/members';
+import { memberAPI } from '@/api/endpoints';
 
 export const useMember = () => {
     const [loading, setLoading] = useState(false);
@@ -12,7 +10,7 @@ export const useMember = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.post(`${API_URL}/register`, data);
+            const response = await memberAPI.apply(data);
             toast.success('Registration successful! Welcome to the family.');
             return response.data;
         } catch (err: any) {
@@ -28,10 +26,7 @@ export const useMember = () => {
     const getAllMembers = async () => {
         setLoading(true);
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get(API_URL, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await memberAPI.getAllMembers();
             return response.data.data.members;
         } catch (err: any) {
             toast.error('Failed to fetch members');
@@ -41,12 +36,10 @@ export const useMember = () => {
         }
     };
 
-    const promoteMember = async (id: string, token: string) => {
+    const promoteMember = async (id: string) => {
         setLoading(true);
         try {
-            const response = await axios.post(`${API_URL}/${id}/promote`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await memberAPI.promoteMember(id);
             toast.success('Member promoted successfully');
             return response.data;
         } catch (err: any) {
