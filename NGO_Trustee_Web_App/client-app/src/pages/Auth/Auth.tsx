@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthAPI } from '@/api/endpoints';
 import authBackground from '@/assets/auth-background.jpg';
-import nhrdLogo from '@/assets/nhrd-logo.png';
+import nhrdLogoBig from '@/assets/nhrd-logo-big.png';
 import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
 interface AuthProps {
@@ -136,20 +136,29 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                     alt="Background"
                     className="w-full h-full object-cover opacity-60"
                 />
-                <div className="absolute inset-0 flex flex-col justify-between p-12 text-white z-10">
-                    <div className="flex items-center gap-3">
-                        <img src={nhrdLogo} alt="Logo" className="w-12 h-12 bg-white/20 p-2 rounded-lg backdrop-blur" />
-                        <span className="text-xl font-bold tracking-wider">NHRD TRUST</span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-white z-10 text-center">
+                    {/* Logo Section */}
+                    <div className="w-full flex flex-col items-center justify-center mb-8" style={{ transform: 'translateY(-10%)' }}>
+                        <img
+                            src={nhrdLogoBig}
+                            alt="NHRD Logo"
+                            className="bg-transparent object-contain drop-shadow-lg"
+                            style={{ width: '40%', maxWidth: '300px' }}
+                        />
                     </div>
+
+                    {/* Text Section */}
                     <div>
                         <h1 className="text-5xl font-bold mb-6 leading-tight">
                             {isLogin ? "Welcome Back." : "Join the Movement."}
                         </h1>
-                        <p className="text-xl text-white/80 max-w-md">
+                        <p className="text-xl text-white/80 max-w-md mx-auto">
                             Together we can transform lives and build a sustainable future for our communities.
                         </p>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-white/60">
+
+                    {/* Footer Links - Absolute Bottom */}
+                    <div className="absolute bottom-12 flex items-center gap-4 text-sm text-white/60">
                         <span>© 2026 NHRD</span>
                         <span>Privacy Policy</span>
                         <span>Terms of Service</span>

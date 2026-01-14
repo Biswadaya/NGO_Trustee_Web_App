@@ -78,10 +78,11 @@ const App = () => (
                 <Route path="/get-involved" element={<GetInvolved />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/donate" element={<Donate />} />
-                <Route path="/login" element={<Auth initialMode="login" />} />
-                <Route path="/register" element={<Auth initialMode="register" />} />
                 <Route path="/become-member" element={<BecomeMember />} />
               </Route>
+
+              <Route path="/login" element={<Auth initialMode="login" />} />
+              <Route path="/register" element={<Auth initialMode="register" />} />
 
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminDashboard /></RouteGuard>} />
