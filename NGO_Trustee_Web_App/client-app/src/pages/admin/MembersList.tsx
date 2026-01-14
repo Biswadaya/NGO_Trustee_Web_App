@@ -35,8 +35,7 @@ const MembersList = () => {
         if (!confirm(`Are you sure you want to promote ${name} to Volunteer?`)) return;
 
         try {
-            const token = localStorage.getItem('token') || '';
-            await promoteMember(id, token);
+            await promoteMember(id);
             toast.success(`${name} has been promoted to Volunteer`);
             fetchMembers(); // Refresh list
         } catch (error) {
