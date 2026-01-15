@@ -37,6 +37,7 @@
     "qrcode": "^1.5.3",
     "redis": "^4.6.12",
     "reflect-metadata": "^0.2.2",
+    "resend": "^6.7.0",
     "socket.io": "^4.6.0",
     "stripe": "^14.11.0",
     "winston": "^3.11.0",

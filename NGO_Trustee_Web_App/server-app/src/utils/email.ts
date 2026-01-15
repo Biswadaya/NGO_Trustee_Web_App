@@ -1,19 +1,16 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import logger from './logger';
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail', // Or use host/port from env
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS // App Password
-    }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Default sender - Resend provides a free testing domain
+const FROM_EMAIL = process.env.EMAIL_FROM || 'NHRD Trust <onboarding@resend.dev>';
 
 export const sendOTPEmail = async (to: string, otp: string) => {
     try {
-        const mailOptions = {
-            from: `"NHRD Trust Security" <${process.env.EMAIL_USER}>`,
-            to,
+        const { data, error } = await resend.emails.send({
+            from: FROM_EMAIL,
+            to: [to],
             subject: 'Your Login Verification Code',
             html: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
@@ -24,10 +21,14 @@ export const sendOTPEmail = async (to: string, otp: string) => {
                     <p style="font-size: 12px; color: #666;">If you did not request this, please ignore this email.</p>
                 </div>
             `
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
-        logger.info(`OTP sent to ${to}`);
+        if (error) {
+            logger.error('Resend Error:', error);
+            return false;
+        }
+
+        logger.info(`OTP sent to ${to} (ID: ${data?.id})`);
         return true;
     } catch (error) {
         logger.error('Error sending OTP email', error);
