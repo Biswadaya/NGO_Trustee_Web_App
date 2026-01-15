@@ -10,7 +10,7 @@ const levels = {
 
 const level = () => {
     const env = process.env.NODE_ENV || 'development';
-    return env === 'development' ? 'debug' : 'warn';
+    return 'debug'; // Force debug logs everywhere for now
 };
 
 const colors = {
