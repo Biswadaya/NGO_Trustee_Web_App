@@ -29,6 +29,10 @@ app.use(morganMiddleware);
 app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'UP', timestamp: new Date() });
 });
+// Root endpoint for simple checks
+app.get('/', (req: Request, res: Response) => {
+    res.status(200).send('API is running');
+});
 
 // Routes
 import routes from './routes';
