@@ -32,8 +32,14 @@ export const sendOTPEmail = async (to: string, otp: string) => {
 
         logger.info(`OTP sent to ${to} (Message ID: ${info.messageId})`);
         return true;
-    } catch (error) {
-        logger.error('Error sending OTP email', error);
+    } catch (error: any) {
+        logger.error('Error sending OTP email:', {
+            message: error?.message,
+            code: error?.code,
+            command: error?.command,
+            responseCode: error?.responseCode,
+            response: error?.response,
+        });
         return false;
     }
 };
