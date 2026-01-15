@@ -11,6 +11,15 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
+        Logger.info(`Attempting database connection... (URL defined: ${!!process.env.DATABASE_URL})`);
+        // Log masked URL for debugging (safe to show)
+        if (process.env.DATABASE_URL) {
+            const masked = process.env.DATABASE_URL.replace(/:[^:@]*@/, ':****@');
+            Logger.info(`Connecting to: ${masked}`);
+        } else {
+            Logger.error('DATABASE_URL is NOT defined!');
+        }
+
         await prisma.$connect();
         Logger.info('Database connected successfully');
 
