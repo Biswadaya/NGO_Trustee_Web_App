@@ -23,8 +23,8 @@ const startServer = async () => {
         await prisma.$connect();
         Logger.info('Database connected successfully');
 
-        const server = app.listen(PORT, () => {
-            Logger.info(`Server is running @ http://localhost:${PORT}`);
+        const server = app.listen(Number(PORT), '0.0.0.0', () => {
+            Logger.info(`Server is running @ http://0.0.0.0:${PORT}`);
         });
 
         // Graceful shutdown logic
