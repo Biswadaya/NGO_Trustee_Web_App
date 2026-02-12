@@ -55,3 +55,4 @@ const startServer = async () => {
 };
 
 startServer();
+// Server restarted after port conflict resolution

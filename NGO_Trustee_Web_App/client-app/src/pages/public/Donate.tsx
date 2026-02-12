@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 import odishaSunrise from '@/assets/odisha-sunrise.jpg';
 import campaignEducationImage from '@/assets/campaign-education.jpg'; // Fallbacks/Placeholders
+import qrCode from '@/assets/qr.jpeg';
 
 const donationAmounts = [500, 1000, 2500, 5000, 10000];
 
@@ -25,12 +26,12 @@ const impactExamples = [
 ];
 
 const bankDetails = {
-  bankName: 'State Bank of India',
-  accountName: 'NHRD - National Human Resource Development',
-  accountNumber: '3XXXXXXXXXX567',
-  ifscCode: 'SBIN0001234',
-  branch: 'Bhubaneswar Main Branch',
-  upiId: 'nhrd@sbi',
+  bankName: 'Union Bank of India',
+  accountName: 'NHRD - National Humanity And Rural Development',
+  accountNumber: '319322010001458',
+  ifscCode: 'UBIN0931934',
+  branch: 'Kakarudrapur Branch, Khurda-752102',
+  upiId: 'QR919438262626-1458@unionbankofindia',
 };
 
 const Donate = () => {
@@ -549,8 +550,20 @@ const Donate = () => {
                 <div className="mt-4 p-3 bg-muted/50 rounded-lg">
                   <p className="text-xs text-muted-foreground flex items-start gap-2">
                     <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                    {t('donate.bankTransferNote', 'After transfer, please email your payment details to contact@nhrd.org for receipt and tax certificate.')}
+                    {t('donate.bankTransferNote', 'After transfer, please email your payment details to contact E-mail:-nhrdodisha@gmail.com for receipt and tax certificate.')}
                   </p>
+                </div>
+
+                {/* QR Code Section */}
+                <div className="mt-6 flex flex-col items-center">
+                  <p className="text-sm font-medium text-foreground mb-3">{t('donate.scanToPay', 'Scan to Pay via UPI')}</p>
+                  <div className="bg-white p-2 rounded-xl shadow-sm border border-border">
+                    <img
+                      src={qrCode}
+                      alt="Payment QR Code"
+                      className="w-48 h-48 object-contain rounded-lg"
+                    />
+                  </div>
                 </div>
               </div>
 

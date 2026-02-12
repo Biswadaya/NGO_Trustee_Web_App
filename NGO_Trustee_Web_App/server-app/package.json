@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "predev": "npx kill-port 3000",
+    "predev": "npx kill-port 5000",
     "dev": "nodemon src/server.ts",
     "build": "rm -rf dist && tsc",
     "lint": "eslint src/**/*.ts",

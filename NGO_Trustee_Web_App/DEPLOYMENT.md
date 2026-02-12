@@ -23,12 +23,13 @@ We recommend deploying the backend first so you have the live API URL to configu
     - Click **New +** -> **Web Service**.
     - Connect your GitHub repository.
 3.  **Configure Service:**
-    - **Root Directory:** `server-app` (Important! Current root is the repo root, backend is in `server-app`)
+    - **Root Directory:** `server-app`
+      (This is critical because your backend code lives inside this folder, not at the root of the repo)
     - **Environment:** Node
-    - **Build Command:** `npm install && npm run build` (or just `npm install` if you compile TS in start)
-        - *Note:* Our `npm start` runs `node dist/server.js`, so we need to run `npm run build` (tsc) first.
-        - **Better Build Command:** `npm install && npx prisma generate && npm run build`
+    - **Build Command:** `npm install && npx prisma generate && npm run build`
+      (This installs dependencies, generates the database client, and compiles your TypeScript code)
     - **Start Command:** `npm start`
+      (This runs the compiled JavaScript from the `dist` folder)
 4.  **Environment Variables:**
     Add the following Environment Variables in the Render dashboard:
     - `NODE_ENV`: `production`
@@ -41,6 +42,16 @@ We recommend deploying the backend first so you have the live API URL to configu
     - `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`: (SMTP details)
 5.  **Deploy:** Click **Create Web Service**.
 6.  **Copy URL:** Once deployed, copy the backend URL (e.g., `https://ngo-backend.onrender.com`).
+
+### ⚙️ Advanced Configuration (Optional but Recommended)
+
+-   **Pre-Deploy Command:** `npx prisma migrate deploy`
+    -   *Why?* Automatically runs database migrations before the new code starts.
+-   **Auto-Deploy:** `Yes` (Default)
+    -   *Why?* Ensures your app updates automatically when you push code to GitHub.
+-   **Build Filters:**
+    -   Add a rule to **Include** only the `server-app` directory.
+    -   *Why?* Prevents the backend from redeploying when you only change frontend code (`client-app`).
 
 ### Option B: Deploy on Railway
 

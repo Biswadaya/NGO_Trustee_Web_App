@@ -129,7 +129,7 @@ const Footer = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white font-medium">
                         <p className="flex items-center gap-1">
-                            {t('footer.copyright', '© 2024 NHRD. All rights reserved.')}
+                            {t('footer.copyright', '© 2026 NHRD. All rights reserved.')}
                             <Heart className="w-4 h-4 text-white inline-block" />
                         </p>
                         <div className="flex items-center gap-4">
