@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Mail, Loader2, User } from 'lucide-react';
+import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Mail, Loader2, User, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -104,8 +104,20 @@ const Donate = () => {
     toast.success(`${label} copied to clipboard`);
   };
 
+  // QR Modal State
+  const [showQrModal, setShowQrModal] = useState(false);
+
   // Phone state
   const [phone, setPhone] = useState('');
+
+  // Handle Phone Change (Numbers Only)
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setPhone(value);
+    }
+  };
+
   // Razorpay
   const { Razorpay } = useRazorpay();
 
@@ -194,6 +206,50 @@ const Donate = () => {
 
   return (
     <div className="bg-background min-h-screen">
+      {/* QR Code Modal */}
+      <AnimatePresence>
+        {showQrModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setShowQrModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white p-4 rounded-xl shadow-2xl relative max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowQrModal(false)}
+                className="absolute top-2 right-2 p-2 rounded-full hover:bg-slate-100 transition-colors"
+              >
+                <X className="w-6 h-6 text-slate-500" />
+              </button>
+              <div className="text-center pt-2 pb-4">
+                <h3 className="text-xl font-bold text-slate-800 mb-1">Scan to Donate</h3>
+                <p className="text-sm text-slate-500">Use any UPI app to scan this code</p>
+              </div>
+              <div className="flex justify-center p-4 bg-slate-50 rounded-lg border border-slate-100">
+                <img
+                  src={qrCode}
+                  alt="Payment QR Code"
+                  className="w-full h-auto max-h-[400px] object-contain rounded-lg"
+                />
+              </div>
+              <div className="mt-4 text-center">
+                <p className="font-mono text-sm bg-slate-100 py-2 px-3 rounded-lg inline-block text-slate-700">
+                  {bankDetails.upiId}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
@@ -276,14 +332,16 @@ const Donate = () => {
                       placeholder="Email Address"
                       type="email"
                       value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="h-12"
                     />
                     <Input
                       placeholder="Phone Number"
                       type="tel"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={handlePhoneChange}
                       className="h-12"
+                      maxLength={10}
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2 ml-1">
@@ -557,13 +615,17 @@ const Donate = () => {
                 {/* QR Code Section */}
                 <div className="mt-6 flex flex-col items-center">
                   <p className="text-sm font-medium text-foreground mb-3">{t('donate.scanToPay', 'Scan to Pay via UPI')}</p>
-                  <div className="bg-white p-2 rounded-xl shadow-sm border border-border">
+                  <button
+                    onClick={() => setShowQrModal(true)}
+                    className="bg-white p-2 rounded-xl shadow-sm border border-border hover:shadow-md hover:scale-[1.02] transition-all cursor-zoom-in"
+                  >
                     <img
                       src={qrCode}
                       alt="Payment QR Code"
                       className="w-48 h-48 object-contain rounded-lg"
                     />
-                  </div>
+                    <p className="text-xs text-center mt-2 text-slate-500 font-medium">Click to enlarge</p>
+                  </button>
                 </div>
               </div>
 
