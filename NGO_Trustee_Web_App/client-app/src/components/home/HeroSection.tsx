@@ -88,7 +88,7 @@ const HeroSection = () => {
                         <Link to="/login">
                             <Button variant="heroSecondary" size="xl" className="gap-2 min-w-[200px]">
                                 <Users className="w-5 h-5" />
-                                {t('hero.ctaVolunteer', 'Join as Volunteer')}
+                                {t('hero.ctaMember', 'Become a Member')}
                             </Button>
                         </Link>
                         <Link to="/about">
