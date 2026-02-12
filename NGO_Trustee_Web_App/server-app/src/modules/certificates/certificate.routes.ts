@@ -5,11 +5,13 @@ import { UserRole } from '@prisma/client';
 
 const router = express.Router();
 
+// General routes
+router.get('/test-gen', CertificateController.testGenerate); // Temporary Test Route - Public for testing
+router.get('/:id/certificates', CertificateController.getEntityCertificates); // Public to allow guest validation
+
 router.use(protect);
 
-// General routes
 router.get('/list', CertificateController.list);
-router.get('/:id/certificates', CertificateController.getEntityCertificates);
 
 // Admin routes
 router.post('/create', restrictTo(UserRole.ADMIN, UserRole.MANAGER), CertificateController.create);

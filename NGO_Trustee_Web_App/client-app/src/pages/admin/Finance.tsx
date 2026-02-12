@@ -1,28 +1,52 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { adminAPI, transparencyAPI } from '@/api/endpoints';
+import { adminAPI, donationAPI } from '@/api/endpoints';
 import { DollarSign, TrendingUp, TrendingDown, Wallet, Loader2, PieChart as PieIcon, RefreshCw } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--success))', 'hsl(var(--warning))'];
+const COLORS: Record<string, string> = {
+  "Donation": "#0088FE", // Blue
+  "Membership fee": "#00C49F", // Teal/Green
+  "Grants": "#FFBB28", // Yellow
+  "CSR Comittments": "#FF8042", // Orange
+  "Investment": "#8884d8", // Purple
+  "Projects": "#FF6B6B", // Red
+  "Salary": "#4ECDC4", // Teal
+  "EPF": "#45B7D1", // Blue
+  "GST": "#96CEB4", // Light Green
+  "Others": "#FFEEAD" // Pale Yellow
+};
+const DEFAULT_COLOR = "#cccccc";
 
 const AdminFinance = () => {
   const [loading, setLoading] = useState(true);
   const [financeData, setFinanceData] = useState<any>(null);
-  const [breakdown, setBreakdown] = useState<any[]>([]);
+  const [breakdown, setBreakdown] = useState<any>({ income: [], expenditure: [] });
+  const [donations, setDonations] = useState<any[]>([]);
 
+  /* 
+  Updated to use getFinanceStats for accurate Income/Expense breakdown
+  */
   const fetchFinanceData = async () => {
     setLoading(true);
     try {
-      const [summaryRes, breakdownRes] = await Promise.all([
+      const [summaryRes, statsRes, donationsRes] = await Promise.all([
         adminAPI.getFundsSummary(),
-        transparencyAPI.getFinancialBreakdown()
+        adminAPI.getFinanceStats(),
+        donationAPI.listAll()
       ]);
       setFinanceData(summaryRes.data.data);
-      setBreakdown(breakdownRes.data.data.breakdown.chartData || []);
+
+      // Process Income Data for Pie Chart
+      const incomeData = Object.entries(statsRes.data.data.income).map(([name, value]) => ({ name, value: Number(value) }));
+      // Process Expenditure Data for Pie Chart
+      const expenditureData = Object.entries(statsRes.data.data.expenditure).map(([name, value]) => ({ name, value: Number(value) }));
+
+      setBreakdown({ income: incomeData, expenditure: expenditureData });
+      setDonations(donationsRes.data.data.donations || []);
     } catch (error) {
       console.error('Failed to load financial data');
       toast.error('Financial data sync failed');
@@ -52,6 +76,66 @@ const AdminFinance = () => {
     { label: 'Avg Donation', value: `₹${(financeData?.averageDonation || 0).toLocaleString()}`, icon: DollarSign, color: 'from-warning to-accent' },
   ];
 
+  const renderPieChart = (title: string, data: any[]) => (
+    <Card variant="glass">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-lg font-bold">{title}</CardTitle>
+        <PieIcon className="w-4 h-4 text-muted-foreground" />
+      </CardHeader>
+      <CardContent>
+        <div className="h-[250px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data.every(d => d.value === 0) ? [{ name: 'No Data', value: 1 }] : data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                innerRadius={50}
+                paddingAngle={2}
+                label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+                  if (!percent || percent < 0.05) return null; // Hide small labels
+                  const RADIAN = Math.PI / 180;
+                  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                  return (
+                    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-[10px] font-bold">
+                      {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                  );
+                }}
+              >
+                {data.every(d => d.value === 0)
+                  ? <Cell fill="#e5e7eb" />
+                  : data.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[entry.name] || COLORS[Object.keys(COLORS)[index % Object.keys(COLORS).length]] || DEFAULT_COLOR}
+                    />
+                  ))
+                }
+              </Pie>
+              <Tooltip
+                formatter={(value: any) => [`₹${Number(value).toLocaleString()}`, 'Amount']}
+                contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+              />
+              <Legend
+                layout="vertical"
+                verticalAlign="middle"
+                align="right"
+                wrapperStyle={{ fontSize: '12px', fontWeight: 500 }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Custom Legend removed in favor of Recharts Legend, or can be kept as additional detail if desired, but user asked for "Legend to show which colour belongs to whom" which Recharts Legend does well. Removing manual list to avoid clutter if Recharts Legend is used, OR keeping it as valid detail list. I will comment it out or remove it to rely on the chart legend as requested. */}
+      </CardContent>
+    </Card>
+  );
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -79,71 +163,61 @@ const AdminFinance = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Expenditure Breakdown */}
-          <Card variant="glass">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">Expenditure Breakdown</CardTitle>
-              <PieIcon className="w-4 h-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={breakdown.length > 0 ? breakdown : [{ name: 'Operational', value: 1 }]}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      innerRadius={60}
-                      paddingAngle={5}
-                      label
-                    >
-                      {breakdown.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex flex-wrap justify-center gap-4 mt-2">
-                {breakdown.map((item, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                    <span className="text-xs text-muted-foreground">{item.name}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Over Time */}
-          <Card variant="glass">
-            <CardHeader>
-              <CardTitle className="text-lg">Donation Velocity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[350px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={financeData?.monthlyStats || []}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
-                    <XAxis dataKey="month" className="text-[10px]" />
-                    <YAxis className="text-[10px]" />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
-                    />
-                    <Bar dataKey="donations" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={20} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <p className="text-center text-[10px] text-muted-foreground mt-4 italic">
-                * Real-time contribution flow across the last 6 months.
-              </p>
-            </CardContent>
-          </Card>
+          {renderPieChart("Income Breakdown", (breakdown as any).income || [])}
+          {renderPieChart("Expenditure Breakdown", (breakdown as any).expenditure || [])}
         </div>
+
+        {/* Donations List */}
+        <Card variant="glass">
+          <CardHeader className="bg-muted/30 border-b border-border/50">
+            <CardTitle className="text-lg">All Donations</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="premium-table w-full">
+                <thead>
+                  <tr className="bg-muted/20">
+                    <th className="px-6 py-4 text-left font-display uppercase tracking-wider text-xs">Donor</th>
+                    <th className="px-6 py-4 text-left font-display uppercase tracking-wider text-xs">Amount</th>
+                    <th className="px-6 py-4 text-left font-display uppercase tracking-wider text-xs">Campaign</th>
+                    <th className="px-6 py-4 text-left font-display uppercase tracking-wider text-xs">Tx ID / Bank</th>
+                    <th className="px-6 py-4 text-left font-display uppercase tracking-wider text-xs">Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border/50">
+                  {donations.map((d: any) => (
+                    <tr key={d.id} className="hover:bg-muted/30 transition-colors group">
+                      <td className="px-6 py-4">
+                        <p className="font-semibold text-sm group-hover:text-primary transition-colors">{d.donor_name || 'Anonymous'}</p>
+                        <p className="text-[10px] text-muted-foreground">{d.email || d.donor_email || '-'}</p>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-success text-sm">₹{d.amount.toLocaleString()}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-[10px] bg-muted px-2 py-1 rounded-full">{d.campaign?.title || 'General Fund'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-xs font-mono text-muted-foreground uppercase">{d.transaction_id?.slice(0, 12)}...</p>
+                        <p className="text-[10px] text-muted-foreground">{d.payment_method}</p>
+                      </td>
+                      <td className="px-6 py-4 text-xs">
+                        {new Date(d.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {donations.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-20 text-center text-muted-foreground">
+                        No donation records found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

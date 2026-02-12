@@ -10,54 +10,54 @@
   --radius-md: calc(0.75rem - 2px);
   --radius-sm: calc(0.75rem - 4px);
 
-  /* Primary - Forest Green */
-  --color-primary: hsl(145 45% 33%);
+  /* Primary - Deep Teal */
+  --color-primary: hsl(176 80% 30%);
   --color-primary-foreground: hsl(0 0% 100%);
-  --color-primary-light: hsl(145 45% 95%);
-  --color-primary-dark: hsl(145 55% 20%);
+  --color-primary-light: hsl(176 60% 95%);
+  --color-primary-dark: hsl(176 85% 20%);
 
-  /* Accent - Warm Orange */
-  --color-accent: hsl(28 80% 52%);
+  /* Accent - Turquoise/Cyan */
+  --color-accent: hsl(185 80% 45%);
   --color-accent-foreground: hsl(0 0% 100%);
-  --color-accent-light: hsl(28 80% 96%);
+  --color-accent-light: hsl(185 80% 96%);
 
-  /* Secondary - Hopeful Blue */
-  --color-secondary: hsl(204 70% 53%);
+  /* Secondary - Ocean Blue */
+  --color-secondary: hsl(195 85% 45%);
   --color-secondary-foreground: hsl(0 0% 100%);
 
-  /* Earth - Connection to agriculture */
-  --color-earth: hsl(30 35% 41%);
+  /* Earth - Sandy/Coastal Tone */
+  --color-earth: hsl(35 40% 50%);
   --color-earth-foreground: hsl(0 0% 100%);
 
-  /* Backgrounds */
-  --color-background: hsl(40 20% 98%);
-  --color-foreground: hsl(0 0% 15%);
+  /* Backgrounds - Cool Mint/White */
+  --color-background: hsl(190 30% 98%);
+  --color-foreground: hsl(200 50% 15%);
 
   --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 15%);
+  --color-card-foreground: hsl(200 50% 15%);
 
   --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(0 0% 15%);
+  --color-popover-foreground: hsl(200 50% 15%);
 
-  --color-muted: hsl(40 15% 95%);
-  --color-muted-foreground: hsl(0 0% 40%);
+  --color-muted: hsl(190 20% 94%);
+  --color-muted-foreground: hsl(200 30% 50%);
 
-  --color-border: hsl(40 15% 88%);
-  --color-input: hsl(40 15% 88%);
-  --color-ring: hsl(145 45% 33%);
+  --color-border: hsl(190 20% 88%);
+  --color-input: hsl(190 20% 88%);
+  --color-ring: hsl(176 80% 30%);
 
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
 
   /* Sidebar */
-  --color-sidebar-background: hsl(0 0% 98%);
-  --color-sidebar-foreground: hsl(0 0% 15%);
-  --color-sidebar-primary: hsl(145 45% 33%);
+  --color-sidebar-background: hsl(190 30% 98%);
+  --color-sidebar-foreground: hsl(200 50% 15%);
+  --color-sidebar-primary: hsl(176 80% 30%);
   --color-sidebar-primary-foreground: hsl(0 0% 100%);
-  --color-sidebar-accent: hsl(145 45% 95%);
-  --color-sidebar-accent-foreground: hsl(145 45% 33%);
-  --color-sidebar-border: hsl(40 15% 88%);
-  --color-sidebar-ring: hsl(145 45% 33%);
+  --color-sidebar-accent: hsl(176 60% 95%);
+  --color-sidebar-accent-foreground: hsl(176 80% 30%);
+  --color-sidebar-border: hsl(190 20% 88%);
+  --color-sidebar-ring: hsl(176 80% 30%);
 
   /* Animations */
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -101,9 +101,9 @@
 /* Base Styles */
 @layer base {
   :root {
-    --gradient-hero: linear-gradient(135deg, hsl(145 45% 33%) 0%, hsl(145 55% 25%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(28 80% 52%) 0%, hsl(28 85% 45%) 100%);
-    --gradient-overlay: linear-gradient(180deg, hsl(0 0% 0% / 0.5) 0%, hsl(0 0% 0% / 0.7) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(176 80% 30%) 0%, hsl(195 85% 45%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(185 80% 45%) 0%, hsl(195 85% 45%) 100%);
+    --gradient-overlay: linear-gradient(180deg, hsl(200 50% 10% / 0.5) 0%, hsl(200 50% 10% / 0.7) 100%);
   }
   
   * {

@@ -2,15 +2,16 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { GraduationCap, Heart, Droplets, Briefcase, Wheat, ShieldAlert, ArrowRight } from 'lucide-react';
+import { GraduationCap, Heart, Droplets, Briefcase, Wheat, ShieldAlert, ArrowRight, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProgramDetailModal from '@/components/ProgramDetailModal';
 import childrenImage from '@/assets/children-classroom.jpg';
 import womenImage from '@/assets/women-shg-meeting.jpg';
-import healthImage from '@/assets/campaign-health.jpg';
-import waterImage from '@/assets/campaign-water.jpg';
-import villageImage from '@/assets/hero-odisha-village.jpg';
-import eventsImage from '@/assets/events-cultural.jpg';
+import healthImage from '@/assets/program-health-real.jpg';
+import livelihoodImage from '@/assets/campaign-water.jpg';
+import agricultureImage from '@/assets/1_women_in_field.jpg.webp';
+import disasterImage from '@/assets/cyclone_NDRF.jpg';
+import shgImage from '@/assets/program-microfinance-real.jpg';
 
 const ProgramsSection = () => {
     const { t } = useTranslation();
@@ -62,7 +63,7 @@ const ProgramsSection = () => {
             titleKey: 'programs.livelihood.title',
             descKey: 'programs.livelihood.description',
             color: 'bg-earth/10 text-earth',
-            image: waterImage,
+            image: livelihoodImage,
             stats: [
                 { label: 'Masons Trained', value: '1,660' },
                 { label: 'Dairy Units', value: '500+' },
@@ -75,7 +76,7 @@ const ProgramsSection = () => {
             titleKey: 'programs.agriculture.title',
             descKey: 'programs.agriculture.description',
             color: 'bg-primary/10 text-primary',
-            image: villageImage,
+            image: agricultureImage,
             stats: [
                 { label: 'Farmer Groups', value: '500+' },
                 { label: 'Farmers Trained', value: '10,000+' },
@@ -83,12 +84,25 @@ const ProgramsSection = () => {
             features: ['Farmer groups', 'Organic practices', 'Crop support', 'Training programs', 'Market access'],
         },
         {
+            id: 'microfinance',
+            icon: Banknote,
+            titleKey: 'programs.microfinance.title',
+            descKey: 'programs.microfinance.description',
+            color: 'bg-secondary/10 text-secondary',
+            image: shgImage,
+            stats: [
+                { label: 'Credit Linked', value: '₹80M' },
+                { label: 'Beneficiaries', value: '45,000+' },
+            ],
+            features: ['Bank linkages', 'Credit facilitation', 'Financial literacy', 'Entrepreneurship', 'Savings groups'],
+        },
+        {
             id: 'disaster-response',
             icon: ShieldAlert,
             titleKey: 'programs.disaster.title',
             descKey: 'programs.disaster.description',
             color: 'bg-destructive/10 text-destructive',
-            image: eventsImage,
+            image: disasterImage,
             stats: [
                 { label: 'Cyclone Fani Relief', value: '4,500 families' },
                 { label: 'COVID Response', value: '10,000+' },

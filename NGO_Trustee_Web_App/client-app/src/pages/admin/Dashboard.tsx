@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import {
   Users,
-  Heart,
   DollarSign,
   Calendar,
   FileText,
@@ -77,36 +76,28 @@ const AdminDashboard = () => {
 
   const statCards = [
     {
+      title: 'Total Donors',
+      value: stats?.totalDonors?.toLocaleString() || '0',
+      change: '+12%', // Static for now as not calculated
+      trend: 'up',
+      icon: Users,
+      color: 'from-blue-500 to-cyan-500'
+    },
+    {
       title: 'Total Members',
-      value: stats?.users?.length?.toLocaleString() || '0',
+      value: stats?.totalMembers?.toLocaleString() || '0',
       change: `+2.4%`,
       trend: 'up',
       icon: Users,
       color: 'from-primary to-secondary'
     },
     {
-      title: 'Active Volunteers',
-      value: stats?.volunteers?.active?.toString() || '0',
-      change: '+5.1%',
-      trend: 'up',
-      icon: Heart,
-      color: 'from-secondary to-primary'
-    },
-    {
       title: 'Total Donations',
-      value: `₹${((stats?.funds?.total || 0) / 1000).toFixed(1)}K`,
+      value: `₹${((stats?.totalDonationAmount || 0)).toLocaleString()}`,
       change: '+12.3%',
       trend: 'up',
       icon: DollarSign,
       color: 'from-accent to-warning'
-    },
-    {
-      title: 'Active Campaigns',
-      value: stats?.campaigns?.active?.toString() || '0',
-      change: 'Active',
-      trend: 'up',
-      icon: FileText,
-      color: 'from-warning to-accent'
     },
   ];
 

@@ -102,3 +102,57 @@ We recommend deploying the backend first so you have the live API URL to configu
 ## 📁 Configuration Added
 - **`client-app/vercel.json`**: Added to handle SPA routing (rewrites requests to `index.html`).
 - **`server-app/Procfile`**: Added for platform compatibility.
+
+---
+
+## 🔄 Migration: Railway to Render
+
+If you are switching from Railway to Render, follow these steps to clean up and ensure a smooth transition:
+
+1.  **Stop/Delete Railway Project**:
+    - Log in to your Railway dashboard.
+    - Select your project.
+    - Go to **Settings** (General).
+    - Scroll down to the danger zone and click **Delete Project** (or just stop the service if you want to keep it as backup).
+
+2.  **Clean up GitHub Settings**:
+    - Railway adds a webhook to your repository to trigger deployments. You should remove this to stop Railway from trying to build your code.
+    - Go to your GitHub Repository -> **Settings** -> **Webhooks**.
+    - Look for a webhook with a URL looking like `https://backboard.railway.app/...`.
+    - Click **Delete**.
+
+3.  **Follow Render Setup**:
+    - Follow the [Part 1: Backend Deployment](#option-a-deploy-on-render-recommended-for-free-tier) instructions above.
+    - Ensure you add all the Environment Variables from your Railway project to your new Render project.
+
+---
+
+## 🔧 Troubleshooting
+
+### Repository Not Found in Render?
+
+If you cannot see your repository in the Render dashboard when creating a new Web Service:
+
+### Repository Not Found in Render?
+
+If you cannot see your repository in the Render dashboard:
+
+This usually means the **Render GitHub App** doesn't have permission to access your specific repository.
+
+#### Method 1: The Direct Fix (Recommended)
+1.  **Go directly to GitHub App settings**: click [here](https://github.com/apps/render/installations/new).
+2.  Choose your GitHub account/organization.
+3.  Scroll down to **Repository access**.
+4.  Select **All repositories** (or search for and select your specific repo).
+5.  Click **Save**.
+6.  Go back to Render and refresh the "New Web Service" page.
+
+#### Method 2: From Render Dashboard
+1.  Click on your **Profile Picture** -> **Settings**.
+2.  Look for **Account Security** (credentials might be listed here) OR try creating a new service.
+3.  During the "Connect a repository" step, if you don't see your repo, look for a small link saying **"Configure GitHub App"** or **"Manage Permissions"** near the GitHub connection area.
+
+
+2.  **Refresh Render**: Go back to the "New Web Service" page in Render and refresh. Your repository should now appear in the list.
+
+

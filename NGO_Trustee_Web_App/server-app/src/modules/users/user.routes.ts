@@ -32,6 +32,7 @@ router.put('/:userId/promote',
 // Profile route
 // Profile route
 router.get('/me', protect, UserController.getMe);
+router.patch('/me', protect, UserController.updateMe);
 router.get('/my-tasks', protect, UserController.getMyTasks);
 
 export default router;

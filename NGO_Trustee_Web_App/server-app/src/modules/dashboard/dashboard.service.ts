@@ -1,74 +1,40 @@
 import { prisma } from '../../utils/db';
 
 export const getDashboardOverview = async () => {
+  /*
   const [
-    totalDonations,
-    totalCampaigns,
-    totalVolunteers,
-    totalActiveVolunteers,
-    totalCertificates,
-    totalMessages,
-    totalNotices,
-    donationSum,
-    allUsers
+    totalDonors,
+    totalMembers,
+    donationSum
   ] = await Promise.all([
-    prisma.donation.count(),
-    prisma.campaign.count(),
-    prisma.volunteer.count(),
-    prisma.volunteer.count({ where: { status: 'ACTIVE' } }),
-    prisma.certificate.count(),
-    prisma.message.count(),
-    prisma.notice.count({ where: { is_active: true } }),
+    prisma.user.count({ where: { role: 'DONOR' } }),
+    prisma.memberProfile.count(),
     prisma.donation.aggregate({
       _sum: { amount: true },
     }),
-    prisma.user.findMany({
-      where: {
-        role: {
-          notIn: ['ADMIN', 'SUPER_ADMIN']
-        }
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-        full_name: true,
-        created_at: true,
-        is_active: true,
-        is_blocked: true,
-        volunteer_profile: {
-          select: { status: true, full_name: true }
-        },
-        member_profile: {
-          select: { is_paid: true, full_name: true }
-        }
-      },
-      orderBy: { created_at: 'desc' }
-    })
   ]);
+  */
 
-  const activeCampaigns = await prisma.campaign.findMany({
-    where: { status: 'active' },
-    select: {
-      id: true,
-      title: true,
-      goal_amount: true,
-      raised_amount: true,
-    },
-    take: 5,
+  // Sequential execution to save connections
+  const totalDonors = await prisma.user.count({ where: { role: 'DONOR' } });
+  const totalMembers = await prisma.memberProfile.count();
+  const donationSum = await prisma.donation.aggregate({
+    _sum: { amount: true },
   });
 
   return {
-    totalDonations,
+    totalDonors,
+    totalMembers,
     totalDonationAmount: donationSum._sum.amount || 0,
-    totalCampaigns,
-    totalVolunteers,
-    totalActiveVolunteers,
-    totalCertificates,
-    totalMessages,
-    totalNotices,
-    users: allUsers,
-    activeCampaigns,
+    // Return zeros/empty for others to avoid breaking frontend immediately before I update it
+    totalCampaigns: 0,
+    totalVolunteers: 0,
+    totalActiveVolunteers: 0,
+    totalCertificates: 0,
+    totalMessages: 0,
+    totalNotices: 0,
+    users: [],
+    activeCampaigns: [],
   };
 };
 

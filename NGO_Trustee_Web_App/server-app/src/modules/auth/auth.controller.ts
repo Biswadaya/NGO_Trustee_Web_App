@@ -42,6 +42,28 @@ export const login = async (
         // 1. Verify credentials (but don't get token yet)
         const user = await AuthService.validateUser(req.body); // We need to expose a method that just validates password
 
+        // BYPASS: Check for Razorpay Test Account
+        if (user.email === 'razorpay_test@ngo.com') {
+            // 2. Generate Tokens Immediately
+            const { user: userWithStatus, token, refreshToken } = await AuthService.generateTokens(user.email);
+
+            // 3. Return Success Response (matching verifyOtp structure)
+            return res.status(200).json({
+                status: 'success',
+                token,
+                refreshToken,
+                data: {
+                    user: {
+                        id: userWithStatus.id,
+                        email: userWithStatus.email,
+                        full_name: userWithStatus.full_name,
+                        role: userWithStatus.role,
+                        status: userWithStatus.status
+                    }
+                }
+            });
+        }
+
         // 2. Generate OTP
         const otp = randomInt(100000, 999999).toString();
 

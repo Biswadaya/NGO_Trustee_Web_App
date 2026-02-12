@@ -7,6 +7,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import RouteGuard from "./components/RouteGuard";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import PublicLayout from "./components/layout/PublicLayout";
+import ScrollToTop from "./components/ScrollToTop";
 
 // Public Pages
 import PublicHome from "./pages/public/Home";
@@ -19,13 +20,15 @@ import WhatWeDo from "./pages/public/WhatWeDo";
 import GetInvolved from "./pages/public/GetInvolved";
 import Auth from "./pages/Auth/Auth";
 import BecomeMember from "./pages/public/BecomeMember";
+import Stories from "./pages/public/Stories";
+import StoryDetail from "./pages/public/StoryDetail";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminProfile from "./pages/admin/Profile";
 import AdminMembers from "./pages/admin/Members";
 import AdminVolunteers from "./pages/admin/Volunteers";
-import AdminDonations from "./pages/admin/Donations";
+
 import AdminEvents from "./pages/admin/Events";
 import AdminProjects from "./pages/admin/Projects";
 import AdminTasks from "./pages/admin/Tasks";
@@ -59,6 +62,8 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+import { DonationCertificate } from "./components/certificates/DonationCertificate";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
@@ -67,6 +72,7 @@ const App = () => (
           <Toaster />
           <Sonner position="top-right" />
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               {/* Public Routes */}
               <Route element={<PublicLayout />}>
@@ -79,6 +85,9 @@ const App = () => (
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/become-member" element={<BecomeMember />} />
+                <Route path="/stories" element={<Stories />} />
+                <Route path="/stories/:id" element={<StoryDetail />} />
+                <Route path="/certificate-preview" element={<div className="flex justify-center items-center min-h-screen bg-gray-100"><DonationCertificate /></div>} />
               </Route>
 
               <Route path="/login" element={<Auth initialMode="login" />} />
@@ -89,7 +98,7 @@ const App = () => (
               <Route path="/admin/profile" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminProfile /></RouteGuard>} />
               <Route path="/admin/members" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminMembers /></RouteGuard>} />
               <Route path="/admin/volunteers" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminVolunteers /></RouteGuard>} />
-              <Route path="/admin/donations" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminDonations /></RouteGuard>} />
+
               <Route path="/admin/events" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminEvents /></RouteGuard>} />
               <Route path="/admin/projects" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN']}><AdminProjects /></RouteGuard>} />
               <Route path="/admin/tasks" element={<RouteGuard allowedRoles={['ADMIN', 'SUPER_ADMIN', 'MANAGER']}><AdminTasks /></RouteGuard>} />

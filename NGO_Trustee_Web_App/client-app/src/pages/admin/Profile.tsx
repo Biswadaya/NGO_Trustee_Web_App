@@ -4,28 +4,67 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { userAPI } from '@/api/endpoints';
-import { User, Shield, Mail, Calendar, Phone, MapPin, QrCode, Building, Loader2 } from 'lucide-react';
+import { User, Shield, QrCode, Loader2, Edit2, Save, X, Calendar, Download } from 'lucide-react';
 import { toast } from 'sonner';
+import NHRDLogo from '@/assets/nhrd-logo.png';
 
 const AdminProfile = () => {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [formData, setFormData] = useState<any>(null);
+    const [saving, setSaving] = useState(false);
+
+    const fetchProfile = async () => {
+        try {
+            const res = await userAPI.getMe();
+            const user = res.data.data.user;
+            // Merge user data and volunteer profile data if available for editing
+            const mergedData = {
+                ...user,
+                phone: user.volunteer_profile?.phone || '',
+                bio: user.volunteer_profile?.bio || '',
+                address: user.volunteer_profile?.address || '', // Assuming address might be in volunteer profile or just simulated
+                // Add more fields if needed
+            };
+            setProfile(mergedData);
+            setFormData(mergedData);
+        } catch (error) {
+            console.error("Failed to fetch profile", error);
+            toast.error("Failed to load profile");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const res = await userAPI.getMe();
-                setProfile(res.data.data.user);
-            } catch (error) {
-                console.error("Failed to fetch profile", error);
-                toast.error("Failed to load profile");
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchProfile();
     }, []);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (!formData) return;
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSave = async () => {
+        if (!formData) return;
+        setSaving(true);
+        try {
+            // Call updateMe
+            await userAPI.updateMe(formData);
+            setProfile(formData);
+            setIsEditing(false);
+            toast.success("Profile updated successfully!");
+        } catch (error) {
+            console.error("Update failed", error);
+            toast.error("Failed to update profile");
+        } finally {
+            setSaving(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -50,7 +89,7 @@ const AdminProfile = () => {
                             </span>
                         </div>
                         <div>
-                            <h1 className="text-3xl font-display font-bold tracking-tight">{profile.username || 'Admin User'}</h1>
+                            <h1 className="text-3xl font-display font-bold tracking-tight">{profile.full_name || profile.username || 'Admin User'}</h1>
                             <div className="flex items-center gap-2 mt-2">
                                 <Badge variant="premium" className="px-3 py-1">
                                     <Shield className="w-3 h-3 mr-1" />
@@ -63,6 +102,20 @@ const AdminProfile = () => {
                             </div>
                         </div>
                     </div>
+                    {!isEditing ? (
+                        <Button onClick={() => setIsEditing(true)} variant="outline">
+                            <Edit2 className="w-4 h-4 mr-2" /> Edit Profile
+                        </Button>
+                    ) : (
+                        <div className="flex gap-2">
+                            <Button variant="ghost" onClick={() => { setIsEditing(false); setFormData(profile); }}>
+                                <X className="w-4 h-4 mr-2" /> Cancel
+                            </Button>
+                            <Button variant="premium" onClick={handleSave} disabled={saving}>
+                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Save Changes
+                            </Button>
+                        </div>
+                    )}
                 </div>
 
                 <Tabs defaultValue="overview" className="space-y-6">
@@ -76,51 +129,84 @@ const AdminProfile = () => {
                         <div className="grid md:grid-cols-2 gap-6">
                             <Card variant="glass">
                                 <CardHeader>
-                                    <CardTitle>Contact Information</CardTitle>
+                                    <CardTitle>Personal Information</CardTitle>
+                                    <CardDescription>Update your personal details here.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                                        <Mail className="w-5 h-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-xs font-medium text-muted-foreground uppercase">Email Address</p>
-                                            <p className="text-sm font-semibold">{profile.email}</p>
-                                        </div>
+                                    <div className="grid gap-2">
+                                        <Label>Full Name</Label>
+                                        <Input
+                                            name="full_name"
+                                            value={formData?.full_name || ''}
+                                            disabled={!isEditing}
+                                            onChange={handleChange}
+                                            placeholder="Enter your full name"
+                                        />
                                     </div>
-                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                                        <Phone className="w-5 h-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-xs font-medium text-muted-foreground uppercase">Phone</p>
-                                            <p className="text-sm font-semibold">Not Provided</p>
-                                        </div>
+                                    <div className="grid gap-2">
+                                        <Label>Username</Label>
+                                        <Input
+                                            name="username"
+                                            value={formData?.username || ''}
+                                            disabled={!isEditing}
+                                            onChange={handleChange}
+                                            placeholder="Enter your username"
+                                        />
                                     </div>
-                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-                                        <MapPin className="w-5 h-5 text-muted-foreground" />
-                                        <div>
-                                            <p className="text-xs font-medium text-muted-foreground uppercase">Location</p>
-                                            <p className="text-sm font-semibold">HQ Office</p>
-                                        </div>
+                                    <div className="grid gap-2">
+                                        <Label>Phone Number</Label>
+                                        <Input
+                                            name="phone"
+                                            value={formData?.phone || ''}
+                                            disabled={!isEditing}
+                                            onChange={handleChange}
+                                            placeholder="Enter your phone number"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label>Bio / Designation</Label>
+                                        <Input
+                                            name="bio"
+                                            value={formData?.bio || ''}
+                                            disabled={!isEditing}
+                                            onChange={handleChange}
+                                            placeholder="Enter your bio or role description"
+                                        />
                                     </div>
                                 </CardContent>
                             </Card>
 
                             <Card variant="glass">
                                 <CardHeader>
-                                    <CardTitle>Role Permissions</CardTitle>
-                                    <CardDescription>Active access levels for your account</CardDescription>
+                                    <CardTitle>Contact & Role</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <div className="flex flex-wrap gap-2">
-                                        {profile.manager_permissions ? (
-                                            Object.entries(profile.manager_permissions)
-                                                .filter(([key, val]) => key.startsWith('can_') && val)
-                                                .map(([key]) => (
-                                                    <Badge key={key} variant="outline" className="capitalize">
-                                                        {key.replace('can_', '').replace('_', ' ')}
-                                                    </Badge>
-                                                ))
-                                        ) : (
-                                            <Badge variant="outline">Full System Access</Badge>
-                                        )}
+                                <CardContent className="space-y-4">
+                                    <div className="grid gap-2">
+                                        <Label>Email Address</Label>
+                                        <Input
+                                            name="email"
+                                            value={profile.email || ''}
+                                            disabled={true}
+                                            className="bg-muted/50"
+                                        />
+                                        <p className="text-[10px] text-muted-foreground">Email cannot be changed directly.</p>
+                                    </div>
+
+                                    <div className="grid gap-2 pt-4">
+                                        <Label>System Permissions</Label>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {profile.manager_permissions ? (
+                                                Object.entries(profile.manager_permissions)
+                                                    .filter(([key, val]) => key.startsWith('can_') && val)
+                                                    .map(([key]) => (
+                                                        <Badge key={key} variant="outline" className="capitalize">
+                                                            {key.replace('can_', '').replace('_', ' ')}
+                                                        </Badge>
+                                                    ))
+                                            ) : (
+                                                <Badge variant="outline">Full System Access</Badge>
+                                            )}
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -128,69 +214,94 @@ const AdminProfile = () => {
                     </TabsContent>
 
                     <TabsContent value="id-card">
-                        <div className="grid place-items-center py-10">
-                            {/* ID CARD DESIGN */}
-                            <div className="relative w-[350px] h-[550px] rounded-[20px] overflow-hidden shadow-2xl bg-black text-white transform hover:scale-105 transition-transform duration-500 group">
-                                {/* Background Effects */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-950 to-black z-0"></div>
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full mix-blend-screen"></div>
-                                <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/20 blur-[100px] rounded-full mix-blend-screen"></div>
-                                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay z-0"></div>
+                        <div className="flex flex-col items-center py-10 space-y-8">
+                            {/* INDUSTRY GRADE ID CARD DESIGN */}
+                            <div className="relative w-[340px] h-[520px] rounded-[16px] overflow-hidden bg-white shadow-2xl transition-all duration-300 hover:shadow-[0_20px_60px_-10px_rgba(0,180,160,0.3)] group print:shadow-none print:w-[340px] print:h-[520px] border border-slate-100">
 
-                                {/* Content */}
-                                <div className="relative z-10 h-full flex flex-col items-center p-8 text-center border border-white/10 rounded-[20px]">
-                                    {/* Header */}
-                                    <div className="flex items-center gap-2 mb-8 w-full justify-center">
-                                        <div className="w-8 h-8 rounded bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                                            <Building className="w-4 h-4 text-white" />
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="text-xs font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary uppercase">NGO Trustee</h3>
-                                            <p className="text-[8px] font-medium tracking-widest text-neutral-400">OFFICIAL IDENTIFICATION</p>
-                                        </div>
+                                {/* 1. Header with Gradient & Logo - Professional Look */}
+                                <div className="h-[180px] w-full bg-gradient-to-br from-[#006056] to-[#008ba3] relative p-4 flex flex-col items-center justify-center text-center z-10">
+                                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
+                                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+
+                                    <div className="bg-white p-2 rounded-lg shadow-sm mb-2">
+                                        <img
+                                            src={NHRDLogo}
+                                            alt="NHRD Logo"
+                                            className="h-8 w-auto object-contain"
+                                        />
                                     </div>
+                                    <h3 className="text-[12px] font-bold tracking-widest text-white uppercase leading-tight font-sans opacity-90 max-w-[90%]">
+                                        National Humanity And Rural Development (NHRD)
+                                    </h3>
+                                </div>
 
-                                    {/* Photo */}
-                                    <div className="w-40 h-40 rounded-2xl bg-neutral-800 border-2 border-white/10 p-1 mb-6 shadow-inner relative group-hover:border-primary/50 transition-colors">
-                                        <div className="w-full h-full rounded-xl bg-neutral-900 flex items-center justify-center overflow-hidden">
-                                            <User className="w-20 h-20 text-neutral-700" />
-                                        </div>
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-neutral-900 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-xl flex items-center gap-1">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                            Active
+                                {/* 2. Content Body */}
+                                <div className="flex flex-col items-center relative z-20 -mt-10 px-2">
+
+                                    {/* Photo Container */}
+                                    <div className="w-24 h-24 rounded-full bg-white p-1.5 shadow-lg mb-3">
+                                        <div className="w-full h-full rounded-full bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center">
+                                            {profile.profile_photo ? (
+                                                <img src={profile.profile_photo} alt="Profile" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <User className="w-12 h-12 text-slate-300" />
+                                            )}
                                         </div>
                                     </div>
 
                                     {/* Name & Role */}
-                                    <h2 className="text-2xl font-black tracking-tight mb-1 text-white">{profile.username || 'Admin'}</h2>
-                                    <p className="text-sm font-medium text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-neutral-200 uppercase tracking-widest mb-8">{profile.role}</p>
-
-                                    {/* Details */}
-                                    <div className="w-full space-y-3 mb-8">
-                                        <div className="flex justify-between items-center bg-white/5 px-4 py-2 rounded-lg border border-white/5">
-                                            <span className="text-[10px] uppercase text-neutral-500 font-bold">ID No.</span>
-                                            <span className="text-xs font-mono text-neutral-300">ADMIN-{profile.id.substring(0, 8).toUpperCase()}</span>
-                                        </div>
-                                        <div className="flex justify-between items-center bg-white/5 px-4 py-2 rounded-lg border border-white/5">
-                                            <span className="text-[10px] uppercase text-neutral-500 font-bold">Joined</span>
-                                            <span className="text-xs font-mono text-neutral-300">{new Date(profile.created_at).toLocaleDateString()}</span>
+                                    <div className="text-center mb-6 w-full">
+                                        <h2 className="text-lg font-bold text-slate-800 leading-tight mb-1 truncate">
+                                            {profile.full_name || profile.username || 'Administrator'}
+                                        </h2>
+                                        <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                                            <Shield className="w-3 h-3" />
+                                            <span className="text-[10px] font-bold uppercase tracking-wider">{profile.role}</span>
                                         </div>
                                     </div>
 
-                                    {/* Footer / QR */}
-                                    <div className="mt-auto w-full pt-6 border-t border-white/10 flex justify-between items-end">
-                                        <div className="text-left">
-                                            <p className="text-[8px] text-neutral-600 uppercase tracking-widest mb-1">Authorization</p>
-                                            <div className="h-6 w-20 bg-white/10 rounded"></div>
+                                    {/* Details Grid */}
+                                    <div className="w-full grid grid-cols-2 gap-y-4 gap-x-2 text-left bg-slate-50/50 p-4 rounded-xl border border-slate-100">
+                                        <div>
+                                            <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Admin ID</p>
+                                            <p className="text-xs font-mono font-semibold text-slate-700">
+                                                NHRD-{profile.id?.substring(0, 6).toUpperCase() || '0000'}
+                                            </p>
                                         </div>
-                                        <div className="bg-white p-1 rounded">
-                                            <QrCode className="w-10 h-10 text-black" />
+                                        <div>
+                                            <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Valid Thru</p>
+                                            <p className="text-xs font-mono font-semibold text-slate-700">LIFETIME</p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Department / Role</p>
+                                            <p className="text-xs font-semibold text-slate-700">
+                                                {profile.bio || 'Board of Trustees & Administration'}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* 3. Footer */}
+                                <div className="absolute bottom-0 w-full h-[60px] bg-slate-50 border-t border-slate-100 flex items-center justify-between px-6">
+                                    <div className="flex flex-col justify-center">
+                                        <div className="h-4 w-20 mb-1 opacity-50 bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_sample.svg/1200px-Signature_sample.svg.png')] bg-contain bg-no-repeat bg-left"></div>
+                                        <div className="h-[1px] w-24 bg-slate-300"></div>
+                                        <p className="text-[7px] uppercase text-slate-400 font-bold tracking-widest mt-0.5">Authorized Signatory</p>
+                                    </div>
+                                    <div className="bg-white p-1 rounded border border-slate-100">
+                                        <QrCode className="w-8 h-8 text-slate-800" />
+                                    </div>
+                                </div>
+
+                                {/* Watermark */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 opacity-[0.03] pointer-events-none grayscale">
+                                    <img src={NHRDLogo} alt="" className="w-full h-full object-contain" />
+                                </div>
                             </div>
 
-                            <Button variant="outline" className="mt-8" onClick={() => window.print()}>Download / Print Card</Button>
+                            <Button onClick={() => window.print()} variant="outline" className="gap-2">
+                                <Download className="w-4 h-4" /> Download Identity Card
+                            </Button>
                         </div>
                     </TabsContent>
 

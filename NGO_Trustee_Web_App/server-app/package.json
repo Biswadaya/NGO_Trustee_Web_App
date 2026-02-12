@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@getbrevo/brevo": "^3.0.1",
-    "@prisma/client": "^5.9.0",
+    "@prisma/client": "^5.22.0",
     "@types/multer": "^2.0.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -36,6 +36,7 @@
     "nodemailer": "^6.10.1",
     "pdfkit": "^0.14.0",
     "qrcode": "^1.5.3",
+    "razorpay": "^2.9.6",
     "redis": "^4.6.12",
     "reflect-metadata": "^0.2.2",
     "resend": "^6.7.0",
@@ -60,7 +61,7 @@
     "eslint": "^8.56.0",
     "nodemon": "^3.0.3",
     "prettier": "^3.2.5",
-    "prisma": "^5.9.0",
+    "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },

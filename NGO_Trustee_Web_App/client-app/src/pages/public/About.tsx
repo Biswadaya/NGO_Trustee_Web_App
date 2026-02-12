@@ -1,17 +1,21 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  Target, Lightbulb, Shield, Scale, Leaf, Heart, CheckCircle, Users,
+  Target, Lightbulb, Shield, Scale, Leaf, Heart, Users,
   GraduationCap, Droplets, Briefcase, Wheat, ShieldAlert, Banknote, ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import womenMeetingImage from '@/assets/women-shg-meeting.jpg';
-import childrenImage from '@/assets/children-classroom.jpg';
-import campaignHealthImage from '@/assets/campaign-health.jpg';
+import womenMeetingImage from '@/assets/women empowerment.jpeg';
+import childrenImage from '@/assets/children.jpeg';
+import campaignHealthImage from '@/assets/women empowerment.jpeg';
+import LegalStatusSection from '@/components/home/LegalStatusSection';
+import JourneyModal from '@/components/home/JourneyModal';
 
 const About = () => {
   const { t } = useTranslation();
+  const [isJourneyModalOpen, setIsJourneyModalOpen] = useState(false);
 
   const values = [
     { icon: Users, titleKey: 'about.values.inclusion.title', descKey: 'about.values.inclusion.description' },
@@ -22,14 +26,7 @@ const About = () => {
     { icon: Lightbulb, titleKey: 'about.values.empowerment.title', descKey: 'about.values.empowerment.description' },
   ];
 
-  const certifications = [
-    { name: 'Societies Registration Act', code: '2054/193 of 2000' },
-    { name: 'FCRA Registration', code: '104830223' },
-    { name: 'Income Tax 12A', code: 'Registered' },
-    { name: 'Income Tax 80G', code: 'FY2023-2027' },
-    { name: 'NITI AAYOG', code: 'Registered' },
-    { name: 'CSR Registration', code: 'Active' },
-  ];
+
 
   const timelineYears = ['2000', '2008', '2015', '2019', '2024'];
 
@@ -45,13 +42,18 @@ const About = () => {
 
   return (
     <>
+      <JourneyModal
+        isOpen={isJourneyModalOpen}
+        onClose={() => setIsJourneyModalOpen(false)}
+      />
+
       {/* Hero Section with Image */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={womenMeetingImage}
             alt="Women SHG meeting in Odisha village"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-[50%_20%]"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/70 to-primary/90" />
         </div>
@@ -229,6 +231,9 @@ const About = () => {
             <p className="text-muted-foreground text-lg">{t('about.journeySubtitle', 'Milestones in our path of service')}</p>
           </motion.div>
 
+          {/* Detailed Journey Sheet */}
+
+
           <div className="space-y-8">
             {timelineYears.map((year, index) => (
               <motion.div
@@ -253,6 +258,16 @@ const About = () => {
                 </div>
               </motion.div>
             ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={() => setIsJourneyModalOpen(true)}
+            >
+              Learn More <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </section>
@@ -291,37 +306,10 @@ const About = () => {
         </div>
       </section>
 
-      {/* Certifications */}
-      <section className="py-16 md:py-24 bg-primary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{t('about.certTitle', 'Recognitions & Certifications')}</h2>
-            <p className="text-primary-foreground/80 text-lg">{t('about.certSubtitle', 'We maintain the highest standards of transparency and compliance')}</p>
-          </motion.div>
+      {/* Legal Status */}
+      <LegalStatusSection />
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {certifications.map((cert, index) => (
-              <motion.div
-                key={cert.name}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                className="bg-primary-foreground/10 backdrop-blur-sm p-4 rounded-xl text-center"
-              >
-                <CheckCircle className="w-8 h-8 text-accent mx-auto mb-2" />
-                <p className="text-primary-foreground font-semibold text-sm">{cert.name}</p>
-                <p className="text-primary-foreground/60 text-xs mt-1">{cert.code}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Team Section */}
       <section className="py-16 md:py-24 bg-muted/30">
@@ -338,11 +326,11 @@ const About = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { key: 'chairman', initials: 'BP', name: 'Bibhuti Bhusan Pattnaik', role: 'Chairman', desc: 'Leading with vision for rural development.' },
-              { key: 'viceChairman', initials: 'RS', name: 'Rabindra Nath Sahoo', role: 'Vice-Chairman', desc: 'Driving operational excellence.' },
-              { key: 'secretary1', initials: 'PN', name: 'Pravasini Nayak', role: 'Secretary', desc: 'Coordinating programs and outreach.' },
-              { key: 'secretary2', initials: 'SD', name: 'Satyabhoama Das', role: 'Joint Secretary', desc: 'Strengthening community ties.' },
-              { key: 'treasurer', initials: 'GM', name: 'Gitanjali Moharana', role: 'Treasurer', desc: 'Ensuring financial integrity.' },
+              { key: 'chairman', initials: 'BP', name: 'Shri Bhagirathi Pradhan', role: 'Chairman', desc: 'Leading with vision for rural development.' },
+              { key: 'Secretary', initials: 'SS', name: 'Smt. Sradhanjali Samantaray', role: 'Secretary', desc: 'Driving operational excellence.' },
+              { key: 'Director', initials: 'SK', name: 'Smt. Snighdha Kumari Samantray', role: 'Director', desc: 'Coordinating programs and outreach.' },
+              { key: 'Director', initials: 'LS', name: 'Smt. Laxmipriya Swain', role: 'Director', desc: 'Strengthening community ties.' },
+              { key: 'Director', initials: 'UK', name: 'Shri Umesh Kumar Swain', role: 'Director', desc: 'Ensuring financial integrity.' },
             ].map((member, index) => (
               <motion.div
                 key={member.key}

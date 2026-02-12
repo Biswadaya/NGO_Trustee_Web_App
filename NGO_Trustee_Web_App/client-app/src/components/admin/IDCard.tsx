@@ -1,5 +1,6 @@
 import React from 'react';
-import { User, QrCode } from 'lucide-react';
+import { User, Shield, QrCode } from 'lucide-react';
+import NHRDLogo from '@/assets/nhrd-logo.png';
 
 interface IDCardProps {
     user: any;
@@ -7,99 +8,104 @@ interface IDCardProps {
 }
 
 const IDCard = React.forwardRef<HTMLDivElement, IDCardProps>(({ user, role }, ref) => {
-    // Basic branding colors
-    const roleKey = role || user.role || 'MEMBER';
+    // Determine Role Display
+    const displayRole = role || user.role || 'MEMBER';
 
-    // Corporate colors
-    const isVolunteer = roleKey === 'VOLUNTEER';
-    const headerColor = isVolunteer ? 'bg-[#1e3a8a]' : 'bg-[#064e3b]'; // Deep Blue or Deep Green
+    // Determine Profile Photo
+    // Check diverse paths: user.profile_photo, user.profile?.profile_photo, user.avatar_url, etc.
+    const profilePhoto = user.profile_photo || user.profile?.profile_photo || user.avatar_url || user.profile?.avatar_url;
 
-    const name = user.full_name || user.name || 'Unknown Name';
-    const id = user.unique_id || user.id?.slice(0, 8).toUpperCase() || 'N/A';
-    const joinDate = user.created_at || user.join_date ? new Date(user.created_at || user.join_date).toLocaleDateString() : 'N/A';
-    const profileImage = user.profile?.avatar_url || user.avatar_url;
+    // Determine ID
+    const userIdDisplay = (user.unique_id || user.id || '0000').substring(0, 6).toUpperCase();
+
+    // Determine Join Date
+    const joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
 
     return (
         <div
             ref={ref}
-            className="w-[320px] h-[520px] bg-white rounded-lg overflow-hidden shadow-2xl relative flex flex-col font-sans"
-            style={{
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-            }}
+            className="relative w-[340px] h-[520px] rounded-[16px] overflow-hidden bg-white shadow-2xl transition-all duration-300 border border-slate-100 flex flex-col items-center"
+            id="id-card-element"
         >
-            {/* Header / Brand Section */}
-            <div className={`h-32 ${headerColor} relative flex flex-col items-center justify-start pt-6`}>
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-10"
-                    style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}
-                />
+            {/* 1. Header with Gradient & Logo - Professional Look */}
+            <div className="h-[180px] w-full bg-gradient-to-br from-[#006056] to-[#008ba3] relative p-4 flex flex-col items-center justify-center text-center z-10 shrink-0">
+                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
 
-                {/* Logo Area */}
-                <div className="text-white text-center z-10">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                        <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center text-xs font-bold text-gray-800 border-2 border-white/50">
-                            NHRD
-                        </div>
-                        <h1 className="text-lg font-bold tracking-wide">BISWADAYA</h1>
-                    </div>
-                    <p className="text-[10px] uppercase tracking-widest opacity-80">NGO Trustee Web App</p>
+                <div className="bg-white p-2 rounded-lg shadow-sm mb-2">
+                    <img
+                        src={NHRDLogo}
+                        alt="NHRD Logo"
+                        className="h-8 w-auto object-contain"
+                    />
                 </div>
+                <h3 className="text-[12px] font-bold tracking-widest text-white uppercase leading-tight font-sans opacity-90 max-w-[90%]">
+                    National Humanity And Rural Development (NHRD)
+                </h3>
             </div>
 
-            {/* Profile Picture - Overlapping Header */}
-            <div className="relative -mt-16 flex justify-center z-20">
-                <div className="w-32 h-32 rounded-full border-4 border-white bg-gray-100 shadow-lg overflow-hidden flex items-center justify-center shrink-0">
-                    {profileImage ? (
-                        <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                        <User className="w-16 h-16 text-gray-300" />
-                    )}
-                </div>
-            </div>
+            {/* 2. Content Body */}
+            <div className="flex flex-col items-center relative z-20 -mt-10 px-2 w-full flex-grow">
 
-            {/* User Details */}
-            <div className="flex-1 flex flex-col items-center pt-4 px-6 text-center">
-                <h2 className="text-xl font-bold text-gray-800 uppercase leading-snug">{name}</h2>
-
-                <span className={`mt-2 px-4 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wider ${headerColor}`}>
-                    {roleKey}
-                </span>
-
-                <div className="w-full mt-6 space-y-3">
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                        <span className="text-xs text-gray-500 uppercase font-semibold">ID No.</span>
-                        <span className="text-sm font-medium text-gray-800 font-mono">{id}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                        <span className="text-xs text-gray-500 uppercase font-semibold">Joined</span>
-                        <span className="text-sm font-medium text-gray-800">{joinDate}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                        <span className="text-xs text-gray-500 uppercase font-semibold">Phone</span>
-                        <span className="text-sm font-medium text-gray-800">{user.phone || user.profile?.phone || 'N/A'}</span>
+                {/* Photo Container */}
+                <div className="w-24 h-24 rounded-full bg-white p-1.5 shadow-lg mb-3">
+                    <div className="w-full h-full rounded-full bg-slate-50 border border-slate-100 overflow-hidden flex items-center justify-center">
+                        {profilePhoto ? (
+                            <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                            <User className="w-12 h-12 text-slate-300" />
+                        )}
                     </div>
                 </div>
 
-                {/* Footer / QR */}
-                <div className="mt-auto mb-6 w-full flex items-center justify-between pt-4">
-                    <div className="text-left">
-                        <p className="text-[10px] text-gray-400 uppercase">Authorization</p>
-                        <div className="h-8 w-24 mt-1 bg-no-repeat bg-contain opacity-70"
-                            style={{ backgroundImage: 'url("https://upload.wikimedia.org/wikipedia/commons/f/f8/Signature_sample.svg")' }} // Mock signature
-                        ></div>
-                        <p className="text-[10px] text-gray-600 font-semibold">Director</p>
+                {/* Name & Role */}
+                <div className="text-center mb-6 w-full px-4">
+                    <h2 className="text-lg font-bold text-slate-800 leading-tight mb-1 truncate">
+                        {user.full_name || user.username || 'Member'}
+                    </h2>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                        <Shield className="w-3 h-3" />
+                        <span className="text-[10px] font-bold uppercase tracking-wider">{displayRole}</span>
                     </div>
+                </div>
 
-                    <div className="w-16 h-16 bg-white border border-gray-200 p-1 rounded-md shadow-sm">
-                        <div className="w-full h-full bg-gray-900 flex items-center justify-center text-white">
-                            <QrCode className="w-10 h-10" />
-                        </div>
+                {/* Details Grid */}
+                <div className="w-full grid grid-cols-2 gap-y-4 gap-x-2 text-left bg-slate-50/50 p-4 rounded-xl border border-slate-100 mb-4">
+                    <div>
+                        <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Member ID</p>
+                        <p className="text-xs font-mono font-semibold text-slate-700">
+                            NHRD-{userIdDisplay}
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Valid Thru</p>
+                        <p className="text-xs font-mono font-semibold text-slate-700">LIFETIME</p>
+                    </div>
+                    <div className="col-span-2">
+                        <p className="text-[9px] uppercase text-slate-400 font-bold tracking-wider mb-0.5">Department / Role</p>
+                        <p className="text-xs font-semibold text-slate-700">
+                            {user.bio || user.profile?.bio || 'General Membership'}
+                        </p>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Color Bar */}
-            <div className={`h-2 w-full ${headerColor}`}></div>
+            {/* 3. Footer */}
+            <div className="w-full h-[60px] bg-slate-50 border-t border-slate-100 flex items-center justify-between px-6 shrink-0 mt-auto">
+                <div className="flex flex-col justify-center">
+                    <div className="h-4 w-20 mb-1 opacity-50 bg-[url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Signature_sample.svg/1200px-Signature_sample.svg.png')] bg-contain bg-no-repeat bg-left"></div>
+                    <div className="h-[1px] w-24 bg-slate-300"></div>
+                    <p className="text-[7px] uppercase text-slate-400 font-bold tracking-widest mt-0.5">Authorized Signatory</p>
+                </div>
+                <div className="bg-white p-1 rounded border border-slate-100">
+                    <QrCode className="w-8 h-8 text-slate-800" />
+                </div>
+            </div>
+
+            {/* Watermark */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 opacity-[0.03] pointer-events-none grayscale z-0">
+                <img src={NHRDLogo} alt="" className="w-full h-full object-contain" />
+            </div>
         </div>
     );
 });

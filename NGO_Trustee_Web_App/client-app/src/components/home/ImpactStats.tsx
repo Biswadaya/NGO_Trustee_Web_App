@@ -12,7 +12,7 @@ interface StatItem {
 }
 
 const stats: StatItem[] = [
-    { icon: Award, value: 24, suffix: '', labelKey: 'impact.years', color: 'text-primary' },
+    { icon: Award, value: 25, suffix: '', labelKey: 'impact.years', color: 'text-primary' },
     { icon: Users, value: 100000, suffix: '+', labelKey: 'impact.lives', color: 'text-accent' },
     { icon: MapPin, value: 500, suffix: '+', labelKey: 'impact.villages', color: 'text-secondary' },
     { icon: HandHeart, value: 4481, suffix: '', labelKey: 'impact.shgs', color: 'text-primary' },

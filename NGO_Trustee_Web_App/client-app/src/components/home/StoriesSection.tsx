@@ -4,32 +4,9 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Quote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const stories = [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600&h=400&fit=crop',
-        name: 'Sunita Devi',
-        location: 'Balipatna Village',
-        quote: 'Through the SHG program, I started a small dairy business. Now I earn ₹8,000 monthly and my children are in school.',
-        program: 'Women Empowerment',
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1594608661623-aa0bd3a69d98?w=600&h=400&fit=crop',
-        name: 'Rajan Kumar',
-        location: 'Nimapara',
-        quote: 'The masonry training gave me skills to build houses. I went from daily wages to running my own construction team.',
-        program: 'Livelihood',
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&h=400&fit=crop',
-        name: 'Priya Mohanty',
-        location: 'Bhubaneswar',
-        quote: 'Free education at LSE changed my life. I was the first in my family to graduate. Now I teach other children.',
-        program: 'Education',
-    },
-];
+import { stories } from '@/data/stories';
+
+const recentStories = stories.slice(0, 3);
 
 const StoriesSection = () => {
     const { t } = useTranslation();
@@ -55,7 +32,7 @@ const StoriesSection = () => {
 
                 {/* Stories Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                    {stories.map((story, index) => (
+                    {recentStories.map((story, index) => (
                         <motion.div
                             key={story.id}
                             initial={{ opacity: 0, y: 30 }}

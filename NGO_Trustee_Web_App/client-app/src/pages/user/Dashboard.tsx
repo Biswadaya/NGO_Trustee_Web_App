@@ -90,27 +90,38 @@ const UserDashboard = () => {
           </div>
           <Badge variant="premium" className="self-start md:self-auto py-1 shadow-lg">
             <Award className="w-3 h-3 mr-1" />
-            {user?.role === 'DONOR' ? 'Supporter' : 'Active Patron'}
+            {user?.role === 'DONOR' ? 'Supporter' : 'Member'}
           </Badge>
         </div>
 
         {/* Membership CTA for Donors */}
-        {user?.role === 'DONOR' && (
+        {(user?.role === 'DONOR' || user?.role === 'MEMBER') && (
           <Card className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-primary/20 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-3 opacity-10">
               <Award className="w-32 h-32" />
             </div>
             <CardContent className="p-6 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-bold text-primary mb-1">Become a Full Member</h3>
-                <p className="text-sm text-muted-foreground max-w-xl">
-                  Join the NHRD family formally. Get voting rights, exclusive updates, and a permanent membership ID card.
-                  Take the next step in your journey of social impact.
-                </p>
-              </div>
-              <Button asChild size="lg" className="shrink-0 shadow-lg shadow-primary/25">
-                <Link to="/become-member">Apply for Membership <ArrowRight className="ml-2 w-4 h-4" /></Link>
-              </Button>
+              {user?.role === 'MEMBER' ? (
+                <div>
+                  <h3 className="text-lg font-bold text-green-700 mb-1">You are a Full Member</h3>
+                  <p className="text-sm text-green-600 max-w-xl">
+                    Thank you for being a part of the NHRD family. You have full access to all member privileges.
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <h3 className="text-lg font-bold text-primary mb-1">Become a Full Member</h3>
+                  <p className="text-sm text-muted-foreground max-w-xl">
+                    Join the NHRD family formally. Get voting rights, exclusive updates, and a permanent membership ID card.
+                    Take the next step in your journey of social impact.
+                  </p>
+                </div>
+              )}
+              {user?.role !== 'MEMBER' && (
+                <Button asChild size="lg" className="shrink-0 shadow-lg shadow-primary/25">
+                  <Link to="/become-member">Apply for Membership <ArrowRight className="ml-2 w-4 h-4" /></Link>
+                </Button>
+              )}
             </CardContent>
           </Card>
         )}

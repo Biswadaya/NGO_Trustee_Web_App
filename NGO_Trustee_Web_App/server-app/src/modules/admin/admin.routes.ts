@@ -29,6 +29,7 @@ router.put('/volunteer/:id/active-manual', AdminController.approveVolunteer); //
 // Funds & Expenses
 router.get('/funds/summary', AdminController.getFundsSummary);
 router.get('/funds/expenses', AdminController.getExpenses);
+router.get('/finance/stats', AdminController.getFinanceStats);
 
 // Volunteer stats
 router.get('/volunteer/stats', AdminController.getVolunteerStats);
@@ -59,5 +60,10 @@ router.get('/reports/generate', AdminController.generateReport);
 
 // Audit logs
 router.get('/audit-logs', AdminController.getAuditLogs);
+
+
+// Organization Settings
+router.get('/settings/organization', AdminController.getOrganizationSettings);
+router.put('/settings/organization', AdminController.updateOrganizationSettings);
 
 export default router;

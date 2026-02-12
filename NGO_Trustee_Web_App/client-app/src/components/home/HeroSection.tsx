@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Heart, Users, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/hero-odisha-village.jpg';
+import heroImage from '@/assets/sean-oulashin-KMn4VEeEPR8-unsplash.jpg';
 
 const HeroSection = () => {
     const { t } = useTranslation();

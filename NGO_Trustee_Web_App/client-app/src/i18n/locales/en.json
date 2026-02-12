@@ -10,17 +10,17 @@
     "contact": "Contact"
   },
   "hero": {
-    "badge": "24 Years of Trust",
+    "badge": "25 Years of Trust",
     "title": "Transforming Rural Odisha",
     "subtitle": "100,000+ Lives Touched | 500+ Villages",
-    "description": "Converting visionary thoughts into reality through community participation and involvement of programme participants in each project activity.",
+    "description": "National Humanity & Rural Development (NHRD)Transforming rural Odisha since 2000 by empowering marginalized communities through education, women and child development, healthcare, sustainable livelihoods, and climate-resilient initiatives.",
     "ctaDonate": "Make a Donation",
     "ctaVolunteer": "Become a Volunteer",
     "ctaLearnMore": "Learn Our Story"
   },
   "impact": {
     "title": "Our Impact in Numbers",
-    "subtitle": "24 years of dedication to rural development",
+    "subtitle": "25 years of dedication to rural development",
     "years": "Years of Trust",
     "lives": "Lives Reached",
     "villages": "Villages",
@@ -36,7 +36,7 @@
     "learnMore": "Learn More",
     "education": {
       "title": "Education",
-      "description": "Free school model (LSE) providing quality education to 1000+ children with free uniforms, meals, transport, and health checkups."
+      "description": "Notably, NHRD established London School of Education (LSE), an English medium school in 2008, providing free education, transportation, uniforms, learning materials, and health check-ups."
     },
     "women": {
       "title": "Women Empowerment",
@@ -71,8 +71,8 @@
   "support": {
     "title": "Why Support NHRD?",
     "trust": {
-      "title": "24 Years of Trust",
-      "description": "Government registered, 80G certified, with transparent operations and documented impact."
+      "title": "25 Years of Trust",
+      "description": "Registered under the Societies Registration Act 1860, NHRD operates on the principles of love, sacrifice, dedication, transparency, and commitment."
     },
     "impact": {
       "title": "Measurable Impact",
@@ -93,11 +93,11 @@
   },
   "footer": {
     "about": "About NHRD",
-    "aboutText": "National Humanity & Rural Development has been transforming rural communities in Odisha since 2000 through integrated development programs.",
+    "aboutText": "National Humanity And Rural Development  (NHRD) focus areas of activities are Education, Empowerment of Women & Children Development &Livelihood",
     "quickLinks": "Quick Links",
     "contact": "Contact Us",
     "followUs": "Follow Us",
-    "address": "AT/PO-Balipatna, Via-Bhubaneswar, Dist-Khordha, Odisha-752102",
+    "address": "Headquarters: Balipatna, Via-Bhubaneswar, Dist-Khordha, Odisha, 752102",
     "phone": "Phone",
     "email": "Email",
     "copyright": "© 2024 National Humanity & Rural Development. All rights reserved.",
@@ -118,13 +118,13 @@
   },
   "about": {
     "heroTitle": "About Us",
-    "heroSubtitle": "24 Years of Transforming Lives Through Community Participation",
+    "heroSubtitle": "25 Years of Transforming Lives Through Community Participation",
     "visionTitle": "Our Vision",
-    "visionText": "Creation of an equitable society in which the poor people of unprivileged & marginalized communities will be able to live with dignity enjoying their rights & privileges to ensure a better quality of life.",
+    "visionText": "Creating an equitable society where underprivileged and marginalized communities live with dignity, enjoying their rights and privileges, and ensuring a better quality of life.",
     "missionTitle": "Our Mission",
-    "missionText": "Converting the visionary thoughts into reality through community participation and involvement of programme participants in each project activity.",
+    "missionText": "Translating visionary thoughts into reality through community participation and involvement of programme participants in every project activity.",
     "journeyTitle": "Our Journey",
-    "journeySubtitle": "24 years of dedication to rural development",
+    "journeySubtitle": "25 years of dedication to rural development",
     "valuesTitle": "Core Values",
     "valuesSubtitle": "The principles that guide our work",
     "certTitle": "Trusted & Transparent",
@@ -158,7 +158,7 @@
     "timeline": {
       "2000": {
         "title": "NHRD Founded",
-        "description": "Established by Bhagirathi Pradhan with a vision to transform rural communities."
+        "description": "Under the leadership of Sri Bhagirathi Pradhan, a celebrated social activist, a group of young individuals came together to form NHRD."
       },
       "2008": {
         "title": "London School of Education",
@@ -199,7 +199,7 @@
     "taxBenefit1": "80G exemption: 50% deduction on taxable income",
     "taxBenefit2": "12A registration: Organization exempt from income tax",
     "taxBenefit3": "Instant tax certificate via email",
-    "trustMessage": "Every rupee you donate goes directly to transforming lives. With 24 years of trust and complete transparency, we ensure your generosity creates maximum impact.",
+    "trustMessage": "Every rupee you donate goes directly to transforming lives. With 25 years of trust and complete transparency, we ensure your generosity creates maximum impact.",
     "impact1": "1 day school for 10 children",
     "impact2": "SHG training for 5 women",
     "impact3": "1 month meals for 15 children",
@@ -277,7 +277,7 @@
       "button": "Donate Now"
     },
     "csr": {
-      "title": "CSR Partnership",
+      "title": "CSR Contribution",
       "description": "Align your company's CSR goals with community development.",
       "point1": "Customized programs",
       "point2": "Employee volunteering",

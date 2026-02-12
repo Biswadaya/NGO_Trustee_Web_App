@@ -26,14 +26,14 @@ export const getCertifications = async () => {
 };
 
 export const getFinancialBreakdown = async () => {
-    const [donations, campaigns] = await Promise.all([
-        prisma.donation.findMany({
-            select: { amount: true, created_at: true }
-        }),
-        prisma.campaign.findMany({
-            select: { title: true, goal_amount: true, raised_amount: true }
-        })
-    ]);
+    // Sequential execution
+    const donations = await prisma.donation.findMany({
+        select: { amount: true, created_at: true }
+    });
+
+    const campaigns = await prisma.campaign.findMany({
+        select: { title: true, goal_amount: true, raised_amount: true }
+    });
 
     const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount), 0);
     const totalRaised = campaigns.reduce((sum, c) => sum + Number(c.raised_amount), 0);

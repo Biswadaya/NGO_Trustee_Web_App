@@ -7,7 +7,8 @@ import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Ma
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { campaignAPI } from '@/api/endpoints';
+import { campaignAPI, donationAPI } from '@/api/endpoints';
+import { useRazorpay } from 'react-razorpay';
 import { useAuth } from '@/contexts/AuthContext';
 
 import odishaSunrise from '@/assets/odisha-sunrise.jpg';
@@ -36,6 +37,8 @@ const Donate = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const campaignIdFromUrl = searchParams.get('campaign');
+  const donationTypeFromUrl = searchParams.get('type');
+  const isCSR = donationTypeFromUrl === 'CSR';
   const { user, isAuthenticated } = useAuth();
 
   const [selectedAmount, setSelectedAmount] = useState<number | null>(1000);
@@ -50,11 +53,15 @@ const Donate = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
-  // Prefill user details
+  // Prefill user details & Validate Session
   useEffect(() => {
     if (isAuthenticated && user) {
       setName(user.fullname || '');
       setEmail(user.email || '');
+
+      // Optional: Verify if the user session is actually valid by making a lightweight protected call
+      // If valid, good. If not, the axios interceptor (in endpoints.ts) should catch 401 and log out.
+      // But for now, we rely on the fact that if they are "authenticated" in context, we try to use it.
     }
   }, [isAuthenticated, user]);
 
@@ -96,23 +103,92 @@ const Donate = () => {
     toast.success(`${label} copied to clipboard`);
   };
 
-  const handleDonate = () => {
+  // Phone state
+  const [phone, setPhone] = useState('');
+  // Razorpay
+  const { Razorpay } = useRazorpay();
+
+  const handleDonate = async () => {
     const finalAmount = currentAmount || 0;
     if (finalAmount <= 0) {
       toast.error("Please select a valid donation amount");
       return;
     }
 
-    const campaignTitle = selectedCampaign
-      ? campaigns.find(c => c.id === selectedCampaign)?.title || 'Specific Campaign'
-      : 'General Fund';
+    if (!isAuthenticated && (!name || !email || !phone)) {
+      toast.error("Please provide your name, email and phone number");
+      return;
+    }
 
-    toast.success(`Processing donation of ₹${finalAmount} for ${campaignTitle}!`);
+    try {
+      setLoadingCampaigns(true); // Re-using loading state for payment processing
 
-    // In a real implementation:
-    // 1. Create Order via API
-    // 2. Open Payment Gateway (Razorpay/Stripe)
-    // 3. On success, call donationAPI.verify()
+      // 1. Create Order
+      const orderRes = await donationAPI.createOrder(finalAmount);
+      const { id: order_id, currency } = orderRes.data.data;
+
+      // 2. Open Razorpay
+      const options = {
+        key: import.meta.env.VITE_TEST_KEY_ID || import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: finalAmount * 100,
+        currency: currency,
+        name: "NHRD",
+        description: selectedCampaign
+          ? `Donation for ${campaigns.find(c => c.id === selectedCampaign)?.title}`
+          : "General Donation",
+        image: "https://your-logo-url.com/logo.png", // Replace with actual logo URL if available
+        order_id: order_id,
+        handler: async (response: any) => {
+          try {
+            // 3. Verify Payment
+            const verifyRes = await donationAPI.verifyPayment({
+              ...response,
+              donation_data: {
+                amount: finalAmount,
+                currency: currency,
+                payment_method: 'razorpay',
+                campaign_id: selectedCampaign || null,
+                user_id: user?.id || null,
+                donor_name: name,
+                donor_email: email,
+                donor_phone: phone, // Pass the phone number
+                is_anonymous: false
+              }
+            });
+
+            if (verifyRes.data.status === 'success') {
+              toast.success(`Thank you for your donation of ₹${finalAmount}!`);
+              setCustomAmount('');
+              setSelectedAmount(1000);
+              // Optional: Redirect to success page or show success modal
+            }
+          } catch (err) {
+            console.error("Payment Verification Failed", err);
+            toast.error("Payment verification failed. Please contact support.");
+          }
+        },
+        prefill: {
+          name: name,
+          email: email,
+          contact: phone || '' // fallback to empty string
+        },
+        theme: {
+          color: "#F37254"
+        }
+      };
+
+      const rzp1 = new Razorpay(options);
+      rzp1.on('payment.failed', function (response: any) {
+        toast.error(response.error.description || "Payment Failed");
+      });
+      rzp1.open();
+
+    } catch (err) {
+      console.error("Donation initialization failed", err);
+      toast.error("Failed to initialize donation. Please try again.");
+    } finally {
+      setLoadingCampaigns(false);
+    }
   };
 
   return (
@@ -136,10 +212,28 @@ const Donate = () => {
           >
             <Heart className="w-16 h-16 mx-auto mb-6" />
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              {t('donate.heroTitle', 'Your Donation Changes Lives')}
+              {isCSR
+                ? t('donate.csrHeroTitle', 'Your CSR Contribution changes lives')
+                : (donationTypeFromUrl === 'GRANT'
+                  ? t('donate.grantHeroTitle', 'Your Grant empowers communities')
+                  : (donationTypeFromUrl === 'INVESTMENT'
+                    ? t('donate.investmentHeroTitle', 'Invest in sustainable change')
+                    : t('donate.heroTitle', 'Your Donation Changes Lives')
+                  )
+                )
+              }
             </h1>
             <p className="text-xl md:text-2xl text-accent-foreground/90 max-w-3xl mx-auto">
-              {t('donate.heroSubtitle', 'Every contribution, no matter the size, helps us continue our mission.')}
+              {isCSR
+                ? 'Partner with us to create sustainable impact.'
+                : (donationTypeFromUrl === 'GRANT'
+                  ? 'Support specific projects through dedicated grants.'
+                  : (donationTypeFromUrl === 'INVESTMENT'
+                    ? 'Create social return on investment with us.'
+                    : t('donate.heroSubtitle', 'Every contribution, no matter the size, helps us continue our mission.')
+                  )
+                )
+              }
             </p>
           </motion.div>
         </div>
@@ -181,7 +275,13 @@ const Donate = () => {
                       placeholder="Email Address"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12"
+                    />
+                    <Input
+                      placeholder="Phone Number"
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       className="h-12"
                     />
                   </div>
@@ -204,8 +304,8 @@ const Donate = () => {
                       setSelectedCampaign(null);
                     }}
                     className={`p-4 rounded-xl border-2 transition-all text-left ${donationTarget === 'general'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
                       }`}
                   >
                     <Building2 className={`w-6 h-6 mb-2 ${donationTarget === 'general' ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -215,8 +315,8 @@ const Donate = () => {
                   <button
                     onClick={() => setDonationTarget('campaign')}
                     className={`p-4 rounded-xl border-2 transition-all text-left ${donationTarget === 'campaign'
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-primary/50'
                       }`}
                   >
                     <Heart className={`w-6 h-6 mb-2 ${donationTarget === 'campaign' ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -247,8 +347,8 @@ const Donate = () => {
                             key={campaign.id}
                             onClick={() => setSelectedCampaign(campaign.id)}
                             className={`relative rounded-xl overflow-hidden aspect-square transition-all ${selectedCampaign === campaign.id
-                                ? 'ring-2 ring-primary ring-offset-2'
-                                : 'hover:opacity-80'
+                              ? 'ring-2 ring-primary ring-offset-2'
+                              : 'hover:opacity-80'
                               }`}
                           >
                             <img
@@ -278,8 +378,8 @@ const Donate = () => {
                 <button
                   onClick={() => setDonationType('one-time')}
                   className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${donationType === 'one-time'
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground'
                     }`}
                 >
                   {t('donate.oneTime', 'One-time Donation')}
@@ -287,8 +387,8 @@ const Donate = () => {
                 <button
                   onClick={() => setDonationType('monthly')}
                   className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-all ${donationType === 'monthly'
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground'
                     }`}
                 >
                   {t('donate.monthly', 'Monthly Donation')}
@@ -306,8 +406,8 @@ const Donate = () => {
                       setCustomAmount('');
                     }}
                     className={`py-4 px-4 rounded-xl text-center font-semibold transition-all ${selectedAmount === amount && !customAmount
-                        ? 'bg-primary text-primary-foreground shadow-lg scale-105'
-                        : 'bg-muted text-foreground hover:bg-muted/80'
+                      ? 'bg-primary text-primary-foreground shadow-lg scale-105'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
                       }`}
                   >
                     ₹{amount.toLocaleString()}

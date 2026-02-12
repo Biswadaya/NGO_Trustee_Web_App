@@ -1,74 +1,123 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     Heart, Users, Building2, Briefcase, Mail, ArrowRight,
-    CheckCircle, Clock, Award, HandHeart
+    CheckCircle, Clock, Award, HandHeart, Coins, Handshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import womenMeetingImage from '@/assets/women-shg-meeting.jpg';
+import womenMeetingImage from '@/assets/women empowerment.jpeg';
+import FundingFormModal from '@/components/forms/FundingFormModal';
+import InvestmentFormModal from '@/components/forms/InvestmentFormModal';
 
 const GetInvolved = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
+    const [activeModal, setActiveModal] = useState<'CSR' | 'GRANT' | 'INVESTMENT' | null>(null);
+
+    const handleAction = (type: string, href?: string) => {
+        if (href) {
+            navigate(href);
+            return;
+        }
+        if (type === 'CSR') setActiveModal('CSR');
+        if (type === 'GRANT') setActiveModal('GRANT');
+        if (type === 'INVESTMENT') setActiveModal('INVESTMENT');
+    };
 
     const involvementOptions = [
         {
             icon: Users,
-            titleKey: 'getInvolved.volunteer.title',
-            descKey: 'getInvolved.volunteer.description',
+            titleKey: 'Become a Member',
+            descKey: 'Join our community as an official member.',
             points: [
-                t('getInvolved.volunteer.point1', 'Join our team'),
-                t('getInvolved.volunteer.point2', 'Community outreach'),
-                t('getInvolved.volunteer.point3', 'Skill sharing'),
-                t('getInvolved.volunteer.point4', 'Make new friends'),
+                'Access to exclusive events',
+                'Voting rights',
+                'Networking opportunities',
+                'Direct impact'
             ],
-            buttonKey: 'getInvolved.volunteer.button',
+            buttonKey: 'Join Now',
             buttonVariant: 'default' as const,
             color: 'bg-primary/10 text-primary',
+            href: '/register' // Redirects to registration
         },
         {
             icon: Heart,
-            titleKey: 'getInvolved.donation.title',
-            descKey: 'getInvolved.donation.description',
+            titleKey: 'Make a Donation',
+            descKey: 'Support our causes with a financial contribution.',
             points: [
-                t('getInvolved.donation.point1', 'One-time donation'),
-                t('getInvolved.donation.point2', 'Monthly giving'),
-                t('getInvolved.donation.point3', 'Sponsor a child'),
-                t('getInvolved.donation.point4', 'Tax benefits'),
+                'One-time donation',
+                'Monthly giving',
+                'Sponsor a child',
+                'Tax benefits'
             ],
-            buttonKey: 'getInvolved.donation.button',
+            buttonKey: 'Donate Now',
             buttonVariant: 'cta' as const,
             href: '/donate',
             color: 'bg-accent/10 text-accent',
         },
         {
             icon: Building2,
-            titleKey: 'getInvolved.csr.title',
-            descKey: 'getInvolved.csr.description',
+            titleKey: 'CSR Contribution',
+            descKey: 'Collaborate with us for Corporate Social Responsibility.',
             points: [
-                t('getInvolved.csr.point1', 'Corporate partnerships'),
-                t('getInvolved.csr.point2', 'Employee engagement'),
-                t('getInvolved.csr.point3', 'Project sponsorship'),
-                t('getInvolved.csr.point4', 'Sustainability goals'),
+                'Corporate partnerships',
+                'Employee engagement',
+                'Project sponsorship',
+                'Sustainability goals'
             ],
-            buttonKey: 'getInvolved.csr.button',
+            buttonKey: 'Contribute',
             buttonVariant: 'outline' as const,
             color: 'bg-secondary/10 text-secondary',
+            actionType: null,
+            href: '/donate?type=CSR'
+        },
+        {
+            icon: Handshake,
+            titleKey: 'Provide a Grant',
+            descKey: 'Support specific projects through grants.',
+            points: [
+                'Targeted impact',
+                'Project-specific funding',
+                'Regular reporting',
+                'Transparency'
+            ],
+            buttonKey: 'Apply Grant',
+            buttonVariant: 'outline' as const,
+            color: 'bg-indigo-500/10 text-indigo-500',
+            actionType: null,
+            href: '/donate?type=GRANT'
+        },
+        {
+            icon: Coins,
+            titleKey: 'Investment',
+            descKey: 'Invest in sustainable development projects.',
+            points: [
+                'Social Return on Investment',
+                'Sustainable growth',
+                'Long-term partnership',
+                'Financial & Social Impact'
+            ],
+            buttonKey: 'Invest Now',
+            buttonVariant: 'outline' as const,
+            color: 'bg-emerald-500/10 text-emerald-500',
+            actionType: null,
+            href: '/donate?type=INVESTMENT'
         },
         {
             icon: Briefcase,
-            titleKey: 'getInvolved.careers.title',
-            descKey: 'getInvolved.careers.description',
+            titleKey: 'Careers',
+            descKey: 'Work with us and build a career with purpose.',
             points: [
-                t('getInvolved.careers.point1', 'Work with purpose'),
-                t('getInvolved.careers.point2', 'Professional growth'),
-                t('getInvolved.careers.point3', 'Field experience'),
-                t('getInvolved.careers.point4', 'Competitive benefits'),
+                'Work with purpose',
+                'Professional growth',
+                'Field experience',
+                'Competitive benefits'
             ],
-            buttonKey: 'getInvolved.careers.button',
+            buttonKey: 'View Openings',
             buttonVariant: 'outline' as const,
             color: 'bg-earth/10 text-earth',
         },
@@ -82,13 +131,23 @@ const GetInvolved = () => {
 
     return (
         <>
+            <FundingFormModal
+                isOpen={activeModal === 'GRANT'}
+                onClose={() => setActiveModal(null)}
+                type={'GRANT'}
+            />
+            <InvestmentFormModal
+                isOpen={activeModal === 'INVESTMENT'}
+                onClose={() => setActiveModal(null)}
+            />
+
             {/* Hero Section */}
             <section className="relative py-20 md:py-32 overflow-hidden">
                 <div className="absolute inset-0">
                     <img
                         src={womenMeetingImage}
                         alt="Community involvement in Odisha"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-[50%_20%]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/70 to-primary/90" />
                 </div>
@@ -112,29 +171,29 @@ const GetInvolved = () => {
             {/* Involvement Options */}
             <section className="py-16 md:py-24 bg-background">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                        {involvementOptions.map((option, index) => (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                        {involvementOptions.map((option: any, index) => (
                             <motion.div
                                 key={option.titleKey}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                                className="bg-card rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-shadow"
+                                className="bg-card rounded-2xl p-6 md:p-8 shadow-lg hover:shadow-xl transition-shadow flex flex-col"
                             >
                                 <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${option.color} mb-5`}>
                                     <option.icon className="w-7 h-7" />
                                 </div>
 
                                 <h3 className="text-xl md:text-2xl font-bold text-foreground mb-3">
-                                    {t(option.titleKey, option.titleKey.split('.')[1])}
+                                    {t(option.titleKey, option.titleKey) as string}
                                 </h3>
-                                <p className="text-muted-foreground mb-5">
-                                    {t(option.descKey, 'Description...')}
+                                <p className="text-muted-foreground mb-5 flex-grow">
+                                    {t(option.descKey, option.descKey) as string}
                                 </p>
 
                                 <ul className="space-y-2 mb-6">
-                                    {option.points.map((point, idx) => (
+                                    {option.points.map((point: string, idx: number) => (
                                         <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
                                             <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
                                             {point}
@@ -142,21 +201,14 @@ const GetInvolved = () => {
                                     ))}
                                 </ul>
 
-                                {option.href ? (
-                                    <Link to={option.href}>
-                                        <Button variant={option.buttonVariant} className="w-full gap-2">
-                                            {t(option.buttonKey, 'Learn More')}
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                    </Link>
-                                ) : (
-                                    <Link to="/auth">
-                                        <Button variant={option.buttonVariant} className="w-full gap-2">
-                                            {t(option.buttonKey, 'Get Started')}
-                                            <ArrowRight className="w-4 h-4" />
-                                        </Button>
-                                    </Link>
-                                )}
+                                <Button
+                                    variant={option.buttonVariant}
+                                    className="w-full gap-2 mt-auto"
+                                    onClick={() => handleAction(option.actionType, option.href)}
+                                >
+                                    {t(option.buttonKey, option.buttonKey) as string}
+                                    <ArrowRight className="w-4 h-4" />
+                                </Button>
                             </motion.div>
                         ))}
                     </div>
@@ -173,7 +225,7 @@ const GetInvolved = () => {
                         className="text-center mb-12"
                     >
                         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                            {t('getInvolved.whyVolunteer', 'Why Volunteer With Us?')}
+                            {t('getInvolved.whyVolunteer', 'Why Join Us?')}
                         </h2>
                         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                             {t('getInvolved.whyVolunteerSubtitle', 'Experience the joy of giving back while growing personally and professionally')}
@@ -193,8 +245,8 @@ const GetInvolved = () => {
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
                                     <benefit.icon className="w-8 h-8 text-primary" />
                                 </div>
-                                <h3 className="text-xl font-bold text-foreground mb-2">{t(benefit.titleKey, benefit.titleKey.split('.')[2])}</h3>
-                                <p className="text-muted-foreground">{t(benefit.descKey, 'Benefit description')}</p>
+                                <h3 className="text-xl font-bold text-foreground mb-2">{t(benefit.titleKey, benefit.titleKey.split('.')[2]) as string}</h3>
+                                <p className="text-muted-foreground">{t(benefit.descKey, 'Benefit description') as string}</p>
                             </motion.div>
                         ))}
                     </div>

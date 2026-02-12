@@ -54,6 +54,8 @@ export const donationAPI = {
     getByTransactionId: (txId: string) => api.get(`/donations/transaction/${txId}`),
     getStats: () => api.get('/donations/stats'),
     getMyDonations: () => api.get('/donations/my-donations'),
+    createOrder: (amount: number) => api.post('/donations/create-order', { amount }),
+    verifyPayment: (data: any) => api.post('/donations/verify-payment', data),
 };
 
 export const campaignAPI = {
@@ -108,6 +110,7 @@ export const adminAPI = {
     blockUser: (id: string, data: any) => api.put(`/admin/users/${id}/block`, data),
     unblockUser: (id: string) => api.put(`/admin/users/${id}/unblock`),
     getBlockedUsers: () => api.get('/admin/users'),
+    getFinanceStats: () => api.get('/admin/finance/stats'),
     getAuditLogs: (limit: number) => api.get(`/admin/audit-logs?limit=${limit}`),
     getPendingVolunteers: () => api.get('/admin/volunteers/pending'),
     addVolunteer: (data: any) => api.post('/admin/volunteers', data),
@@ -170,11 +173,16 @@ export const fileAPI = {
 export const userAPI = {
     getMe: () => api.get('/users/me'),
     getMyTasks: () => api.get('/users/my-tasks'),
+    updateMe: (data: any) => api.patch('/users/me', data),
 };
 
 export const memberAPI = {
     apply: (data: any) => api.post('/members/register', data),
+    createOrder: (amount: number) => api.post('/members/payment/create-order', { amount }),
     getMyProfile: () => api.get('/members/me'),
+    updateProfile: (data: any) => api.put('/members/me', data),
+    getIdCard: () => api.get('/members/me/id-card'),
+    getAppointmentLetter: () => api.get('/members/me/appointment-letter'),
     getAllMembers: () => api.get('/members'),
     promoteMember: (id: string) => api.post(`/members/${id}/promote`),
 };
@@ -185,6 +193,8 @@ export const donorAPI = {
 
 export const publicAPI = {
     getEvents: () => api.get('/admin/events/public'),
+    submitFunding: (data: any) => api.post('/public/submit/funding', data),
+    submitInvestment: (data: any) => api.post('/public/submit/investment', data),
 };
 
 export const eventAPI = {

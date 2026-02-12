@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 // client-app uses 'react-hot-toast' in AdminProjects.tsx (seen in previous turns: "toast.error('Failed to load campaigns')")
 import { toast } from 'sonner';
 
-import heroImage from '@/assets/hero-odisha-village.jpg';
+import heroImage from '@/assets/contact.jpeg';
 
 const Contact = () => {
     const { t } = useTranslation();
@@ -43,8 +43,8 @@ const Contact = () => {
         {
             icon: Mail,
             titleKey: 'footer.email',
-            content: 'bhagirathius@gmail.com',
-            href: 'mailto:bhagirathius@gmail.com',
+            content: 'nhrdodisha@gmail.com',
+            href: 'mailto:nhrdosidha@gmail.com',
         },
         {
             icon: Clock,
@@ -88,7 +88,7 @@ const Contact = () => {
                     <img
                         src={heroImage}
                         alt="Odisha village"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-[50%_3%]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-primary/80 via-primary/70 to-primary/90" />
                 </div>

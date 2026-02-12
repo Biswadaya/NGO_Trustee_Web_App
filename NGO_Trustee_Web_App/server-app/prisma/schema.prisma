@@ -373,6 +373,8 @@ model MemberProfile {
   phone           String?
   address         String?
   occupation      String?
+  dob             DateTime  // Added as per requirement
+  adhar_number    String?   // Made optional
 
   // Payment Details
   membership_fee  Decimal   @db.Decimal(10, 2)
@@ -380,27 +382,28 @@ model MemberProfile {
   payment_date    DateTime?
   payment_reference String?
 
-  // Bank Details
-  bank_name       String
-  account_number  String
-  ifsc_code       String
+  // Bank Details (Made Optional)
+  bank_name       String?
+  account_number  String?
+  ifsc_code       String?
   branch_name     String?
   account_type    String?    // Savings/Current
 
-  // Nominee Details
-  nominee_name    String
-  nominee_relation String
+  // Nominee Details (Made Optional)
+  nominee_name    String?
+  nominee_relation String?
   nominee_dob     DateTime?
   nominee_phone   String?
   nominee_address String?
   
-  // Nominee Bank Details
+  // Nominee Bank Details (Optional)
   nominee_bank_name     String?
   nominee_account_number String?
   nominee_ifsc_code     String?
 
   user            User      @relation(fields: [user_id], references: [id])
   family_members  FamilyMember[]
+  payments        MembershipPayment[]
 
   created_at      DateTime  @default(now())
   updated_at      DateTime  @updatedAt
@@ -459,4 +462,120 @@ model EventRegistration {
 
   @@unique([event_id, user_id]) // Prevent duplicate registration
   @@map("event_registrations")
+}
+
+// NEW FUNDING MODELS
+
+enum FundingType {
+  CSR
+  GRANT
+}
+
+model FundingRecord {
+  id                  String      @id @default(uuid())
+  type                FundingType
+  
+  // Beneficiary Details
+  beneficiary_name    String
+  beneficiary_address String
+  
+  // Sanction Details
+  sanction_amount     Decimal     @db.Decimal(15, 2)
+  sanction_authority  String      // Name of authority/person
+  
+  project_name        String
+  
+  received_date       DateTime    @default(now())
+  status              String      @default("received") // pending, received
+  description         String?
+  
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
+
+  @@map("funding_records")
+}
+
+model Investment {
+  id                  String      @id @default(uuid())
+  amount              Decimal     @db.Decimal(15, 2)
+  investment_limit    Decimal     @db.Decimal(15, 2)
+  investment_date     DateTime
+  period              String      // e.g., "5 Years"
+  rate_of_interest    Decimal     @db.Decimal(5, 2) // Percentage
+  
+  // Sanction Authority Details
+  authority_name      String
+  organization_name   String
+  authority_address   String
+  
+  status              String      @default("active") // active, matured, closed
+  
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
+
+  @@map("investments")
+}
+
+model MembershipPayment {
+  id                  String      @id @default(uuid())
+  member_id           String
+  amount              Decimal     @db.Decimal(10, 2)
+  payment_date        DateTime    @default(now())
+  payment_year        String?     // e.g. "2025"
+  payment_method      String?     // razorpay, bank_transfer, cash
+  receipt_url         String?
+  status              String      @default("completed")
+  
+  created_at          DateTime    @default(now())
+  
+  member              MemberProfile @relation(fields: [member_id], references: [id])
+
+  @@map("membership_payments")
+}
+
+// NEW EXPENDITURE MODEL
+
+enum ExpenditureCategory {
+  EPF
+  GST
+  PROJECT_COST
+  SALARY
+  OTHER
+}
+
+model ExpenditureRecord {
+  id                  String      @id @default(uuid())
+  category            ExpenditureCategory
+  amount              Decimal     @db.Decimal(15, 2)
+  date                DateTime
+  description         String?
+  
+  // GST / Purchase Specifics
+  item_name           String?
+  vendor_name         String?
+  invoice_number      String?
+  
+  // Project Specifics
+  project_name        String?
+  
+  status              String      @default("paid") // pending, paid
+  
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @updatedAt
+
+  @@map("expenditure_records")
+}
+
+model OrganizationSettings {
+  id              String    @id @default(uuid())
+  org_name        String    @default("Trust Flow")
+  contact_email   String    @default("info@trustflow.app")
+  phone           String    @default("+91 98765 43210")
+  address         String?
+  website         String?
+  logo_url        String?
+  
+  updated_at      DateTime  @updatedAt
+  
+  @@map("organization_settings")
 }

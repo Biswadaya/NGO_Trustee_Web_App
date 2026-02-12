@@ -4,12 +4,16 @@ import { AppError } from '../../middleware/error';
 import { prisma } from '../../utils/db';
 import { signToken } from '../../utils/jwt';
 
+import { sendOTPEmail, sendMembershipConfirmationEmail } from '../../utils/email';
+
 export const registerMember = async (data: {
     email: string;
     full_name: string;
+    dob: string; // Required
     phone?: string;
     address?: string;
     occupation?: string;
+    adhar_number?: string; // Optional
 
     // Family
     family_members?: {
@@ -37,98 +41,150 @@ export const registerMember = async (data: {
         branch_name?: string;
     };
 
-    // Payment (Mock)
-    // Payment (Mock)
+    // Payment Info
     membership_fee: number;
+    payment_info?: {
+        razorpay_order_id: string;
+        razorpay_payment_id: string;
+        razorpay_signature: string;
+    };
     password?: string;
-}, isPaid: boolean = false) => {
+}, bypassPayment: boolean = false) => {
     const {
         email,
         full_name,
+        dob,
         phone,
         address,
         occupation,
+        adhar_number,
         family_members,
         nominee,
         bank_details,
         membership_fee,
+        payment_info,
         password,
     } = data;
+
+    // Verify Payment if provided
+    let is_paid = bypassPayment;
+    let payment_date = bypassPayment ? new Date() : null;
+    let payment_reference = null;
+
+    if (payment_info && !bypassPayment) {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = payment_info;
+        const key_secret = process.env.RAZORPAY_KEY_SECRET || process.env.TEST_KEY_SECRET; // Ensure env var is available
+        if (!key_secret) throw new AppError('Server misconfiguration: Razorpay secret missing', 500);
+
+        // Dynamic import to avoid top-level issues if crypto/razorpay not used elsewhere, but crypto is standard
+        const crypto = await import('crypto');
+        const hmac = crypto.createHmac('sha256', key_secret);
+        hmac.update(razorpay_order_id + "|" + razorpay_payment_id);
+        const generated_signature = hmac.digest('hex');
+
+        if (generated_signature === razorpay_signature) {
+            is_paid = true;
+            payment_date = new Date();
+            payment_reference = razorpay_payment_id;
+        } else {
+            throw new AppError('Invalid payment signature', 400);
+        }
+    }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
         where: { email },
+        include: { member_profile: true }
     });
 
+    let userId = '';
+    let isNewUser = true;
+
     if (existingUser) {
-        // Ideally we could link existing user to member profile, but for now let's assume new registration
-        // Or if they are just a donor, we upgrade them? 
-        // For simplicity: unique email for member registration.
-        throw new AppError('User with this email already exists', 400);
+        // If user exists, check role
+        if (existingUser.role === 'DONOR' || existingUser.role === 'VOLUNTEER') {
+            // Allow upgrade
+            if (existingUser.member_profile) {
+                throw new AppError('User is already a registered member', 400);
+            }
+            userId = existingUser.id;
+            isNewUser = false;
+        } else if (existingUser.role === 'MEMBER') {
+            throw new AppError('User is already a member', 400);
+        } else {
+            // For other roles (e.g. ADMIN), maybe block or allow? Assumed block for safety unless specified
+            throw new AppError('User with this email already exists', 400);
+        }
     }
 
     // Create User + Member + Relations
-    // Uses provided password or falls back to default if not provided (though frontend should enforce it)
     const finalPassword = password || 'Member@123';
     const hashedPassword = await bcrypt.hash(finalPassword, 12);
 
     const result = await prisma.$transaction(async (tx) => {
-        // 1. Create User
-        const newUser = await tx.user.create({
-            data: {
-                email,
-                username: email.split('@')[0] + Math.floor(Math.random() * 1000),
-                full_name, // Added full_name mapping
-                password_hash: hashedPassword,
-                role: UserRole.MEMBER,
-                is_active: true,
-                email_verified: true, // Auto verify for paid members?
-            },
-        });
+        // 1. Create User if new
+        let user;
+        if (isNewUser) {
+            user = await tx.user.create({
+                data: {
+                    email,
+                    username: email.split('@')[0] + Math.floor(Math.random() * 1000),
+                    full_name,
+                    password_hash: hashedPassword,
+                    role: UserRole.MEMBER,
+                    is_active: true,
+                    email_verified: is_paid, // Auto verify if paid
+                },
+            });
+            userId = user.id;
+        } else {
+            // Update existing user role to MEMBER
+            user = await tx.user.update({
+                where: { id: userId },
+                data: {
+                    role: UserRole.MEMBER,
+                    // Optional: Update full_name if provided? Let's keep existing to be safe or update?
+                    // user_details might be newer.
+                    full_name: full_name || undefined
+                }
+            });
+        }
 
         // 2. Create Member Profile
         const newMember = await tx.memberProfile.create({
             data: {
-                user_id: newUser.id,
+                user_id: userId,
                 full_name,
+                dob: new Date(dob), // Parse date string
                 email,
                 phone,
                 address,
                 occupation,
+                adhar_number,
                 membership_fee: new Prisma.Decimal(membership_fee),
-                is_paid: isPaid,
-                payment_date: isPaid ? new Date() : null,
-                payment_reference: isPaid ? `ADMIN_MANUAL_${Date.now()}` : null, // MOCK_PAY removed for public
+                is_paid,
+                payment_date,
+                payment_reference,
 
-                // Flattened Bank Details
-                bank_name: bank_details?.bank_name || '',
-                account_number: bank_details?.account_number || '',
-                ifsc_code: bank_details?.ifsc_code || '',
+                // Flattened Bank Details (Optional)
+                bank_name: bank_details?.bank_name,
+                account_number: bank_details?.account_number,
+                ifsc_code: bank_details?.ifsc_code,
                 branch_name: bank_details?.branch_name,
-                // account_type: 'Savings', // Optional if provided
 
-                // Flattened Nominee Details
-                nominee_name: nominee?.name || '',
-                nominee_relation: nominee?.relationship || '',
+                // Flattened Nominee Details (Optional)
+                nominee_name: nominee?.name,
+                nominee_relation: nominee?.relationship,
                 nominee_phone: nominee?.phone,
                 nominee_account_number: nominee?.account_number,
                 nominee_bank_name: nominee?.bank_name,
                 nominee_ifsc_code: nominee?.ifsc_code,
-                // nominee_branch_name: nominee?.branch_name, // Not in schema if I recall, let's check or omit if undefined
 
                 // Nested Writes for Family
                 family_members: family_members ? {
                     create: family_members.map(f => ({
                         full_name: f.name,
                         relationship: f.relationship,
-                        // age: f.age // Schema has 'dob', not 'age'. We might need to calculate DOB or update schema. 
-                        // Wait, schema has 'dob'? Let's check schema for FamilyMember.
-                        // Line 398: dob DateTime? 
-                        // The input has 'age'. 
-                        // We should properly map or adapt. For now let's skip age/dob if not compatible or mock a DOB.
-                        // Or better, let's assume the frontend sends what it sends.
-                        // Ideally we should modify frontend to send DOB.
-                        // But to "not break", let's leave DOB null for now.
                     }))
                 } : undefined,
             },
@@ -137,10 +193,37 @@ export const registerMember = async (data: {
             }
         });
 
-        const token = signToken({ userId: newUser.id, role: newUser.role });
+        // if paid, create a payment record? 
+        if (is_paid) {
+            await tx.membershipPayment.create({
+                data: {
+                    member_id: newMember.id,
+                    amount: new Prisma.Decimal(membership_fee),
+                    payment_date: new Date(),
+                    payment_method: 'razorpay',
+                    status: 'completed',
+                    payment_year: new Date().getFullYear().toString()
+                }
+            });
+        }
 
-        return { user: newUser, member: newMember, token };
+        const token = signToken({ userId: userId, role: user.role });
+
+        return { user, member: newMember, token };
     });
+
+    // Send Confirmation Email Asynchronously
+    if (result.member.is_paid && result.member.email) {
+        setImmediate(async () => {
+            await sendMembershipConfirmationEmail(
+                result.member.email!,
+                result.member.full_name,
+                result.member.id,
+                new Date().toLocaleDateString(),
+                Number(result.member.membership_fee)
+            );
+        });
+    }
 
     return result;
 };
@@ -214,6 +297,57 @@ export const getMemberProfileByUserId = async (userId: string) => {
     return member;
 };
 
+export const getMemberIdCardDetails = async (userId: string) => {
+    const member = await getMemberProfileByUserId(userId);
+    const QRCode = require('qrcode');
+
+    // Generate validity (e.g., 1 year from payment or join date)
+    const validFrom = member.payment_date || member.created_at;
+    const validUntil = new Date(validFrom);
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+
+    // QR Code Data (JSON string for transparency/verification)
+    const qrData = JSON.stringify({
+        id: member.id,
+        name: member.full_name,
+        type: 'MEMBER',
+        valid_until: validUntil.toISOString()
+    });
+
+    const qrCodeUrl = await QRCode.toDataURL(qrData);
+
+    return {
+        memberId: member.id.substring(0, 8).toUpperCase(), // Short ID for display
+        name: member.full_name,
+        memberType: 'Official Member',
+        validFrom: validFrom,
+        validUntil: validUntil,
+        bloodGroup: null, // Add to schema if needed later
+        qrCode: qrCodeUrl,
+        photo: null // Add profile photo URL if available later
+    };
+};
+
+export const getAppointmentLetterDetails = async (userId: string) => {
+    const member = await getMemberProfileByUserId(userId);
+
+    // Generate Reference Number
+    // Format: NHRD/MEM/<YEAR>/<ID_LAST_4>
+    const year = new Date().getFullYear();
+    const shortId = member.id.substring(0, 4).toUpperCase();
+    const refNo = `NHRD/MEM/${year}/${shortId}`;
+
+    return {
+        refNo,
+        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        name: member.full_name,
+        address: member.address || 'Address on file',
+        role: 'Official Member',
+        joinDate: new Date(member.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }),
+        status: 'Active' // Hardcode for now or fetch from user if needed, as memberProfile might not have status field
+    };
+};
+
 export const approveMember = async (userId: string) => {
     // 1. Get Member to verify existence
     const member = await prisma.memberProfile.findUnique({
@@ -249,4 +383,64 @@ export const deleteMember = async (userId: string) => {
     if (!user) throw new AppError('User not found', 404);
 
     return user;
+};
+
+export const updateMemberProfile = async (userId: string, data: any) => {
+    // 1. Get existing profile
+    const member = await prisma.memberProfile.findUnique({
+        where: { user_id: userId }
+    });
+
+    if (!member) throw new AppError('Member profile not found', 404);
+
+    // 2. Update allowed fields
+    const {
+        full_name,
+        phone,
+        address,
+        occupation,
+        adhar_number,
+        dob,
+        bank_details,
+        nominee
+    } = data;
+
+    const updatedMember = await prisma.memberProfile.update({
+        where: { user_id: userId },
+        data: {
+            full_name,
+            phone,
+            address,
+            occupation,
+            adhar_number,
+            dob: dob ? new Date(dob) : undefined,
+
+            // Flattened Bank Details
+            bank_name: bank_details?.bank_name,
+            account_number: bank_details?.account_number,
+            ifsc_code: bank_details?.ifsc_code,
+            branch_name: bank_details?.branch_name,
+
+            // Flattened Nominee Details
+            nominee_name: nominee?.name,
+            nominee_relation: nominee?.relationship,
+            nominee_phone: nominee?.phone,
+            nominee_account_number: nominee?.account_number,
+            nominee_bank_name: nominee?.bank_name,
+            nominee_ifsc_code: nominee?.ifsc_code,
+        },
+        include: {
+            family_members: true
+        }
+    });
+
+    // 3. Update User table name if changed
+    if (full_name) {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { full_name }
+        });
+    }
+
+    return updatedMember;
 };

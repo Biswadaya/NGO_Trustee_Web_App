@@ -20,6 +20,13 @@ const startServer = async () => {
             Logger.error('DATABASE_URL is NOT defined!');
         }
 
+        Logger.info(`BREVO_API_KEY status: ${process.env.BREVO_API_KEY ? 'Present, Length: ' + process.env.BREVO_API_KEY.length : 'MISSING'}`);
+        if (process.env.BREVO_API_KEY && process.env.BREVO_API_KEY.length > 5) {
+            Logger.info(`BREVO_API_KEY prefix: ${process.env.BREVO_API_KEY.substring(0, 5)}...`);
+        }
+
+        Logger.info(`RAZORPAY_KEY_ID status: ${process.env.RAZORPAY_KEY_ID ? 'Present' : 'MISSING'}`);
+
         await prisma.$connect();
         Logger.info('Database connected successfully');
 

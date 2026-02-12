@@ -4,29 +4,54 @@ import { prisma } from '../../utils/db';
 import * as CertificateService from '../certificates/certificate.service';
 
 export const createDonation = async (data: any) => {
-    // Logic to process payment would go here (Stripe)
-    // For MVP, we record the transaction directly
+    const { campaign_id, amount, user_id } = data;
 
-    const donation = await prisma.donation.create({
-        data: {
-            ...data,
-            status: 'completed',
-            // If payment gateway was used, we'd store transaction_id here
-            transaction_id: `TXN-${Date.now()}`
-        },
-    });
+    return prisma.$transaction(async (tx) => {
+        let validUserId = user_id;
 
-    // Auto-generate certificate if user is authenticated
-    if (donation.user_id) {
-        try {
-            await CertificateService.generateForDonation(donation.id);
-        } catch (error) {
-            console.error('Failed to generate certificate:', error);
-            // Don't fail the donation if certificate fails
+        // Validate user existence if user_id is provided
+        if (validUserId) {
+            const userExists = await tx.user.findUnique({ where: { id: validUserId } });
+            console.log(`[DEBUG] Validating User ID ${validUserId}: ${userExists ? 'Found' : 'Not Found'}`);
+            if (!userExists) {
+                console.warn(`Donation attempt with invalid User ID: ${validUserId}. Proceeding as guest donation.`);
+                validUserId = null;
+            }
         }
-    }
 
-    return donation;
+        const donation = await tx.donation.create({
+            data: {
+                ...data,
+                user_id: validUserId, // Use validated (or nullified) ID
+                status: 'completed', // Assuming we only call this after verification
+            },
+        });
+
+        // Update campaign raised amount if applicable
+        if (campaign_id) {
+            await tx.campaign.update({
+                where: { id: campaign_id },
+                data: {
+                    raised_amount: {
+                        increment: Number(amount)
+                    }
+                }
+            });
+        }
+
+        // Auto-generate certificate for both authenticated and guest users
+        if (donation.user_id || donation.donor_email || donation.donor_name) {
+            try {
+                // Note: CertificateService might need to be adjusted to accept tx or we handle outside
+                // For now, we keep it as is, but ideally it should be part of the transaction or safe to fail
+                await CertificateService.generateForDonation(donation.id);
+            } catch (error) {
+                console.error('Failed to generate certificate:', error);
+            }
+        }
+
+        return donation;
+    });
 };
 
 export const getDonations = async () => {
@@ -109,10 +134,42 @@ export const getDonationStats = async () => {
 };
 
 export const getMyDonations = async (userId: string) => {
-    return prisma.donation.findMany({
+    // 1. Fetch Donations
+    const donations = await prisma.donation.findMany({
         where: { user_id: userId },
         orderBy: { created_at: 'desc' },
         include: { campaign: true }
     });
+
+    // 2. Fetch Membership Payments
+    const memberProfile = await prisma.memberProfile.findUnique({
+        where: { user_id: userId },
+        include: { payments: true }
+    });
+
+    const membershipPayments = memberProfile?.payments || [];
+
+    // 3. Map Membership Payments
+    const formattedMembershipPayments = membershipPayments.map(payment => ({
+        id: payment.id,
+        transaction_id: `MEM-${payment.id.split('-')[0].toUpperCase()}`, // Generate a readable ID
+        created_at: payment.payment_date,
+        amount: payment.amount,
+        status: payment.status,
+        currency: 'INR',
+        campaign: {
+            title: `Membership Fee (${payment.payment_year || new Date(payment.payment_date).getFullYear()})`
+        },
+        // Donation specific fields for compatibility
+        is_anonymous: false,
+        tax_exemption_claimed: false,
+    }));
+
+    // 4. Combine and Sort
+    const allTransactions = [...donations, ...formattedMembershipPayments].sort((a, b) => {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    return allTransactions;
 };
 

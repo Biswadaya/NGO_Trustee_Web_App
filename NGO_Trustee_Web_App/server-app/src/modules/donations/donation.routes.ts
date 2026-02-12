@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/my-donations', protect, DonationController.getMyDonations);
 router.post('/', DonationController.create); // Public for now
+router.post('/create-order', DonationController.createOrder);
+router.post('/verify-payment', DonationController.verifyPayment);
 
 router.use(protect, restrictTo(UserRole.ADMIN, UserRole.MANAGER));
 router.get('/', DonationController.list);

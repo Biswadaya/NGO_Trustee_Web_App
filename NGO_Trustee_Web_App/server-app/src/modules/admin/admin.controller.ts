@@ -98,6 +98,15 @@ export const getFundsSummary = async (req: Request, res: Response, next: NextFun
     }
 };
 
+export const getFinanceStats = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const stats = await AdminService.getFinanceStats();
+        res.status(200).json({ status: 'success', data: stats });
+    } catch (error) {
+        next(error);
+    }
+};
+
 export const getExpenses = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const expenses = await AdminService.getExpenses();
@@ -257,6 +266,25 @@ export const generateReport = async (req: Request, res: Response, next: NextFunc
             endDate as string
         );
         res.status(200).json({ status: 'success', results: data.length, data });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getOrganizationSettings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const settings = await AdminService.getOrganizationSettings();
+        res.status(200).json({ status: 'success', data: { settings } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateOrganizationSettings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const updatedById = (req as any).user?.userId;
+        const settings = await AdminService.updateOrganizationSettings(req.body, updatedById);
+        res.status(200).json({ status: 'success', data: { settings } });
     } catch (error) {
         next(error);
     }

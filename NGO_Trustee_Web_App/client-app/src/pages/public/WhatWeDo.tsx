@@ -8,13 +8,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProgramDetailModal from '@/components/ProgramDetailModal';
-import childrenImage from '@/assets/children-classroom.jpg';
-import womenImage from '@/assets/women-shg-meeting.jpg';
-import healthImage from '@/assets/campaign-health.jpg';
-import waterImage from '@/assets/campaign-water.jpg';
-import villageImage from '@/assets/hero-odisha-village.jpg';
-import shgImage from '@/assets/campaign-women-shg.jpg';
-import eventsImage from '@/assets/events-cultural.jpg';
+import childrenImage from '@/assets/children.jpeg';
+import womenImage from '@/assets/women_what_we_do.jpeg';
+// Updated images as per user request
+import healthImage from '@/assets/program-health-real.jpg';
+import livelihoodImage from '@/assets/campaign-water.jpg';
+import agricultureImage from '@/assets/1_women_in_field.jpg.webp';
+import shgImage from '@/assets/program-microfinance-real.jpg';
+import disasterImage from '@/assets/cyclone_NDRF.jpg';
 
 const WhatWeDo = () => {
     const { t } = useTranslation();
@@ -31,7 +32,7 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.freeServices', 'Free Services'), value: '5' },
             ],
             features: [t('programs.features.uniforms', 'Free uniforms'), t('programs.features.meals', 'Free meals'), t('programs.features.transport', 'Free transport'), t('programs.features.healthCheckups', 'Health checkups'), t('programs.features.teachers', 'Quality teachers')],
-            color: 'bg-secondary',
+            color: 'bg-secondary/10 text-secondary',
             image: childrenImage,
         },
         {
@@ -44,7 +45,7 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.microfinanceLinked', 'Microfinance Linked'), value: '₹80M' },
             ],
             features: [t('programs.features.shgFormation', 'SHG formation'), t('programs.features.capacityBuilding', 'Capacity building'), t('programs.features.microfinanceAccess', 'Microfinance access'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.leadershipTraining', 'Leadership training')],
-            color: 'bg-accent',
+            color: 'bg-accent/10 text-accent',
             image: womenImage,
         },
         {
@@ -57,7 +58,7 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.healthCamps', 'Health Camps'), value: '200+' },
             ],
             features: [t('programs.features.odfCertification', 'ODF certification'), t('programs.features.cleanWater', 'Clean water access'), t('programs.features.hygieneEducation', 'Hygiene education'), t('programs.features.sanitation', 'Sanitation facilities'), t('programs.features.healthAwareness', 'Health awareness')],
-            color: 'bg-primary',
+            color: 'bg-primary/10 text-primary',
             image: healthImage,
         },
         {
@@ -70,8 +71,8 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.dairyUnits', 'Dairy Units'), value: '500+' },
             ],
             features: [t('programs.features.dairyFarming', 'Dairy farming'), t('programs.features.fishFarming', 'Fish farming'), t('programs.features.masonryTraining', 'Masonry training'), t('programs.features.skillsDev', 'Skills development'), t('programs.features.marketLinkage', 'Market linkage')],
-            color: 'bg-earth',
-            image: waterImage,
+            color: 'bg-muted text-foreground',
+            image: livelihoodImage,
         },
         {
             id: 'agriculture',
@@ -83,8 +84,8 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.farmersTrained', 'Farmers Trained'), value: '10,000+' },
             ],
             features: [t('programs.features.farmerGroups', 'Farmer groups'), t('programs.features.organicPractices', 'Organic practices'), t('programs.features.cropSupport', 'Crop support'), t('programs.features.trainingPrograms', 'Training programs'), t('programs.features.marketAccess', 'Market access')],
-            color: 'bg-primary',
-            image: villageImage,
+            color: 'bg-primary/10 text-primary',
+            image: agricultureImage,
         },
         {
             id: 'microfinance',
@@ -96,7 +97,7 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.beneficiaries', 'Beneficiaries'), value: '45,000+' },
             ],
             features: [t('programs.features.bankLinkages', 'Bank linkages'), t('programs.features.creditFacilitation', 'Credit facilitation'), t('programs.features.financialLiteracy', 'Financial literacy'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.savingsGroups', 'Savings groups')],
-            color: 'bg-secondary',
+            color: 'bg-secondary/10 text-secondary',
             image: shgImage,
         },
         {
@@ -109,8 +110,8 @@ const WhatWeDo = () => {
                 { label: t('programs.stats.covidResponse', 'COVID Response'), value: '10,000+' },
             ],
             features: [t('programs.features.emergencyRelief', 'Emergency relief'), t('programs.features.food distribution', 'Food distribution'), t('programs.features.shelterSupport', 'Shelter support'), t('programs.features.covidResponse', 'COVID response'), t('programs.features.communityResilience', 'Community resilience')],
-            color: 'bg-destructive',
-            image: eventsImage,
+            color: 'bg-destructive/10 text-destructive',
+            image: disasterImage,
         },
     ];
 
@@ -159,8 +160,8 @@ const WhatWeDo = () => {
                                 {/* Content */}
                                 <div className="flex-1 space-y-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-14 h-14 rounded-xl ${program.color} bg-opacity-10 flex items-center justify-center`}>
-                                            <program.icon className={`w-7 h-7 ${program.color.replace('bg-', 'text-')}`} />
+                                        <div className={`w-14 h-14 rounded-xl ${program.color.split(' ')[0]} flex items-center justify-center`}>
+                                            <program.icon className={`w-7 h-7 ${program.color.split(' ')[1]}`} />
                                         </div>
                                         <h2 className="text-2xl md:text-3xl font-bold text-foreground">{t(program.titleKey, program.titleKey.split('.')[1])}</h2>
                                     </div>
@@ -202,12 +203,13 @@ const WhatWeDo = () => {
                                 {/* Visual Card with Image */}
                                 <div className="flex-1 w-full lg:w-auto">
                                     <div
-                                        className="rounded-2xl overflow-hidden aspect-[4/3] cursor-pointer group"
+                                        className="rounded-2xl overflow-hidden aspect-[4/3] cursor-pointer group shadow-xl"
                                         onClick={() => setSelectedProgram(program)}
                                     >
                                         <img
                                             src={program.image}
                                             alt={t(program.titleKey)}
+                                            loading="lazy"
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                     </div>

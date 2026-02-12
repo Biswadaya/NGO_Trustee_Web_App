@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthAPI } from '@/api/endpoints';
-import authBackground from '@/assets/auth-background.jpg';
-import nhrdLogoBig from '@/assets/nhrd-logo-big.png';
+import authBackground from '@/assets/pexels-studderio-12871861.jpg';
+import nhrdLogoBig from '@/assets/Gemini_Generated_Image_e601vqe601vqe601-removebg-preview.png';
 import { DEFAULT_USER_AVATAR } from '@/utils/constants';
 
 interface AuthProps {

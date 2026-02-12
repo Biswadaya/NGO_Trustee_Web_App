@@ -14,9 +14,12 @@ import dashboardRoutes from '../modules/dashboard/dashboard.routes';
 import memberRoutes from '../modules/member/member.routes';
 import eventRoutes from '../modules/events/event.routes';
 import donorRoutes from '../modules/donor/donor.routes';
+import publicRoutes from '../modules/public/public.routes';
+import webhookRoutes from '../modules/webhooks/webhook.routes';
 
 const router = express.Router();
 
+router.use('/public', publicRoutes);
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/volunteers', volunteerRoutes);
@@ -32,5 +35,6 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/members', memberRoutes);
 router.use('/events', eventRoutes);
 router.use('/donors', donorRoutes);
+router.use('/webhooks', webhookRoutes);
 
 export default router;

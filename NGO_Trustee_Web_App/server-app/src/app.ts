@@ -9,7 +9,11 @@ const app: Express = express();
 
 // Security Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: '*', // Allow all origins for now (or specific client URL)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -24,6 +28,10 @@ app.use(limiter);
 
 // Logging
 app.use(morganMiddleware);
+
+// Static Files - Serve uploads
+import path from 'path';
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

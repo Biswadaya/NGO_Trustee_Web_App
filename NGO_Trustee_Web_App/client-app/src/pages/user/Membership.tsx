@@ -8,7 +8,10 @@ import { Loader2, CreditCard, ShieldCheck, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@/components/ui/separator';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 const UserMembership = () => {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -20,7 +23,8 @@ const UserMembership = () => {
   const fetchProfile = async () => {
     try {
       const res = await memberAPI.getMyProfile();
-      setProfile(res.data.data);
+      console.log("DEBUG: Full Profile Response:", res.data); // Inspect the full structure
+      setProfile(res.data.data.member); // Ensure we are extracting the member object correctly
     } catch (error) {
       console.log("No membership profile found");
       // Optionally redirect or just stay null to show "Apply" state
@@ -52,13 +56,25 @@ const UserMembership = () => {
                 <ShieldCheck className="w-10 h-10 text-primary" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold mb-2">You are not a Member yet</h2>
-            <p className="text-muted-foreground max-w-md mx-auto mb-8">
-              Join our NGO as an official member to participate in decision making, access exclusive features, and secure your family's future.
-            </p>
-            <Button size="lg" variant="premium" onClick={() => navigate('/become-member')}>
-              Apply for Membership
-            </Button>
+
+            {user?.role === 'MEMBER' ? (
+              <>
+                <h2 className="text-2xl font-bold mb-2 text-green-600">You are already a Member</h2>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                  Your membership is active. You can view your details in the profile section or access member-specific features from the sidebar.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold mb-2">You are not a Member yet</h2>
+                <p className="text-muted-foreground max-w-md mx-auto mb-8">
+                  Join our NGO as an official member to participate in decision making, access exclusive features, and secure your family's future.
+                </p>
+                <Button size="lg" variant="premium" onClick={() => navigate('/become-member')}>
+                  Apply for Membership
+                </Button>
+              </>
+            )}
           </Card>
         </div>
       </DashboardLayout>
@@ -77,7 +93,7 @@ const UserMembership = () => {
         </div>
 
         {/* Status Banner */}
-        {!profile.user?.is_active && (
+        {/* {!profile.user?.is_active && (
           <Card className="bg-amber-50 border-amber-200">
             <CardContent className="flex items-center gap-4 p-4 text-amber-800">
               <Clock className="w-6 h-6 flex-shrink-0" />
@@ -87,7 +103,7 @@ const UserMembership = () => {
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Bank Details Card */}
@@ -101,19 +117,19 @@ const UserMembership = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Bank Name</p>
-                  <p className="font-medium">{profile.bank_name}</p>
+                  <p className="font-medium">{profile.bank_name || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Account Type</p>
-                  <p className="font-medium">{profile.account_type}</p>
+                  <p className="font-medium">{profile.account_type || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Account Number</p>
-                  <p className="font-medium">•••• •••• {profile.account_number.slice(-4)}</p>
+                  <p className="font-medium">{profile.account_number ? `•••• •••• ${profile.account_number.slice(-4)}` : 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">IFSC Code</p>
-                  <p className="font-medium">{profile.ifsc_code}</p>
+                  <p className="font-medium">{profile.ifsc_code || 'N/A'}</p>
                 </div>
               </div>
             </CardContent>
@@ -130,18 +146,16 @@ const UserMembership = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-muted-foreground">Nominee Name</p>
-                  <p className="font-medium">{profile.nominee_name}</p>
+                  <p className="font-medium">{profile.nominee_name || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Relationship</p>
-                  <p className="font-medium">{profile.nominee_relation}</p>
+                  <p className="font-medium">{profile.nominee_relation || 'N/A'}</p>
                 </div>
-                {profile.nominee_phone && (
-                  <div className="col-span-2">
-                    <p className="text-muted-foreground">Contact</p>
-                    <p className="font-medium">{profile.nominee_phone}</p>
-                  </div>
-                )}
+                <div className="col-span-2">
+                  <p className="text-muted-foreground">Contact</p>
+                  <p className="font-medium">{profile.nominee_phone || 'N/A'}</p>
+                </div>
               </div>
 
               {profile.nominee_bank_name && (

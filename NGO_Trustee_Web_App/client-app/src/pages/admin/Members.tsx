@@ -7,10 +7,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { adminAPI } from '@/api/endpoints';
-import { Loader2, Search, Eye, CheckCircle, ShieldCheck, CreditCard, UserPlus, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Ban, ShieldCheck, Eye, CreditCard, UserPlus, Loader2, Search, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import IDCardModal from '@/components/admin/IDCardModal';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import MemberRegistrationModal from '@/components/admin/MemberRegistrationModal';
 
 const AdminMembers = () => {
@@ -49,25 +50,17 @@ const AdminMembers = () => {
 
   const handleViewDetails = async (user: any) => {
     setActionLoading(true);
-    try {
-      // Fetch full profile details
-      // We need a specific endpoint for fetching member profile by ID for admin
-      // Assume we added `getMemberProfile` to endpoints but backend needs to support it?
-      // Oops, I added `getMemberProfile` to endpoints but `members.routes.ts` only has `/me`.
-      // Should I add `/members/:id/profile`? 
-      // Or maybe the user list already has enough? Probably not bank details.
-      // Let's assume I'll fix the backend route in a moment if it fails.
-      // For now, I'll try to use the endpoint I defined.
+    let profileData = null;
 
-      // Wait, I defined `getMemberProfile: (id) => api.get('/members/${id}/profile')`
-      // But I didn't add that route to backend. Quick fix needed in backend if this call fails.
-      // Let's assume I will add it.
+    try {
+      // Only attempt to fetch profile if they are likely to have one (or just try and catch)
       const res = await adminAPI.getMemberProfile(user.id);
-      setSelectedMember({ ...user, profile: res.data.data.member });
-      setIsDetailsOpen(true);
+      profileData = res.data.data.member;
     } catch (error) {
-      toast.error("Could not fetch member details or user has no profile.");
+      console.warn("Could not fetch full member profile, showing basic info.");
     } finally {
+      setSelectedMember({ ...user, profile: profileData });
+      setIsDetailsOpen(true);
       setActionLoading(false);
     }
   };
@@ -84,6 +77,29 @@ const AdminMembers = () => {
       toast.error("Failed to approve");
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleBlock = async (userId: string) => {
+    const reason = prompt("Enter reason for blocking (optional):") || "Admin blocked";
+    if (reason === null) return;
+    try {
+      await adminAPI.blockUser(userId, { reason });
+      toast.success("User blocked successfully");
+      fetchUsers();
+    } catch (error) {
+      toast.error("Failed to block user");
+    }
+  };
+
+  const handleUnblock = async (userId: string) => {
+    if (!confirm("Are you sure you want to unblock this user?")) return;
+    try {
+      await adminAPI.unblockUser(userId);
+      toast.success("User unblocked successfully");
+      fetchUsers();
+    } catch (error) {
+      toast.error("Failed to unblock user");
     }
   };
 
@@ -155,28 +171,39 @@ const AdminMembers = () => {
                       <Badge variant="outline">{user.role}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={user.is_active ? "success" : "warning"}>
-                        {user.is_active ? "Active" : "Pending"}
+                      <Badge variant={user.is_blocked ? "destructive" : "success"}>
+                        {user.is_blocked ? "Inactive" : "Active"}
                       </Badge>
                     </TableCell>
                     <TableCell>{user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : '-'}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => handleViewDetails(user)}>
-                        <Eye className="w-4 h-4 mr-2" /> View
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => { setIdCardUser(user); setIsIdCardOpen(true); }}>
-                        <CreditCard className="w-4 h-4 mr-2" /> ID Card
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => {
-                        if (confirm(`Are you sure you want to remove ${user.full_name}? This action cannot be undone.`)) {
-                          adminAPI.deleteMember(user.id).then(() => {
-                            toast.success("Member removed successfully");
-                            fetchUsers();
-                          }).catch(() => toast.error("Failed to remove member"));
-                        }
-                      }}>
-                        <Trash2 className="w-4 h-4 mr-2" /> Remove
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleViewDetails(user)}>
+                            <Eye className="mr-2 h-4 w-4" /> View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => { setIdCardUser(user); setIsIdCardOpen(true); }}>
+                            <CreditCard className="mr-2 h-4 w-4" /> ID Card
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {user.is_blocked ? (
+                            <DropdownMenuItem onClick={() => handleUnblock(user.id)}>
+                              <ShieldCheck className="mr-2 h-4 w-4" /> Unblock
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={() => handleBlock(user.id)} className="text-red-600 focus:text-red-600">
+                              <Ban className="mr-2 h-4 w-4" /> Block
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))
@@ -200,53 +227,66 @@ const AdminMembers = () => {
                   <h4 className="font-bold">{selectedMember.full_name}</h4>
                   <p className="text-sm text-muted-foreground">{selectedMember.email}</p>
                 </div>
-                <Badge variant={selectedMember.is_active ? "success" : "warning"}>
-                  {selectedMember.is_active ? "Active" : "Pending Verification"}
+                <Badge variant={selectedMember.is_blocked ? "destructive" : "success"}>
+                  {selectedMember.is_blocked ? "Inactive" : "Active"}
                 </Badge>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-4 border p-4 rounded-lg">
-                  <h5 className="font-semibold flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" /> Bank Details
-                  </h5>
-                  <div className="text-sm space-y-2">
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Bank:</span> <span>{selectedMember.profile.bank_name}</span></div>
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Account:</span> <span>{selectedMember.profile.account_number}</span></div>
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">IFSC:</span> <span>{selectedMember.profile.ifsc_code}</span></div>
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Type:</span> <span>{selectedMember.profile.account_type}</span></div>
+                <h5 className="font-semibold flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" /> Personal & Payment
+                </h5>
+                <div className="text-sm space-y-2">
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Adhar Number:</span> <span>{selectedMember.profile.adhar_number || '-'}</span></div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Membership Fee:</span>
+                    <span className="font-bold text-green-600">₹{selectedMember.profile.membership_fee}</span>
                   </div>
-                </div>
-
-                <div className="space-y-4 border p-4 rounded-lg">
-                  <h5 className="font-semibold flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4" /> Nominee
-                  </h5>
-                  <div className="text-sm space-y-2">
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Name:</span> <span>{selectedMember.profile.nominee_name}</span></div>
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Relation:</span> <span>{selectedMember.profile.nominee_relation}</span></div>
-                    <div className="grid grid-cols-2"><span className="text-muted-foreground">Phone:</span> <span>{selectedMember.profile.nominee_phone || '-'}</span></div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Payment Status:</span>
+                    <span>{selectedMember.profile.is_paid ? 'Paid' : 'Unpaid'}</span>
+                  </div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Paid Date:</span>
+                    <span>{selectedMember.profile.payment_date ? format(new Date(selectedMember.profile.payment_date), 'PPP') : '-'}</span>
                   </div>
                 </div>
               </div>
 
-              {selectedMember.profile.family_members && selectedMember.profile.family_members.length > 0 && (
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-muted px-4 py-2 text-sm font-semibold">Family Members</div>
-                  <Table>
-                    <TableBody>
-                      {selectedMember.profile.family_members.map((fam: any) => (
-                        <TableRow key={fam.id}>
-                          <TableCell>{fam.full_name}</TableCell>
-                          <TableCell>{fam.relationship}</TableCell>
-                          <TableCell>{fam.is_dependent ? 'Dependent' : '-'}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+              <div className="space-y-4 border p-4 rounded-lg">
+                <h5 className="font-semibold flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" /> Bank Details (Optional)
+                </h5>
+                <div className="text-sm space-y-2">
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Bank:</span> <span>{selectedMember.profile.bank_name || '-'}</span></div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Account:</span> <span>{selectedMember.profile.account_number || '-'}</span></div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">IFSC:</span> <span>{selectedMember.profile.ifsc_code || '-'}</span></div>
                 </div>
-              )}
+              </div>
 
+              <div className="space-y-4 border p-4 rounded-lg">
+                <h5 className="font-semibold flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4" /> Nominee (Optional)
+                </h5>
+                <div className="text-sm space-y-2">
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Name:</span> <span>{selectedMember.profile.nominee_name || '-'}</span></div>
+                  <div className="grid grid-cols-2"><span className="text-muted-foreground">Relation:</span> <span>{selectedMember.profile.nominee_relation || '-'}</span></div>
+                </div>
+
+                {selectedMember.profile.family_members && selectedMember.profile.family_members.length > 0 && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <div className="bg-muted px-4 py-2 text-sm font-semibold">Family Members</div>
+                    <Table>
+                      <TableBody>
+                        {selectedMember.profile.family_members.map((fam: any) => (
+                          <TableRow key={fam.id}>
+                            <TableCell>{fam.full_name}</TableCell>
+                            <TableCell>{fam.relationship}</TableCell>
+                            <TableCell>{fam.is_dependent ? 'Dependent' : '-'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
