@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import logo from '@/assets/nhrd-logo-transparent.png';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Loader2, Share2, ShieldCheck } from 'lucide-react';
 import { memberAPI } from '@/api/endpoints';

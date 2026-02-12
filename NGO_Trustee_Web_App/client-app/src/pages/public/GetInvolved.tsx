@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
     Heart, Users, Building2, Briefcase, Mail, ArrowRight,
     CheckCircle, Clock, Award, HandHeart, Coins, Handshake

@@ -13,9 +13,20 @@ interface InvestmentFormModalProps {
     onClose: () => void;
 }
 
+interface InvestmentFormData {
+    amount: number;
+    investment_limit: number;
+    period: string;
+    rate_of_interest: number;
+    investment_date: string;
+    authority_name: string;
+    organization_name: string;
+    authority_address: string;
+}
+
 const InvestmentFormModal = ({ isOpen, onClose }: InvestmentFormModalProps) => {
     const [loading, setLoading] = useState(false);
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, formState: { isSubmitting }, reset } = useForm<InvestmentFormData>();
 
     const onSubmit = async (data: any) => {
         setLoading(true);
@@ -32,7 +43,7 @@ const InvestmentFormModal = ({ isOpen, onClose }: InvestmentFormModalProps) => {
     };
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={isOpen} onOpenChange={onClose} >
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>Investment Opportunity</DialogTitle>
@@ -87,14 +98,14 @@ const InvestmentFormModal = ({ isOpen, onClose }: InvestmentFormModalProps) => {
 
                     <div className="flex justify-end gap-3 pt-4">
                         <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                        <Button type="submit" disabled={loading || isSubmitting}>
+                            {(loading || isSubmitting) && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             Submit Proposal
                         </Button>
                     </div>
                 </form>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     );
 };
 

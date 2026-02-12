@@ -18,9 +18,6 @@ const IDCard = React.forwardRef<HTMLDivElement, IDCardProps>(({ user, role }, re
     // Determine ID
     const userIdDisplay = (user.unique_id || user.id || '0000').substring(0, 6).toUpperCase();
 
-    // Determine Join Date
-    const joinDate = user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A';
-
     return (
         <div
             ref={ref}

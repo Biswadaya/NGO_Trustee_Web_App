@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Fragment } from 'react';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { X, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface JourneyModalProps {
     isOpen: boolean;
