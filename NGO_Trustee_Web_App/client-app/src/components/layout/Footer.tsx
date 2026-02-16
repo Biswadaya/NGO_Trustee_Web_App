@@ -132,12 +132,18 @@ const Footer = () => {
                             {t('footer.copyright', '© 2026 NHRD. All rights reserved.')}
                             <Heart className="w-4 h-4 text-white inline-block" />
                         </p>
-                        <div className="flex items-center gap-4">
-                            <Link to="/privacy" className="hover:text-white transition-colors">
+                        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                            <Link to="/terms-of-use" className="hover:text-white transition-colors">
+                                {t('footer.terms', 'Terms of Use')}
+                            </Link>
+                            <Link to="/privacy-policy" className="hover:text-white transition-colors">
                                 {t('footer.privacy', 'Privacy Policy')}
                             </Link>
-                            <Link to="/terms" className="hover:text-white transition-colors">
-                                {t('footer.terms', 'Terms of Service')}
+                            <Link to="/copyright-policy" className="hover:text-white transition-colors">
+                                {t('footer.copyrightPolicy', 'Copyright Policy')}
+                            </Link>
+                            <Link to="/linking-policy" className="hover:text-white transition-colors">
+                                {t('footer.linkingPolicy', 'Linking Policy')}
                             </Link>
                         </div>
                     </div>

@@ -22,6 +22,10 @@ import Auth from "./pages/Auth/Auth";
 import BecomeMember from "./pages/public/BecomeMember";
 import Stories from "./pages/public/Stories";
 import StoryDetail from "./pages/public/StoryDetail";
+import PrivacyPolicy from "./pages/public/policies/PrivacyPolicy";
+import TermsOfUse from "./pages/public/policies/TermsOfUse";
+import CopyrightPolicy from "./pages/public/policies/CopyrightPolicy";
+import LinkingPolicy from "./pages/public/policies/LinkingPolicy";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -88,6 +92,10 @@ const App = () => (
                 <Route path="/stories" element={<Stories />} />
                 <Route path="/stories/:id" element={<StoryDetail />} />
                 <Route path="/certificate-preview" element={<div className="flex justify-center items-center min-h-screen bg-gray-100"><DonationCertificate /></div>} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-use" element={<TermsOfUse />} />
+                <Route path="/copyright-policy" element={<CopyrightPolicy />} />
+                <Route path="/linking-policy" element={<LinkingPolicy />} />
               </Route>
 
               <Route path="/login" element={<Auth initialMode="login" />} />
