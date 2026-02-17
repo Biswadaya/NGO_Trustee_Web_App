@@ -45,7 +45,7 @@ const TermsOfUse = () => {
                         <li>Donations once processed are generally non-refundable.</li>
                         <li>Refunds may be considered in cases of duplicate transactions or technical errors.</li>
                         <li>Refund requests must be made within 7 days of transaction date.</li>
-                        <li>Approved refunds will be processed through the original payment method.</li>
+                        <li>Approved refunds will be processed within 5-7 days through the original payment method.</li>
                     </ul>
                 </section>
 

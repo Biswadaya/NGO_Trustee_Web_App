@@ -230,8 +230,8 @@ const Donate = () => {
                 <X className="w-6 h-6 text-slate-500" />
               </button>
               <div className="text-center pt-2 pb-4">
-                <h3 className="text-xl font-bold text-slate-800 mb-1">Scan to Donate</h3>
-                <p className="text-sm text-slate-500">Use any UPI app to scan this code</p>
+                <h3 className="text-xl font-bold text-slate-800 mb-1">{t('donate.scanToPay', 'Scan to Donate')}</h3>
+                <p className="text-sm text-slate-500">{t('donate.scanDesc', 'Use any UPI app to scan this code')}</p>
               </div>
               <div className="flex justify-center p-4 bg-slate-50 rounded-lg border border-slate-100">
                 <img
@@ -282,11 +282,11 @@ const Donate = () => {
             </h1>
             <p className="text-xl md:text-2xl text-accent-foreground/90 max-w-3xl mx-auto">
               {isCSR
-                ? 'Partner with us to create sustainable impact.'
+                ? t('donate.csrHeroSubtitle', 'Partner with us to create sustainable impact.')
                 : (donationTypeFromUrl === 'GRANT'
-                  ? 'Support specific projects through dedicated grants.'
+                  ? t('donate.grantHeroSubtitle', 'Support specific projects through dedicated grants.')
                   : (donationTypeFromUrl === 'INVESTMENT'
-                    ? 'Create social return on investment with us.'
+                    ? t('donate.investmentHeroSubtitle', 'Create social return on investment with us.')
                     : t('donate.heroSubtitle', 'Every contribution, no matter the size, helps us continue our mission.')
                   )
                 )
@@ -314,8 +314,8 @@ const Donate = () => {
                     <User className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">Welcome back, {user?.fullname}</p>
-                    <p className="text-xs text-muted-foreground">Your donation will be linked to your account for tax certificates.</p>
+                    <p className="text-sm font-medium text-foreground">{t('donate.welcomeUser', { name: user?.fullname, defaultValue: `Welcome back, ${user?.fullname}` })}</p>
+                    <p className="text-xs text-muted-foreground">{t('donate.taxLinked', 'Your donation will be linked to your account for tax certificates.')}</p>
                   </div>
                 </div>
               ) : (
@@ -323,20 +323,20 @@ const Donate = () => {
                   <h3 className="text-lg font-semibold text-foreground mb-4">{t('donate.yourDetails', 'Your Details')}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Input
-                      placeholder="Full Name"
+                      placeholder={t('contact.name', 'Full Name')}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="h-12"
                     />
                     <Input
-                      placeholder="Email Address"
+                      placeholder={t('contact.email', 'Email Address')}
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="h-12"
                     />
                     <Input
-                      placeholder="Phone Number"
+                      placeholder={t('contact.phone', 'Phone Number')}
                       type="tel"
                       value={phone}
                       onChange={handlePhoneChange}
@@ -345,8 +345,8 @@ const Donate = () => {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground mt-2 ml-1">
-                    * Provide email to receive donation receipt.
-                    <a href="/login" className="text-primary hover:underline ml-1">Login</a> for automatic tax certificates.
+                    * {t('donate.emailNote', 'Provide email to receive donation receipt.')}
+                    <a href="/login" className="text-primary hover:underline ml-1">{t('auth.login', 'Login')}</a> {t('donate.taxNote', 'for automatic tax certificates.')}
                   </p>
                 </div>
               )}
@@ -560,15 +560,15 @@ const Donate = () => {
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">Bank</span>
+                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.bank', 'Bank')}</span>
                     <span className="text-sm font-medium text-foreground">{bankDetails.bankName}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">Account Name</span>
+                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountName', 'Account Name')}</span>
                     <span className="text-sm font-medium text-foreground text-right max-w-[180px]">{bankDetails.accountName}</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">Account No.</span>
+                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountNo', 'Account No.')}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono font-medium text-foreground">{bankDetails.accountNumber}</span>
                       <button
@@ -580,7 +580,7 @@ const Donate = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">IFSC Code</span>
+                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.ifsc', 'IFSC Code')}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono font-medium text-foreground">{bankDetails.ifscCode}</span>
                       <button
@@ -592,7 +592,7 @@ const Donate = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">UPI ID</span>
+                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.upi', 'UPI ID')}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono font-medium text-foreground">{bankDetails.upiId}</span>
                       <button
@@ -624,7 +624,7 @@ const Donate = () => {
                       alt="Payment QR Code"
                       className="w-48 h-48 object-contain rounded-lg"
                     />
-                    <p className="text-xs text-center mt-2 text-slate-500 font-medium">Click to enlarge</p>
+                    <p className="text-xs text-center mt-2 text-slate-500 font-medium">{t('donate.clickToEnlarge', 'Click to enlarge')}</p>
                   </button>
                 </div>
               </div>

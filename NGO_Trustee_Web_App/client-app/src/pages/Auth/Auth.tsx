@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, User, Heart, Loader2, Phone, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ interface AuthProps {
 }
 
 const Auth = ({ initialMode = 'login' }: AuthProps) => {
+    const { t } = useTranslation();
     const { setAuth } = useAuth();
 
     const [isLogin, setIsLogin] = useState(initialMode === 'login');
@@ -48,7 +50,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
 
                 if (response.data.status === 'OTP_REQUIRED') {
                     setShowOtpInput(true);
-                    toast.info('Verification code sent to your email.');
+                    toast.info(t('auth.codeSent', 'Verification code sent to your email.'));
                 } else {
                     // Fallback for direct login (if OTP disabled)
                     await completeLogin(response.data);
@@ -59,7 +61,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                 await completeLogin(response.data);
             }
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Authentication failed');
+            toast.error(error.response?.data?.message || t('auth.authFailed', 'Authentication failed'));
         } finally {
             setIsLoading(false);
         }
@@ -97,7 +99,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
 
     const loginSuccess = (token: string, user: any) => {
         setAuth(token, user);
-        toast.success('Welcome back!');
+        toast.success(t('auth.welcome', 'Welcome back!'));
 
         if (['ADMIN', 'SUPER_ADMIN', 'MANAGER'].includes(user.role)) {
             window.location.href = '/admin/dashboard';
@@ -115,13 +117,12 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
         setIsLoading(true);
         try {
             await AuthAPI.register(registerData);
-            toast.success('Account created successfully! Please login.');
-            toast.success('Account created successfully! Please login.');
+            toast.success(t('auth.accountCreated', 'Account created successfully! Please login.'));
             setLoginData({ email: registerData.email, password: '', otp: '' });
             setRegisterData({ full_name: '', email: '', phone: '', password: '', profile_photo: '' });
             setIsLogin(true);
         } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Registration failed');
+            toast.error(error.response?.data?.message || t('auth.registrationFailed', 'Registration failed'));
         } finally {
             setIsLoading(false);
         }
@@ -150,18 +151,18 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                     {/* Text Section */}
                     <div>
                         <h1 className="text-5xl font-bold mb-6 leading-tight">
-                            {isLogin ? "Welcome Back." : "Join the Movement."}
+                            {isLogin ? t('auth.welcomeBack', "Welcome Back.") : t('auth.joinMovement', "Join the Movement.")}
                         </h1>
                         <p className="text-xl text-white/80 max-w-md mx-auto">
-                            Together we can transform lives and build a sustainable future for our communities.
+                            {t('auth.subtitle', 'Together we can transform lives and build a sustainable future for our communities.')}
                         </p>
                     </div>
 
                     {/* Footer Links - Absolute Bottom */}
                     <div className="absolute bottom-12 flex items-center gap-4 text-sm text-white/60">
                         <span>© 2026 NHRD</span>
-                        <span>Privacy Policy</span>
-                        <span>Terms of Service</span>
+                        <Link to="/privacy-policy" className="hover:text-white transition-colors">{t('footer.privacy', 'Privacy Policy')}</Link>
+                        <Link to="/terms-of-use" className="hover:text-white transition-colors">{t('footer.terms', 'Terms of Service')}</Link>
                     </div>
                 </div>
             </div>
@@ -171,10 +172,10 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                 <div className="w-full max-w-md space-y-8">
                     <div className="text-center lg:text-left">
                         <h2 className="text-3xl font-bold tracking-tight">
-                            {isLogin ? 'Sign in to account' : 'Create an account'}
+                            {isLogin ? t('auth.signInTitle', 'Sign in to account') : t('auth.createAccountTitle', 'Create an account')}
                         </h2>
                         <p className="text-muted-foreground mt-2">
-                            {isLogin ? 'Enter your email below to access your account' : 'Enter your details below to get started'}
+                            {isLogin ? t('auth.signInSubtitle', 'Enter your email below to access your account') : t('auth.createAccountSubtitle', 'Enter your details below to get started')}
                         </p>
                     </div>
 
@@ -183,13 +184,13 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                             onClick={() => setIsLogin(true)}
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${isLogin ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                         >
-                            Login
+                            {t('auth.login', 'Login')}
                         </button>
                         <button
                             onClick={() => setIsLogin(false)}
                             className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${!isLogin ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                         >
-                            Sign Up
+                            {t('auth.signUp', 'Sign Up')}
                         </button>
                     </div>
 
@@ -206,7 +207,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                 {!showOtpInput ? (
                                     <>
                                         <div className="space-y-2">
-                                            <Label>Email</Label>
+                                            <Label>{t('auth.email', 'Email')}</Label>
                                             <div className="relative">
                                                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                                 <Input
@@ -220,8 +221,8 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                         </div>
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
-                                                <Label>Password</Label>
-                                                <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
+                                                <Label>{t('auth.password', 'Password')}</Label>
+                                                <Link to="/forgot-password" className="text-xs text-primary hover:underline">{t('auth.forgotPassword', 'Forgot password?')}</Link>
                                             </div>
                                             <div className="relative">
                                                 <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -241,10 +242,10 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                 ) : (
                                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
                                         <div className="bg-primary/10 p-4 rounded-lg text-sm text-primary mb-4">
-                                            We sent a 6-digit code to <strong>{loginData.email}</strong>. Please enter it below.
+                                            {t('auth.verificationSent', { email: loginData.email, defaultValue: `We sent a 6-digit code to ${loginData.email}. Please enter it below.` })}
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Verification Code</Label>
+                                            <Label>{t('auth.verificationCode', 'Verification Code')}</Label>
                                             <div className="relative">
                                                 <Shield className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                                 <Input
@@ -264,13 +265,13 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                                 onClick={() => setShowOtpInput(false)}
                                                 className="text-xs text-muted-foreground hover:text-primary hover:underline"
                                             >
-                                                Use a different email
+                                                {t('auth.useDifferentEmail', 'Use a different email')}
                                             </button>
                                         </div>
                                     </div>
                                 )}
                                 <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : (showOtpInput ? "Verify & Login" : "Sign In")}
+                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : (showOtpInput ? t('auth.verifyLogin', "Verify & Login") : t('auth.signIn', "Sign In"))}
                                 </Button>
                             </motion.form>
                         ) : (
@@ -283,7 +284,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                 className="space-y-4"
                             >
                                 <div className="space-y-2">
-                                    <Label>Full Name</Label>
+                                    <Label>{t('auth.fullName', 'Full Name')}</Label>
                                     <div className="relative">
                                         <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -296,7 +297,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Email</Label>
+                                    <Label>{t('auth.email', 'Email')}</Label>
                                     <div className="relative">
                                         <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -310,7 +311,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Phone</Label>
+                                    <Label>{t('auth.phone', 'Phone')}</Label>
                                     <div className="relative">
                                         <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -323,7 +324,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Password</Label>
+                                    <Label>{t('auth.password', 'Password')}</Label>
                                     <div className="relative">
                                         <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -336,7 +337,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Profile Image URL (Optional)</Label>
+                                    <Label>{t('auth.profileImage', 'Profile Image URL (Optional)')}</Label>
                                     <div className="relative">
                                         <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                         <Input
@@ -348,7 +349,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
                                     </div>
                                 </div>
                                 <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Account"}
+                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t('auth.createAccount', "Create Account")}
                                 </Button>
                             </motion.form>
                         )}
@@ -356,7 +357,7 @@ const Auth = ({ initialMode = 'login' }: AuthProps) => {
 
                     <div className="text-center">
                         <Link to="/" className="text-sm text-muted-foreground hover:text-primary flex items-center justify-center gap-2">
-                            <Heart className="w-4 h-4" /> Back to Home
+                            <Heart className="w-4 h-4" /> {t('auth.backToHome', 'Back to Home')}
                         </Link>
                     </div>
                 </div>

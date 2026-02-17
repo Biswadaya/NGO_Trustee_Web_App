@@ -59,7 +59,7 @@ const HeroSection = () => {
                         transition={{ delay: 0.4, duration: 0.6 }}
                         className="text-xl sm:text-2xl text-white/90 font-medium"
                     >
-                        {t('hero.subtitle', '24+ Years of Service • 100,000+ Lives Impacted')}
+                        {t('hero.subtitle', '25 Years of Service • 100,000+ Lives Impacted')}
                     </motion.p>
 
                     {/* Description */}

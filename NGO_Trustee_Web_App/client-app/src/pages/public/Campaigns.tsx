@@ -116,8 +116,8 @@ const Campaigns = () => {
                     ) : campaigns.length === 0 ? (
                         <div className="text-center py-20 bg-muted/20 rounded-2xl border-2 border-dashed border-muted">
                             <Target className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                            <h3 className="text-xl font-bold text-foreground mb-2">No Active Campaigns</h3>
-                            <p className="text-muted-foreground">Check back soon for new initiatives.</p>
+                            <h3 className="text-xl font-bold text-foreground mb-2">{t('campaigns.noActive', 'No Active Campaigns')}</h3>
+                            <p className="text-muted-foreground">{t('campaigns.checkBack', 'Check back soon for new initiatives.')}</p>
                         </div>
                     ) : (
                         <div className="grid md:grid-cols-2 gap-8">
@@ -160,11 +160,11 @@ const Campaigns = () => {
                                         <div className="mb-4">
                                             <div className="flex justify-between text-sm mb-2">
                                                 <span className="font-semibold text-primary">{formatCurrency(campaign.raised)}</span>
-                                                <span className="text-muted-foreground">of {formatCurrency(campaign.goal)}</span>
+                                                <span className="text-muted-foreground">{t('campaigns.of', 'of')} {formatCurrency(campaign.goal)}</span>
                                             </div>
                                             <Progress value={getProgressPercentage(campaign.raised, campaign.goal)} className="h-2" />
                                             <p className="text-xs text-muted-foreground mt-1">
-                                                {getProgressPercentage(campaign.raised, campaign.goal).toFixed(0)}% funded
+                                                {getProgressPercentage(campaign.raised, campaign.goal).toFixed(0)}% {t('campaigns.funded', 'funded')}
                                             </p>
                                         </div>
 
@@ -176,7 +176,7 @@ const Campaigns = () => {
                                             </span>
                                             <span className="flex items-center gap-1">
                                                 <Calendar className="w-4 h-4" />
-                                                Ends {new Date(campaign.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                                                {t('campaigns.ends', 'Ends')} {new Date(campaign.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                                             </span>
                                         </div>
 
@@ -185,11 +185,11 @@ const Campaigns = () => {
                                             <Link to={`/donate?campaign=${campaign.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
                                                 <Button variant="cta" className="w-full gap-2">
                                                     <Heart className="w-4 h-4" />
-                                                    Donate Now
+                                                    {t('common.donateNow', 'Donate Now')}
                                                 </Button>
                                             </Link>
                                             <Button variant="outline" className="gap-2" onClick={() => setSelectedCampaign(campaign)}>
-                                                Details
+                                                {t('campaigns.details', 'Details')}
                                                 <ArrowRight className="w-4 h-4" />
                                             </Button>
                                         </div>
@@ -250,13 +250,13 @@ const Campaigns = () => {
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                                         <div>
                                             <p className="text-3xl font-bold text-primary">{formatCurrency(selectedCampaign.raised)}</p>
-                                            <p className="text-muted-foreground">raised of {formatCurrency(selectedCampaign.goal)} goal</p>
+                                            <p className="text-muted-foreground">{t('campaigns.raised', 'raised')} {t('campaigns.of', 'of')} {formatCurrency(selectedCampaign.goal)} {t('campaigns.goal', 'goal')}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-2xl font-bold text-foreground">
                                                 {getProgressPercentage(selectedCampaign.raised, selectedCampaign.goal).toFixed(0)}%
                                             </p>
-                                            <p className="text-muted-foreground">funded</p>
+                                            <p className="text-muted-foreground">{t('campaigns.funded', 'funded')}</p>
                                         </div>
                                     </div>
                                     <Progress value={getProgressPercentage(selectedCampaign.raised, selectedCampaign.goal)} className="h-3" />
@@ -267,27 +267,27 @@ const Campaigns = () => {
                                     <div className="bg-primary/5 rounded-xl p-4 text-center">
                                         <Users className="w-8 h-8 text-primary mx-auto mb-2" />
                                         <p className="font-semibold text-foreground">{selectedCampaign.beneficiaries}</p>
-                                        <p className="text-sm text-muted-foreground">Beneficiaries</p>
+                                        <p className="text-sm text-muted-foreground">{t('campaigns.beneficiaries', 'Beneficiaries')}</p>
                                     </div>
                                     <div className="bg-primary/5 rounded-xl p-4 text-center">
                                         <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
                                         <p className="font-semibold text-foreground">
                                             {new Date(selectedCampaign.startDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                                         </p>
-                                        <p className="text-sm text-muted-foreground">Started</p>
+                                        <p className="text-sm text-muted-foreground">{t('campaigns.started', 'Started')}</p>
                                     </div>
                                     <div className="bg-primary/5 rounded-xl p-4 text-center">
                                         <Target className="w-8 h-8 text-primary mx-auto mb-2" />
                                         <p className="font-semibold text-foreground">
                                             {new Date(selectedCampaign.endDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
                                         </p>
-                                        <p className="text-sm text-muted-foreground">Ends</p>
+                                        <p className="text-sm text-muted-foreground">{t('campaigns.ends', 'Ends')}</p>
                                     </div>
                                 </div>
 
                                 {/* Description */}
                                 <div className="mb-6">
-                                    <h3 className="text-lg font-bold text-foreground mb-3">About This Campaign</h3>
+                                    <h3 className="text-lg font-bold text-foreground mb-3">{t('campaigns.about', 'About This Campaign')}</h3>
                                     <p className="text-muted-foreground leading-relaxed">
                                         {selectedCampaign.longDescription}
                                     </p>
@@ -296,7 +296,7 @@ const Campaigns = () => {
                                 {/* Updates - If API supports it in future, we can map it. Currently empty unless customized */}
                                 {selectedCampaign.updates.length > 0 && (
                                     <div className="mb-8">
-                                        <h3 className="text-lg font-bold text-foreground mb-3">Recent Updates</h3>
+                                        <h3 className="text-lg font-bold text-foreground mb-3">{t('campaigns.updates', 'Recent Updates')}</h3>
                                         <div className="space-y-3">
                                             {selectedCampaign.updates.map((update, idx) => (
                                                 <div key={idx} className="flex gap-4 p-3 bg-muted/30 rounded-lg">
@@ -315,11 +315,11 @@ const Campaigns = () => {
                                     <Link to={`/donate?campaign=${selectedCampaign.id}`} className="flex-1">
                                         <Button variant="cta" size="xl" className="w-full gap-2">
                                             <Heart className="w-5 h-5" />
-                                            Donate to This Campaign
+                                            {t('campaigns.donateToCampaign', 'Donate to This Campaign')}
                                         </Button>
                                     </Link>
                                     <Button variant="outline" size="xl" onClick={() => setSelectedCampaign(null)}>
-                                        Close
+                                        {t('campaigns.close', 'Close')}
                                     </Button>
                                 </div>
                             </div>

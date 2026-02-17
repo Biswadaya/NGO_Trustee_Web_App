@@ -28,10 +28,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.education.title',
             descKey: 'programs.education.description',
             stats: [
-                { label: t('programs.stats.childrenEducated', 'Children Educated'), value: '1,000+' },
-                { label: t('programs.stats.freeServices', 'Free Services'), value: '5' },
+                { label: t('programs.stats.children', 'Children Educated'), value: '1,000+' },
+                { label: t('programs.stats.services', 'Free Services'), value: '5' },
             ],
-            features: [t('programs.features.uniforms', 'Free uniforms'), t('programs.features.meals', 'Free meals'), t('programs.features.transport', 'Free transport'), t('programs.features.healthCheckups', 'Health checkups'), t('programs.features.teachers', 'Quality teachers')],
+            features: [
+                t('programs.education.features.uniforms', 'Free uniforms'),
+                t('programs.education.features.meals', 'Free meals'),
+                t('programs.education.features.transport', 'Free transport'),
+                t('programs.education.features.health', 'Health checkups'),
+                t('programs.education.features.teachers', 'Quality teachers')
+            ],
             color: 'bg-secondary/10 text-secondary',
             image: childrenImage,
         },
@@ -41,10 +47,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.women.title',
             descKey: 'programs.women.description',
             stats: [
-                { label: t('programs.stats.shgsFormed', 'SHGs Formed'), value: '4,481' },
-                { label: t('programs.stats.microfinanceLinked', 'Microfinance Linked'), value: '₹80M' },
+                { label: t('programs.stats.shgs', 'SHGs Formed'), value: '4,481' },
+                { label: t('programs.stats.microfinance', 'Microfinance Linked'), value: '₹80M' },
             ],
-            features: [t('programs.features.shgFormation', 'SHG formation'), t('programs.features.capacityBuilding', 'Capacity building'), t('programs.features.microfinanceAccess', 'Microfinance access'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.leadershipTraining', 'Leadership training')],
+            features: [
+                t('programs.women.features.shg', 'SHG formation'),
+                t('programs.women.features.capacity', 'Capacity building'),
+                t('programs.women.features.microfinance', 'Microfinance access'),
+                t('programs.women.features.entrepreneurship', 'Entrepreneurship'),
+                t('programs.women.features.training', 'Leadership training')
+            ],
             color: 'bg-accent/10 text-accent',
             image: womenImage,
         },
@@ -54,10 +66,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.health.title',
             descKey: 'programs.health.description',
             stats: [
-                { label: t('programs.stats.villagesOdf', 'Villages ODF'), value: '472' },
-                { label: t('programs.stats.healthCamps', 'Health Camps'), value: '200+' },
+                { label: t('programs.stats.odf', 'Villages ODF'), value: '472' },
+                { label: t('programs.stats.camps', 'Health Camps'), value: '200+' },
             ],
-            features: [t('programs.features.odfCertification', 'ODF certification'), t('programs.features.cleanWater', 'Clean water access'), t('programs.features.hygieneEducation', 'Hygiene education'), t('programs.features.sanitation', 'Sanitation facilities'), t('programs.features.healthAwareness', 'Health awareness')],
+            features: [
+                t('programs.health.features.odf', 'ODF certification'),
+                t('programs.health.features.water', 'Clean water access'),
+                t('programs.health.features.hygiene', 'Hygiene education'),
+                t('programs.health.features.sanitation', 'Sanitation facilities'),
+                t('programs.health.features.awareness', 'Health awareness')
+            ],
             color: 'bg-primary/10 text-primary',
             image: healthImage,
         },
@@ -67,10 +85,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.livelihood.title',
             descKey: 'programs.livelihood.description',
             stats: [
-                { label: t('programs.stats.masonsTrained', 'Masons Trained'), value: '1,660' },
-                { label: t('programs.stats.dairyUnits', 'Dairy Units'), value: '500+' },
+                { label: t('programs.stats.masons', 'Masons Trained'), value: '1,660' },
+                { label: t('programs.stats.dairy', 'Dairy Units'), value: '500+' },
             ],
-            features: [t('programs.features.dairyFarming', 'Dairy farming'), t('programs.features.fishFarming', 'Fish farming'), t('programs.features.masonryTraining', 'Masonry training'), t('programs.features.skillsDev', 'Skills development'), t('programs.features.marketLinkage', 'Market linkage')],
+            features: [
+                t('programs.livelihood.features.dairy', 'Dairy farming'),
+                t('programs.livelihood.features.fish', 'Fish farming'),
+                t('programs.livelihood.features.masonry', 'Masonry training'),
+                t('programs.livelihood.features.skills', 'Skills development'),
+                t('programs.livelihood.features.market', 'Market linkage')
+            ],
             color: 'bg-muted text-foreground',
             image: livelihoodImage,
         },
@@ -81,9 +105,15 @@ const WhatWeDo = () => {
             descKey: 'programs.agriculture.description',
             stats: [
                 { label: t('programs.stats.farmerGroups', 'Farmer Groups'), value: '500+' },
-                { label: t('programs.stats.farmersTrained', 'Farmers Trained'), value: '10,000+' },
+                { label: t('programs.stats.farmers', 'Farmers Trained'), value: '10,000+' },
             ],
-            features: [t('programs.features.farmerGroups', 'Farmer groups'), t('programs.features.organicPractices', 'Organic practices'), t('programs.features.cropSupport', 'Crop support'), t('programs.features.trainingPrograms', 'Training programs'), t('programs.features.marketAccess', 'Market access')],
+            features: [
+                t('programs.agriculture.features.groups', 'Farmer groups'),
+                t('programs.agriculture.features.organic', 'Organic practices'),
+                t('programs.agriculture.features.crop', 'Crop support'),
+                t('programs.agriculture.features.training', 'Training programs'),
+                t('programs.agriculture.features.market', 'Market access')
+            ],
             color: 'bg-primary/10 text-primary',
             image: agricultureImage,
         },
@@ -93,10 +123,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.microfinance.title',
             descKey: 'programs.microfinance.description',
             stats: [
-                { label: t('programs.stats.creditLinked', 'Credit Linked'), value: '₹80M' },
+                { label: t('programs.stats.credit', 'Credit Linked'), value: '₹80M' },
                 { label: t('programs.stats.beneficiaries', 'Beneficiaries'), value: '45,000+' },
             ],
-            features: [t('programs.features.bankLinkages', 'Bank linkages'), t('programs.features.creditFacilitation', 'Credit facilitation'), t('programs.features.financialLiteracy', 'Financial literacy'), t('programs.features.entrepreneurship', 'Entrepreneurship'), t('programs.features.savingsGroups', 'Savings groups')],
+            features: [
+                t('programs.microfinance.features.bank', 'Bank linkages'),
+                t('programs.microfinance.features.credit', 'Credit facilitation'),
+                t('programs.microfinance.features.literacy', 'Financial literacy'),
+                t('programs.microfinance.features.entrepreneurship', 'Entrepreneurship'),
+                t('programs.microfinance.features.savings', 'Savings groups')
+            ],
             color: 'bg-secondary/10 text-secondary',
             image: shgImage,
         },
@@ -106,10 +142,16 @@ const WhatWeDo = () => {
             titleKey: 'programs.disaster.title',
             descKey: 'programs.disaster.description',
             stats: [
-                { label: t('programs.stats.cycloneFaniRelief', 'Cyclone Fani Relief'), value: '4,500 families' },
-                { label: t('programs.stats.covidResponse', 'COVID Response'), value: '10,000+' },
+                { label: t('programs.stats.fani', 'Cyclone Fani Relief'), value: '4,500 families' },
+                { label: t('programs.stats.covid', 'COVID Response'), value: '10,000+' },
             ],
-            features: [t('programs.features.emergencyRelief', 'Emergency relief'), t('programs.features.food distribution', 'Food distribution'), t('programs.features.shelterSupport', 'Shelter support'), t('programs.features.covidResponse', 'COVID response'), t('programs.features.communityResilience', 'Community resilience')],
+            features: [
+                t('programs.disaster.features.relief', 'Emergency relief'),
+                t('programs.disaster.features.food', 'Food distribution'),
+                t('programs.disaster.features.shelter', 'Shelter support'),
+                t('programs.disaster.features.covid', 'COVID response'),
+                t('programs.disaster.features.resilience', 'Community resilience')
+            ],
             color: 'bg-destructive/10 text-destructive',
             image: disasterImage,
         },

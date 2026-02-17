@@ -23,7 +23,7 @@ const StoriesSection = () => {
                     className="text-center mb-12 md:mb-16"
                 >
                     <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        {t('stories.title', 'Voices of Change')}
+                        {t('stories.title', 'Stories of Transformation')}
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         {t('stories.subtitle', 'Real stories of transformation from the communities we serve')}
@@ -62,7 +62,7 @@ const StoriesSection = () => {
                                 <div className="relative mb-4">
                                     <Quote className="absolute -top-2 -left-1 w-8 h-8 text-primary/20" />
                                     <p className="text-foreground/80 text-sm leading-relaxed pl-6 italic">
-                                        "{story.quote}"
+                                        "{t(`stories.list.${story.id}.quote`, story.quote)}"
                                     </p>
                                 </div>
 

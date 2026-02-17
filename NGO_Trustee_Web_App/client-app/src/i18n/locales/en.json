@@ -7,7 +7,12 @@
     "stories": "Stories",
     "donate": "Donate",
     "getInvolved": "Get Involved",
-    "contact": "Contact"
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "dashboard": "Dashboard",
+    "navigation": "Navigation",
+    "campaigns": "Campaigns",
+    "events": "Events"
   },
   "hero": {
     "badge": "25 Years of Trust",
@@ -36,37 +41,129 @@
     "learnMore": "Learn More",
     "education": {
       "title": "Education",
-      "description": "Notably, NHRD established London School of Education (LSE), an English medium school in 2008, providing free education, transportation, uniforms, learning materials, and health check-ups."
+      "description": "Notably, NHRD established London School of Education (LSE), an English medium school in 2008, providing free education, transportation, uniforms, learning materials, and health check-ups.",
+      "features": {
+        "uniforms": "Free uniforms",
+        "meals": "Free meals",
+        "transport": "Free transport",
+        "health": "Health checkups",
+        "teachers": "Quality teachers"
+      }
     },
     "women": {
       "title": "Women Empowerment",
-      "description": "4,481 Self-Help Groups formed, ₹80 million microfinance linked, empowering women through capacity building and training."
+      "description": "4,481 Self-Help Groups formed, ₹80 million microfinance linked, empowering women through capacity building and training.",
+      "features": {
+        "shg": "SHG formation",
+        "capacity": "Capacity building",
+        "microfinance": "Microfinance access",
+        "entrepreneurship": "Entrepreneurship",
+        "training": "Leadership training"
+      }
     },
     "health": {
       "title": "Health & Sanitation",
-      "description": "472 villages certified ODF (Open Defecation Free), clean water access, hygiene promotion, and health awareness programs."
+      "description": "472 villages certified ODF (Open Defecation Free), clean water access, hygiene promotion, and health awareness programs.",
+      "features": {
+        "odf": "ODF certification",
+        "water": "Clean water access",
+        "hygiene": "Hygiene education",
+        "sanitation": "Sanitation facilities",
+        "awareness": "Health awareness"
+      }
     },
     "livelihood": {
       "title": "Livelihood Support",
-      "description": "Dairy, fish farming, masonry training (1,660 trained), and skills development for sustainable income generation."
+      "description": "Dairy, fish farming, masonry training (1,660 trained), and skills development for sustainable income generation.",
+      "features": {
+        "dairy": "Dairy farming",
+        "fish": "Fish farming",
+        "masonry": "Masonry training",
+        "skills": "Skills development",
+        "market": "Market linkage"
+      }
     },
     "agriculture": {
       "title": "Agricultural Support",
-      "description": "500+ farmer groups supported with improved farming techniques, organic practices, and crop support."
+      "description": "500+ farmer groups supported with improved farming techniques, organic practices, and crop support.",
+      "features": {
+        "groups": "Farmer groups",
+        "organic": "Organic practices",
+        "crop": "Crop support",
+        "training": "Training programs",
+        "market": "Market access"
+      }
     },
     "disaster": {
       "title": "Disaster Response",
-      "description": "Emergency response including Cyclone Fani relief (4,500 families) and COVID-19 support for affected communities."
+      "description": "Emergency response including Cyclone Fani relief (4,500 families) and COVID-19 support for affected communities.",
+      "features": {
+        "relief": "Emergency relief",
+        "food": "Food distribution",
+        "shelter": "Shelter support",
+        "covid": "COVID response",
+        "resilience": "Community resilience"
+      }
     },
     "microfinance": {
       "title": "Microfinance",
-      "description": "Providing financial assistance and credit linkage to SHGs to promote entrepreneurship and sustainable livelihoods."
+      "description": "Providing financial assistance and credit linkage to SHGs to promote entrepreneurship and sustainable livelihoods.",
+      "features": {
+        "bank": "Bank linkages",
+        "credit": "Credit facilitation",
+        "literacy": "Financial literacy",
+        "entrepreneurship": "Entrepreneurship",
+        "savings": "Savings groups"
+      }
+    },
+    "stats": {
+      "children": "Children Educated",
+      "services": "Free Services",
+      "shgs": "SHGs Formed",
+      "microfinance": "Microfinance Linked",
+      "odf": "Villages ODF",
+      "camps": "Health Camps",
+      "masons": "Masons Trained",
+      "dairy": "Dairy Units",
+      "farmerGroups": "Farmer Groups",
+      "farmers": "Farmers Trained",
+      "credit": "Credit Linked",
+      "beneficiaries": "Beneficiaries",
+      "fani": "Cyclone Fani Relief",
+      "covid": "COVID Response"
     }
   },
   "stories": {
     "title": "Stories of Transformation",
     "subtitle": "Real people, real change, real impact",
-    "readMore": "Read Full Story"
+    "readMore": "Read Full Story",
+    "backToStories": "Back to Stories",
+    "share": "Share Story",
+    "moreStories": "More Stories",
+    "pageTitle": "Stories of Transformation",
+    "pageSubtitle": "Read about the real impact of our programs on individuals and communities across Odisha.",
+    "list": {
+      "1": {
+        "title": "From Daily Wager to Dairy Entrepreneur",
+        "quote": "Through the SHG program, I started a small dairy business. Now I earn ₹8,000 monthly and my children are in school.",
+        "content": "<p>Sunita Devi, a 34-year-old mother of two from Balipatna village, struggled to make ends meet as a daily wage laborer. With an uncertain income and a family to support, she often faced days without enough food.</p><p>In 2018, NHRD organized a mobilization drive in her village, encouraging women to form Self-Help Groups (SHGs). Hesitant at first, Sunita joined the \"Maa Tarini SHG\" with 11 other women. Through the SHG, she received training in financial literacy and the importance of savings.</p><h3>The Turning Point</h3><p>After six months of regular savings, NHRD facilitated a bank linkage for her group. Sunita took a small loan of ₹20,000 to buy a cow. With the guidance of NHRD's livelihood experts, she learned about proper cattle care and dairy management.</p><p>Today, Sunita owns three cows and sells over 20 liters of milk daily to the local cooperative. Her monthly income has stabilized at around ₹8,000, allowing her to send both her children to the NHRD-supported school.</p><blockquote>\"I never thought I could be a business owner. NHRD didn't just give me money; they gave me the confidence to stand on my own feet.\"</blockquote>"
+      },
+      "2": {
+        "title": "Building Dreams, Brick by Brick",
+        "quote": "The masonry training gave me skills to build houses. I went from daily wages to running my own construction team.",
+        "content": "<p>Rajan Kumar dropped out of school at 14 to support his family. For years, he worked as an unskilled helper at construction sites, earning meager wages and facing frequent exploitation.</p><p>Recognizing the demand for skilled labor in the region, NHRD launched a Masonry Training Program. Rajan enrolled in the 45-day intensive course, where he learned technical skills, measurement, and safety standards.</p><h3>A New Foundation</h3><p>Armed with certification and a tool kit provided by NHRD, Rajan started taking up small independent contracts. His quality of work quickly earned him a reputation in Nimapara.</p><p>Now, at 28, Rajan employs four other youth from his village. He recently built a pucca house for his own parents, a dream he had cherished since childhood.</p>"
+      },
+      "3": {
+        "title": "The First Graduate",
+        "quote": "Free education at LSE changed my life. I was the first in my family to graduate. Now I teach other children.",
+        "content": "<p>Priya was born into a family of landless farmers. Education was a luxury they could not afford. However, when NHRD established the London School of Education (LSE) for underprivileged children, Priya's parents enrolled her in the first batch.</p><p>The school provided her with everything—uniforms, books, meals, and most importantly, a nurturing environment. Priya excelled in her studies, showing a keen interest in science.</p><h3>Giving Back</h3><p>Supported by NHRD through college, Priya recently graduated with a B.Sc. in Physics. She is the first person in her entire extended family to hold a university degree.</p><p>Instead of taking a corporate job, Priya chose to return to LSE as a teacher. \"I want to be the light for other children, just as NHRD was for me,\" she says.</p>"
+      },
+      "4": {
+        "title": "Harvesting Hope: Organic Farming Success",
+        "quote": "Organic farming reduced my costs and increased my yield. The soil is healthier, and so is my family.",
+        "content": "<p>Decades of chemical farming had degraded the soil in Bimal Das's 2-acre plot. Yields were dropping, and debts were mounting due to the high cost of fertilizers.</p><p>NHRD's agricultural intervention program introduced Bimal to organic farming techniques. He learned composting, natural pest management, and crop rotation.</p><h3>Sustainable Growth</h3><p>The transition was challenging, but within two years, Bimal saw a remarkable turnaround. His input costs dropped by 60%, and the quality of his organic paddy fetched a premium price in the market.</p><p>Bimal is now a lead farmer in his community, training others in sustainable practices. \"We are not just growing crops; we are healing the earth,\" he proclaims proudly.</p>"
+      }
+    }
   },
   "support": {
     "title": "Why Support NHRD?",
@@ -176,70 +273,127 @@
         "title": "100,000+ Lives Impacted",
         "description": "Reached a milestone of transforming over 100,000 lives across 500+ villages."
       }
+    },
+    "team": {
+      "chairman": {
+        "name": "Shri Bhagirathi Pradhan",
+        "role": "Chairman",
+        "description": "Leading with vision for rural development."
+      },
+      "Secretary": {
+        "name": "Smt. Sradhanjali Samantaray",
+        "role": "Secretary",
+        "description": "Driving operational excellence."
+      },
+      "Director": {
+        "name": "Smt. Snighdha Kumari Samantray",
+        "role": "Director",
+        "description": "Coordinating programs and outreach."
+      }
+    }
+  },
+  "campaigns": {
+    "title": "Our Campaigns",
+    "subtitle": "Support specific causes that create lasting change in rural Odisha communities",
+    "noActive": "No Active Campaigns",
+    "checkBack": "Check back soon for new initiatives.",
+    "details": "Details",
+    "raised": "raised",
+    "of": "of",
+    "goal": "goal",
+    "funded": "funded",
+    "beneficiaries": "Beneficiaries",
+    "started": "Started",
+    "ends": "Ends",
+    "about": "About This Campaign",
+    "updates": "Recent Updates",
+    "donateToCampaign": "Donate to This Campaign",
+    "close": "Close",
+    "community": "Community",
+    "locationDefault": "Odisha, India",
+    "defaultDesc": "Join us in making a difference.",
+    "defaultLongDesc": "This campaign focuses on bringing sustainable change to the community. Your support ensures that we can provide necessary resources and aid to those who need it most."
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "subtitle": "Join us in our mission through workshops, camps, and cultural celebrations",
+    "allEvents": "All Events",
+    "registerPrompt": "Register for events and be part of our community",
+    "noEvents": "No events found. Check back later!",
+    "freeEntry": "Free Entry",
+    "registered": "registered",
+    "registerNow": "Register Now",
+    "fullyBooked": "Fully Booked",
+    "registerForEvent": "Register for Event",
+    "confirmRegistration": "Confirm Registration",
+    "cancel": "Cancel",
+    "registrationSuccessful": "Registration Successful!",
+    "ticketGenerated": "Your ticket has been generated",
+    "ticketNumber": "TICKET NUMBER",
+    "attendee": "ATTENDEE",
+    "downloadTicket": "Download Ticket",
+    "done": "Done",
+    "byRegistering": "By registering, you'll receive a digital ticket that serves as your entry pass.",
+    "days": {
+      "Sun": "Sun",
+      "Mon": "Mon",
+      "Tue": "Tue",
+      "Wed": "Wed",
+      "Thu": "Thu",
+      "Fri": "Fri",
+      "Sat": "Sat"
+    },
+    "categories": {
+      "cultural": "Cultural",
+      "health": "Health",
+      "education": "Education",
+      "fundraiser": "Fundraiser",
+      "general": "General"
     }
   },
   "donate": {
-    "heroTitle": "Support Our Work",
-    "heroSubtitle": "Every donation creates lasting change in rural communities. Your support matters.",
-    "oneTime": "One-Time",
-    "monthly": "Monthly",
-    "selectAmount": "Select Amount",
-    "customAmount": "Or enter custom amount",
-    "enterAmount": "Enter amount",
-    "yourDonation": "Your donation can provide:",
-    "paymentMethod": "Payment Method",
-    "card": "Credit/Debit Card",
-    "upi": "UPI (Recommended)",
-    "netBanking": "Net Banking",
-    "completeDonation": "Complete Donation",
-    "securePayment": "Secure Payment",
-    "taxDeductible": "80G Tax Deductible",
-    "whereMoneyGoes": "Where Your Money Goes",
-    "taxBenefits": "Tax Benefits",
-    "taxBenefit1": "80G exemption: 50% deduction on taxable income",
-    "taxBenefit2": "12A registration: Organization exempt from income tax",
-    "taxBenefit3": "Instant tax certificate via email",
-    "trustMessage": "Every rupee you donate goes directly to transforming lives. With 25 years of trust and complete transparency, we ensure your generosity creates maximum impact.",
-    "impact1": "1 day school for 10 children",
-    "impact2": "SHG training for 5 women",
-    "impact3": "1 month meals for 15 children",
-    "impact4": "Water purification system",
-    "impact5": "1 month education for 20 children",
-    "allocation": {
-      "education": "Education Programs",
-      "health": "Health & Sanitation",
-      "women": "Women Empowerment",
-      "disaster": "Disaster Response",
-      "admin": "Administration"
-    }
+    "csrHeroTitle": "Your CSR Contribution changes lives",
+    "grantHeroTitle": "Your Grant empowers communities",
+    "investmentHeroTitle": "Invest in sustainable change",
+    "yourDetails": "Your Details",
+    "donateToward": "I want to donate toward",
+    "generalFund": "General Fund",
+    "generalFundDesc": "Support NHRD operations",
+    "specificCampaign": "Specific Campaign",
+    "specificCampaignDesc": "Choose a cause to support",
+    "selectCampaign": "Select a Campaign",
+    "bankTransfer": "Bank Transfer Details",
+    "bankTransferDesc": "Prefer direct bank transfer? Use these details:",
+    "bankTransferNote": "After transfer, please email your payment details to contact E-mail:-nhrdodisha@gmail.com for receipt and tax certificate.",
+    "scanToPay": "Scan to Pay via UPI"
   },
   "contact": {
     "heroTitle": "Get In Touch",
     "heroSubtitle": "We'd love to hear from you. Reach out with questions, feedback, or partnership inquiries.",
     "sendMessage": "Send Us a Message",
     "contactInfo": "Contact Information",
-    "name": "Name",
-    "email": "Email",
-    "phone": "Phone (Optional)",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
     "category": "Category",
-    "selectCategory": "Select a category",
+    "selectCategory": "Select a topic",
     "message": "Message",
-    "yourName": "Your full name",
-    "yourEmail": "your@email.com",
-    "yourPhone": "+91 9876543210",
+    "yourName": "John Doe",
+    "yourEmail": "john@example.com",
+    "yourPhone": "+91 98765 43210",
     "howCanWeHelp": "How can we help you?",
     "send": "Send Message",
     "sending": "Sending...",
-    "messageSent": "Message Sent!",
-    "thankYou": "Thank you for reaching out. We'll respond within 24 hours.",
+    "messageSent": "Message Sent Successfully",
+    "thankYou": "Thank you for contacting us! We will get back to you shortly.",
     "sendAnother": "Send Another Message",
     "ourAddress": "Our Address",
     "officeHours": "Office Hours",
-    "officeHoursText": "Mon-Fri: 9AM-5PM | Sat: 10AM-3PM",
+    "officeHoursText": "Mon - Sat: 9:00 AM - 6:00 PM",
     "faqTitle": "Frequently Asked Questions",
     "categories": {
-      "donation": "Donation Query",
-      "volunteer": "Volunteer Inquiry",
+      "donation": "Donation Inquiry",
+      "volunteer": "Volunteering",
       "partnership": "Partnership",
       "general": "General Inquiry",
       "feedback": "Feedback"
@@ -293,6 +447,33 @@
       "point3": "Professional growth",
       "point4": "Mission-driven team",
       "button": "View Openings"
+    },
+    "member": {
+      "title": "Become a Member",
+      "description": "Join our community as an official member.",
+      "point1": "Access to exclusive events",
+      "point2": "Voting rights",
+      "point3": "Networking opportunities",
+      "point4": "Direct impact",
+      "button": "Join Now"
+    },
+    "grant": {
+      "title": "Provide a Grant",
+      "description": "Support specific projects through grants.",
+      "point1": "Targeted impact",
+      "point2": "Project-specific funding",
+      "point3": "Regular reporting",
+      "point4": "Transparency",
+      "button": "Apply Grant"
+    },
+    "investment": {
+      "title": "Investment",
+      "description": "Invest in sustainable development projects.",
+      "point1": "Social Return on Investment",
+      "point2": "Sustainable growth",
+      "point3": "Long-term partnership",
+      "point4": "Financial & Social Impact",
+      "button": "Invest Now"
     },
     "whyVolunteer": "Why Volunteer With NHRD?",
     "whyVolunteerSubtitle": "Join 11,600+ volunteers who have found purpose in community service",

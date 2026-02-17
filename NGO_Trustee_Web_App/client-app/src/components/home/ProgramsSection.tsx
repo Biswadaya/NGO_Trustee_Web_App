@@ -26,10 +26,16 @@ const ProgramsSection = () => {
             color: 'bg-secondary/10 text-secondary',
             image: childrenImage,
             stats: [
-                { label: 'Children Educated', value: '1,000+' },
-                { label: 'Free Services', value: '5' },
+                { label: t('programs.stats.children', 'Children Educated'), value: '1,000+' },
+                { label: t('programs.stats.services', 'Free Services'), value: '5' },
             ],
-            features: ['Free uniforms', 'Free meals', 'Free transport', 'Health checkups', 'Quality teachers'],
+            features: [
+                t('programs.education.features.uniforms', 'Free uniforms'),
+                t('programs.education.features.meals', 'Free meals'),
+                t('programs.education.features.transport', 'Free transport'),
+                t('programs.education.features.health', 'Health checkups'),
+                t('programs.education.features.teachers', 'Quality teachers')
+            ],
         },
         {
             id: 'women-empowerment',
@@ -39,10 +45,16 @@ const ProgramsSection = () => {
             color: 'bg-accent/10 text-accent',
             image: womenImage,
             stats: [
-                { label: 'SHGs Formed', value: '4,481' },
-                { label: 'Microfinance Linked', value: '₹80M' },
+                { label: t('programs.stats.shgs', 'SHGs Formed'), value: '4,481' },
+                { label: t('programs.stats.microfinance', 'Microfinance Linked'), value: '₹80M' },
             ],
-            features: ['SHG formation', 'Capacity building', 'Microfinance access', 'Entrepreneurship', 'Leadership training'],
+            features: [
+                t('programs.women.features.shg', 'SHG formation'),
+                t('programs.women.features.capacity', 'Capacity building'),
+                t('programs.women.features.microfinance', 'Microfinance access'),
+                t('programs.women.features.entrepreneurship', 'Entrepreneurship'),
+                t('programs.women.features.training', 'Leadership training')
+            ],
         },
         {
             id: 'health',
@@ -52,10 +64,16 @@ const ProgramsSection = () => {
             color: 'bg-primary/10 text-primary',
             image: healthImage,
             stats: [
-                { label: 'Villages ODF', value: '472' },
-                { label: 'Health Camps', value: '200+' },
+                { label: t('programs.stats.odf', 'Villages ODF'), value: '472' },
+                { label: t('programs.stats.camps', 'Health Camps'), value: '200+' },
             ],
-            features: ['ODF certification', 'Clean water access', 'Hygiene education', 'Sanitation facilities', 'Health awareness'],
+            features: [
+                t('programs.health.features.odf', 'ODF certification'),
+                t('programs.health.features.water', 'Clean water access'),
+                t('programs.health.features.hygiene', 'Hygiene education'),
+                t('programs.health.features.sanitation', 'Sanitation facilities'),
+                t('programs.health.features.awareness', 'Health awareness')
+            ],
         },
         {
             id: 'livelihood',
@@ -65,10 +83,16 @@ const ProgramsSection = () => {
             color: 'bg-earth/10 text-earth',
             image: livelihoodImage,
             stats: [
-                { label: 'Masons Trained', value: '1,660' },
-                { label: 'Dairy Units', value: '500+' },
+                { label: t('programs.stats.masons', 'Masons Trained'), value: '1,660' },
+                { label: t('programs.stats.dairy', 'Dairy Units'), value: '500+' },
             ],
-            features: ['Dairy farming', 'Fish farming', 'Masonry training', 'Skills development', 'Market linkage'],
+            features: [
+                t('programs.livelihood.features.dairy', 'Dairy farming'),
+                t('programs.livelihood.features.fish', 'Fish farming'),
+                t('programs.livelihood.features.masonry', 'Masonry training'),
+                t('programs.livelihood.features.skills', 'Skills development'),
+                t('programs.livelihood.features.market', 'Market linkage')
+            ],
         },
         {
             id: 'agriculture',
@@ -78,10 +102,16 @@ const ProgramsSection = () => {
             color: 'bg-primary/10 text-primary',
             image: agricultureImage,
             stats: [
-                { label: 'Farmer Groups', value: '500+' },
-                { label: 'Farmers Trained', value: '10,000+' },
+                { label: t('programs.stats.farmerGroups', 'Farmer Groups'), value: '500+' },
+                { label: t('programs.stats.farmers', 'Farmers Trained'), value: '10,000+' },
             ],
-            features: ['Farmer groups', 'Organic practices', 'Crop support', 'Training programs', 'Market access'],
+            features: [
+                t('programs.agriculture.features.groups', 'Farmer groups'),
+                t('programs.agriculture.features.organic', 'Organic practices'),
+                t('programs.agriculture.features.crop', 'Crop support'),
+                t('programs.agriculture.features.training', 'Training programs'),
+                t('programs.agriculture.features.market', 'Market access')
+            ],
         },
         {
             id: 'microfinance',
@@ -91,10 +121,16 @@ const ProgramsSection = () => {
             color: 'bg-secondary/10 text-secondary',
             image: shgImage,
             stats: [
-                { label: 'Credit Linked', value: '₹80M' },
-                { label: 'Beneficiaries', value: '45,000+' },
+                { label: t('programs.stats.credit', 'Credit Linked'), value: '₹80M' },
+                { label: t('programs.stats.beneficiaries', 'Beneficiaries'), value: '45,000+' },
             ],
-            features: ['Bank linkages', 'Credit facilitation', 'Financial literacy', 'Entrepreneurship', 'Savings groups'],
+            features: [
+                t('programs.microfinance.features.bank', 'Bank linkages'),
+                t('programs.microfinance.features.credit', 'Credit facilitation'),
+                t('programs.microfinance.features.literacy', 'Financial literacy'),
+                t('programs.microfinance.features.entrepreneurship', 'Entrepreneurship'),
+                t('programs.microfinance.features.savings', 'Savings groups')
+            ],
         },
         {
             id: 'disaster-response',
@@ -104,10 +140,16 @@ const ProgramsSection = () => {
             color: 'bg-destructive/10 text-destructive',
             image: disasterImage,
             stats: [
-                { label: 'Cyclone Fani Relief', value: '4,500 families' },
-                { label: 'COVID Response', value: '10,000+' },
+                { label: t('programs.stats.fani', 'Cyclone Fani Relief'), value: '4,500 families' },
+                { label: t('programs.stats.covid', 'COVID Response'), value: '10,000+' },
             ],
-            features: ['Emergency relief', 'Food distribution', 'Shelter support', 'COVID response', 'Community resilience'],
+            features: [
+                t('programs.disaster.features.relief', 'Emergency relief'),
+                t('programs.disaster.features.food', 'Food distribution'),
+                t('programs.disaster.features.shelter', 'Shelter support'),
+                t('programs.disaster.features.covid', 'COVID response'),
+                t('programs.disaster.features.resilience', 'Community resilience')
+            ],
         },
     ];
 

@@ -284,13 +284,13 @@ const Events = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">All Events</h2>
-            <p className="text-muted-foreground">Register for events and be part of our community</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t('events.allEvents', 'All Events')}</h2>
+            <p className="text-muted-foreground">{t('events.registerPrompt', 'Register for events and be part of our community')}</p>
           </motion.div>
 
           {events.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
-              No events found. Check back later!
+              {t('events.noEvents', 'No events found. Check back later!')}
             </div>
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
@@ -312,13 +312,13 @@ const Events = () => {
                     />
                     <div className="absolute top-4 left-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(event.category)}`}>
-                        {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
+                        {t(`events.categories.${event.category}`, event.category.charAt(0).toUpperCase() + event.category.slice(1))}
                       </span>
                     </div>
                     {event.isFree && (
                       <div className="absolute top-4 right-4">
                         <span className="px-3 py-1 bg-green-500 text-white rounded-full text-xs font-medium">
-                          Free Entry
+                          {t('events.freeEntry', 'Free Entry')}
                         </span>
                       </div>
                     )}
@@ -349,7 +349,7 @@ const Events = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Users className="w-4 h-4 text-primary" />
-                        {event.registered}/{event.capacity} registered
+                        {event.registered}/{event.capacity} {t('events.registered', 'registered')}
                       </div>
                     </div>
 
@@ -363,7 +363,7 @@ const Events = () => {
                       disabled={event.registered >= event.capacity}
                     >
                       <Ticket className="w-4 h-4" />
-                      {event.registered >= event.capacity ? 'Fully Booked' : 'Register Now'}
+                      {event.registered >= event.capacity ? t('events.fullyBooked', 'Fully Booked') : t('events.registerNow', 'Register Now')}
                     </Button>
                   </div>
                 </motion.div>
@@ -391,7 +391,7 @@ const Events = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-foreground">Register for Event</h3>
+                <h3 className="text-xl font-bold text-foreground">{t('events.registerForEvent', 'Register for Event')}</h3>
                 <button
                   onClick={() => setShowRegistrationModal(false)}
                   className="p-2 rounded-lg hover:bg-muted transition-colors"
@@ -420,7 +420,7 @@ const Events = () => {
                 </div>
 
                 <p className="text-sm text-muted-foreground">
-                  By registering, you'll receive a digital ticket that serves as your entry pass.
+                  {t('events.byRegistering', "By registering, you'll receive a digital ticket that serves as your entry pass.")}
                 </p>
               </div>
 
@@ -431,10 +431,10 @@ const Events = () => {
                   onClick={() => handleRegister(selectedEvent)}
                 >
                   <Ticket className="w-4 h-4" />
-                  Confirm Registration
+                  {t('events.confirmRegistration', 'Confirm Registration')}
                 </Button>
                 <Button variant="outline" onClick={() => setShowRegistrationModal(false)}>
-                  Cancel
+                  {t('events.cancel', 'Cancel')}
                 </Button>
               </div>
             </motion.div>
@@ -462,15 +462,15 @@ const Events = () => {
               {/* Ticket Header */}
               <div className="bg-primary p-6 text-center">
                 <CheckCircle className="w-16 h-16 text-primary-foreground mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-primary-foreground mb-2">Registration Successful!</h3>
-                <p className="text-primary-foreground/80">Your ticket has been generated</p>
+                <h3 className="text-2xl font-bold text-primary-foreground mb-2">{t('events.registrationSuccessful', 'Registration Successful!')}</h3>
+                <p className="text-primary-foreground/80">{t('events.ticketGenerated', 'Your ticket has been generated')}</p>
               </div>
 
               {/* Ticket Body */}
               <div className="p-6">
                 <div className="border-2 border-dashed border-muted rounded-xl p-4 space-y-4">
                   <div className="text-center">
-                    <p className="text-xs text-muted-foreground">TICKET NUMBER</p>
+                    <p className="text-xs text-muted-foreground">{t('events.ticketNumber', 'TICKET NUMBER')}</p>
                     <p className="text-xl font-mono font-bold text-primary">{ticketData.ticketNumber}</p>
                   </div>
 
@@ -498,7 +498,7 @@ const Events = () => {
                   </div>
 
                   <div className="border-t border-dashed border-muted pt-4 text-center">
-                    <p className="text-xs text-muted-foreground">ATTENDEE</p>
+                    <p className="text-xs text-muted-foreground">{t('events.attendee', 'ATTENDEE')}</p>
                     <p className="font-semibold text-foreground">{ticketData.userName}</p>
                   </div>
                 </div>
@@ -506,10 +506,10 @@ const Events = () => {
                 <div className="flex gap-3 mt-6">
                   <Button variant="outline" className="flex-1 gap-2">
                     <Download className="w-4 h-4" />
-                    Download Ticket
+                    {t('events.downloadTicket', 'Download Ticket')}
                   </Button>
                   <Button variant="default" onClick={() => setTicketData(null)}>
-                    Done
+                    {t('events.done', 'Done')}
                   </Button>
                 </div>
               </div>

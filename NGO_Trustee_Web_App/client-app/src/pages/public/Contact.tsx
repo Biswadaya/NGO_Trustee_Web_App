@@ -315,7 +315,7 @@ const Contact = () => {
                                 </summary>
                                 <div className="px-6 pb-6 pt-0">
                                     <p className="text-muted-foreground">
-                                        {t(faq.aKey, 'Answer to the FAQ question goes here. This is a placeholder since translation keys might be missing.')}
+                                        {t(faq.aKey, 'Answer to the FAQ question goes here.')}
                                     </p>
                                 </div>
                             </motion.details>

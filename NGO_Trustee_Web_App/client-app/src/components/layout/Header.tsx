@@ -90,7 +90,7 @@ const Header = () => {
                                         : "text-foreground hover:bg-accent/10 hover:text-accent"
                                     }
                                 >
-                                    Sign In
+                                    {t('nav.signIn', 'Sign In')}
                                 </Button>
                             </Link>
                         ) : (
@@ -104,7 +104,7 @@ const Header = () => {
                                             : "text-foreground hover:bg-accent/10 hover:text-accent"
                                         }
                                     >
-                                        Dashboard
+                                        {t('nav.dashboard', 'Dashboard')}
                                     </Button>
                                 </Link>
 
@@ -178,7 +178,7 @@ const Header = () => {
                             className="fixed top-0 right-0 h-[100dvh] w-full max-w-sm bg-background/95 backdrop-blur-xl border-l border-border shadow-2xl z-[100] flex flex-col"
                         >
                             <div className="flex items-center justify-between p-6 border-b border-border/50">
-                                <span className="text-lg font-bold">Navigation</span>
+                                <span className="text-lg font-bold">{t('nav.navigation', 'Navigation')}</span>
                                 <button
                                     onClick={() => setIsMobileMenuOpen(false)}
                                     className="p-2 rounded-full hover:bg-muted transition-colors"
@@ -211,7 +211,7 @@ const Header = () => {
                                             className="block"
                                         >
                                             <Button variant="outline" size="lg" className="w-full justify-center">
-                                                Sign In
+                                                {t('nav.signIn', 'Sign In')}
                                             </Button>
                                         </Link>
                                     ) : (
@@ -221,7 +221,7 @@ const Header = () => {
                                             className="block"
                                         >
                                             <Button variant="outline" size="lg" className="w-full justify-center">
-                                                Dashboard
+                                                {t('nav.dashboard', 'Dashboard')}
                                             </Button>
                                         </Link>
                                     )}

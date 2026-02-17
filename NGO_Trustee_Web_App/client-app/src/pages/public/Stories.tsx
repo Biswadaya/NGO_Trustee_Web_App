@@ -11,7 +11,7 @@ const Stories = () => {
     return (
         <div className="min-h-screen bg-background">
             {/* Hero Section */}
-            <section className="relative py-20 bg-muted/30">
+            <section className="relative py-20 pt-32 bg-muted/30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
@@ -68,12 +68,12 @@ const Stories = () => {
 
                                     <h2 className="text-xl font-bold text-foreground mb-3 line-clamp-2 hover:text-primary transition-colors">
                                         <Link to={`/stories/${story.id}`}>
-                                            {story.title}
+                                            {t(`stories.list.${story.id}.title`, story.title)}
                                         </Link>
                                     </h2>
 
                                     <p className="text-muted-foreground text-sm line-clamp-3 mb-6 flex-grow italic">
-                                        "{story.quote}"
+                                        "{t(`stories.list.${story.id}.quote`, story.quote)}"
                                     </p>
 
                                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">

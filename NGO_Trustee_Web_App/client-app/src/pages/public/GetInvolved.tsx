@@ -31,45 +31,45 @@ const GetInvolved = () => {
     const involvementOptions = [
         {
             icon: Users,
-            titleKey: 'Become a Member',
-            descKey: 'Join our community as an official member.',
+            titleKey: 'getInvolved.member.title',
+            descKey: 'getInvolved.member.description',
             points: [
-                'Access to exclusive events',
-                'Voting rights',
-                'Networking opportunities',
-                'Direct impact'
+                t('getInvolved.member.point1', 'Access to exclusive events'),
+                t('getInvolved.member.point2', 'Voting rights'),
+                t('getInvolved.member.point3', 'Networking opportunities'),
+                t('getInvolved.member.point4', 'Direct impact')
             ],
-            buttonKey: 'Join Now',
+            buttonKey: 'getInvolved.member.button',
             buttonVariant: 'default' as const,
             color: 'bg-primary/10 text-primary',
             href: '/register' // Redirects to registration
         },
         {
             icon: Heart,
-            titleKey: 'Make a Donation',
-            descKey: 'Support our causes with a financial contribution.',
+            titleKey: 'getInvolved.donation.title',
+            descKey: 'getInvolved.donation.description',
             points: [
-                'One-time donation',
-                'Monthly giving',
-                'Sponsor a child',
-                'Tax benefits'
+                t('getInvolved.donation.point1', 'One-time donation'),
+                t('getInvolved.donation.point2', 'Monthly giving'),
+                t('getInvolved.donation.point3', 'Sponsor a child'),
+                t('getInvolved.donation.point4', 'Tax benefits')
             ],
-            buttonKey: 'Donate Now',
+            buttonKey: 'getInvolved.donation.button',
             buttonVariant: 'cta' as const,
             href: '/donate',
             color: 'bg-accent/10 text-accent',
         },
         {
             icon: Building2,
-            titleKey: 'CSR Contribution',
-            descKey: 'Collaborate with us for Corporate Social Responsibility.',
+            titleKey: 'getInvolved.csr.title',
+            descKey: 'getInvolved.csr.description',
             points: [
-                'Corporate partnerships',
-                'Employee engagement',
-                'Project sponsorship',
-                'Sustainability goals'
+                t('getInvolved.csr.point1', 'Corporate partnerships'),
+                t('getInvolved.csr.point2', 'Employee engagement'),
+                t('getInvolved.csr.point3', 'Project sponsorship'),
+                t('getInvolved.csr.point4', 'Sustainability goals')
             ],
-            buttonKey: 'Contribute',
+            buttonKey: 'getInvolved.csr.button',
             buttonVariant: 'outline' as const,
             color: 'bg-secondary/10 text-secondary',
             actionType: null,
@@ -77,15 +77,15 @@ const GetInvolved = () => {
         },
         {
             icon: Handshake,
-            titleKey: 'Provide a Grant',
-            descKey: 'Support specific projects through grants.',
+            titleKey: 'getInvolved.grant.title',
+            descKey: 'getInvolved.grant.description',
             points: [
-                'Targeted impact',
-                'Project-specific funding',
-                'Regular reporting',
-                'Transparency'
+                t('getInvolved.grant.point1', 'Targeted impact'),
+                t('getInvolved.grant.point2', 'Project-specific funding'),
+                t('getInvolved.grant.point3', 'Regular reporting'),
+                t('getInvolved.grant.point4', 'Transparency')
             ],
-            buttonKey: 'Apply Grant',
+            buttonKey: 'getInvolved.grant.button',
             buttonVariant: 'outline' as const,
             color: 'bg-indigo-500/10 text-indigo-500',
             actionType: null,
@@ -93,15 +93,15 @@ const GetInvolved = () => {
         },
         {
             icon: Coins,
-            titleKey: 'Investment',
-            descKey: 'Invest in sustainable development projects.',
+            titleKey: 'getInvolved.investment.title',
+            descKey: 'getInvolved.investment.description',
             points: [
-                'Social Return on Investment',
-                'Sustainable growth',
-                'Long-term partnership',
-                'Financial & Social Impact'
+                t('getInvolved.investment.point1', 'Social Return on Investment'),
+                t('getInvolved.investment.point2', 'Sustainable growth'),
+                t('getInvolved.investment.point3', 'Long-term partnership'),
+                t('getInvolved.investment.point4', 'Financial & Social Impact')
             ],
-            buttonKey: 'Invest Now',
+            buttonKey: 'getInvolved.investment.button',
             buttonVariant: 'outline' as const,
             color: 'bg-emerald-500/10 text-emerald-500',
             actionType: null,
@@ -109,15 +109,15 @@ const GetInvolved = () => {
         },
         {
             icon: Briefcase,
-            titleKey: 'Careers',
-            descKey: 'Work with us and build a career with purpose.',
+            titleKey: 'getInvolved.careers.title',
+            descKey: 'getInvolved.careers.description',
             points: [
-                'Work with purpose',
-                'Professional growth',
-                'Field experience',
-                'Competitive benefits'
+                t('getInvolved.careers.point1', 'Work with purpose'),
+                t('getInvolved.careers.point2', 'Professional growth'),
+                t('getInvolved.careers.point3', 'Field experience'),
+                t('getInvolved.careers.point4', 'Competitive benefits')
             ],
-            buttonKey: 'View Openings',
+            buttonKey: 'getInvolved.careers.button',
             buttonVariant: 'outline' as const,
             color: 'bg-earth/10 text-earth',
         },

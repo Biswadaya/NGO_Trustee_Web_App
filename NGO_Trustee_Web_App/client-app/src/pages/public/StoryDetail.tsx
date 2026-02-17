@@ -1,10 +1,12 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Calendar, MapPin, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { stories } from '@/data/stories';
 
 const StoryDetail = () => {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const story = stories.find(s => s.id === id);
 
@@ -18,7 +20,7 @@ const StoryDetail = () => {
             <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
                 <img
                     src={story.image}
-                    alt={story.title}
+                    alt={t(`stories.list.${story.id}.title`, story.title)}
                     className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
@@ -27,7 +29,7 @@ const StoryDetail = () => {
                     <div className="max-w-3xl mx-auto">
                         <Link to="/stories" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-6 transition-colors">
                             <ArrowLeft className="w-5 h-5" />
-                            Back to Stories
+                            {t('stories.backToStories', 'Back to Stories')}
                         </Link>
 
                         <motion.div
@@ -49,7 +51,7 @@ const StoryDetail = () => {
                             </div>
 
                             <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                                {story.title}
+                                {t(`stories.list.${story.id}.title`, story.title)}
                             </h1>
 
                             <p className="text-xl text-white/90 font-medium">
@@ -67,17 +69,17 @@ const StoryDetail = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="prose prose-lg dark:prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: story.content }}
+                    dangerouslySetInnerHTML={{ __html: t(`stories.list.${story.id}.content`, story.content) }}
                 />
 
                 <div className="mt-12 pt-8 border-t border-border flex justify-between items-center">
                     <Button variant="outline" size="sm" className="gap-2">
                         <Share2 className="w-4 h-4" />
-                        Share Story
+                        {t('stories.share', 'Share Story')}
                     </Button>
                     <Link to="/stories">
                         <Button variant="ghost" className="gap-2">
-                            More Stories
+                            {t('stories.moreStories', 'More Stories')}
                             <ArrowLeft className="w-4 h-4 rotate-180" />
                         </Button>
                     </Link>
@@ -86,5 +88,4 @@ const StoryDetail = () => {
         </article>
     );
 };
-
 export default StoryDetail;

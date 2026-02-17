@@ -191,7 +191,7 @@ const About = () => {
                   <p className="text-sm text-muted-foreground">{t('about.shgsFormed', 'SHGs Formed')}</p>
                 </div>
                 <div className="text-center p-4 bg-primary/5 rounded-xl">
-                  <p className="text-3xl font-bold text-primary">24+</p>
+                  <p className="text-3xl font-bold text-primary">25</p>
                   <p className="text-sm text-muted-foreground">{t('about.yearsOfService', 'Years of Service')}</p>
                 </div>
               </div>
@@ -266,7 +266,7 @@ const About = () => {
               className="gap-2"
               onClick={() => setIsJourneyModalOpen(true)}
             >
-              Learn More <ArrowRight className="w-4 h-4" />
+              {t('common.learnMore', 'Learn More')} <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
         </div>
