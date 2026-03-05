@@ -327,10 +327,10 @@ const About = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { key: 'chairman', initials: 'BP', name: 'Shri Bhagirathi Pradhan', role: 'Chairman', desc: 'Leading with vision for rural development.' },
-              { key: 'Secretary', initials: 'SS', name: 'Smt. Sradhanjali Samantaray', role: 'Secretary', desc: 'Driving operational excellence.' },
-              { key: 'Director', initials: 'SK', name: 'Smt. Snighdha Kumari Samantray', role: 'Director', desc: 'Coordinating programs and outreach.' },
-              { key: 'Director', initials: 'LS', name: 'Smt. Laxmipriya Swain', role: 'Director', desc: 'Strengthening community ties.' },
-              { key: 'Director', initials: 'UK', name: 'Shri Umesh Kumar Swain', role: 'Director', desc: 'Ensuring financial integrity.' },
+              { key: 'secretary', initials: 'SS', name: 'Smt. Sradhanjali Samantaray', role: 'Secretary', desc: 'Driving operational excellence.' },
+              { key: 'director1', initials: 'SK', name: 'Smt. Snighdha Kumari Samantray', role: 'Director', desc: 'Coordinating programs and outreach.' },
+              { key: 'director2', initials: 'LS', name: 'Smt. Laxmipriya Swain', role: 'Director', desc: 'Strengthening community ties.' },
+              { key: 'director3', initials: 'UK', name: 'Shri Umesh Kumar Swain', role: 'Director', desc: 'Ensuring financial integrity.' },
             ].map((member, index) => (
               <motion.div
                 key={member.key}

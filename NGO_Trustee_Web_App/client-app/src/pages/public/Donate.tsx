@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Mail, Loader2, User, X } from 'lucide-react';
+import { Heart, CreditCard, Smartphone, Building2, Shield, CheckCircle, Copy, Mail, Loader2, User, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -106,6 +106,9 @@ const Donate = () => {
 
   // QR Modal State
   const [showQrModal, setShowQrModal] = useState(false);
+
+  // Bank Details Collapsible State
+  const [bankDetailsOpen, setBankDetailsOpen] = useState(false);
 
   // Phone state
   const [phone, setPhone] = useState('');
@@ -275,7 +278,7 @@ const Donate = () => {
                   ? t('donate.grantHeroTitle', 'Your Grant empowers communities')
                   : (donationTypeFromUrl === 'INVESTMENT'
                     ? t('donate.investmentHeroTitle', 'Invest in sustainable change')
-                    : t('donate.heroTitle', 'Your Donation Changes Lives')
+                    : t('donate.heroTitle', 'Support Our Work')
                   )
                 )
               }
@@ -287,7 +290,7 @@ const Donate = () => {
                   ? t('donate.grantHeroSubtitle', 'Support specific projects through dedicated grants.')
                   : (donationTypeFromUrl === 'INVESTMENT'
                     ? t('donate.investmentHeroSubtitle', 'Create social return on investment with us.')
-                    : t('donate.heroSubtitle', 'Every contribution, no matter the size, helps us continue our mission.')
+                    : t('donate.heroSubtitle', 'NHRD creates lasting impact through small contributions. We provide free education support for students, empower women through SHGs and skill development, strengthen livelihoods for farmers and artisans, and lead disaster management efforts with relief, rehabilitation, and rescue during crises.')
                   )
                 )
               }
@@ -548,85 +551,106 @@ const Donate = () => {
               viewport={{ once: true }}
               className="space-y-6"
             >
-              {/* Bank Details Card */}
-              <div className="bg-card p-6 rounded-2xl shadow-lg border border-border">
-                <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-primary" />
-                  {t('donate.bankTransfer', 'Bank Transfer Details')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {t('donate.bankTransferDesc', 'Prefer direct bank transfer? Use these details:')}
-                </p>
+              {/* Bank Details Card - Collapsible */}
+              <div className="bg-card rounded-2xl shadow-lg border border-border">
+                <button
+                  onClick={() => setBankDetailsOpen(!bankDetailsOpen)}
+                  className="w-full p-6 flex items-center justify-between text-left hover:bg-muted/30 rounded-2xl transition-colors"
+                >
+                  <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-primary" />
+                    {t('donate.bankTransfer', 'Bank Transfer Details')}
+                  </h3>
+                  <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${bankDetailsOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.bank', 'Bank')}</span>
-                    <span className="text-sm font-medium text-foreground">{bankDetails.bankName}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountName', 'Account Name')}</span>
-                    <span className="text-sm font-medium text-foreground text-right max-w-[180px]">{bankDetails.accountName}</span>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountNo', 'Account No.')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.accountNumber}</span>
-                      <button
-                        onClick={() => copyToClipboard(bankDetails.accountNumber, 'Account number')}
-                        className="p-1 hover:bg-muted rounded"
-                      >
-                        <Copy className="w-3 h-3 text-muted-foreground" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.ifsc', 'IFSC Code')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.ifscCode}</span>
-                      <button
-                        onClick={() => copyToClipboard(bankDetails.ifscCode, 'IFSC code')}
-                        className="p-1 hover:bg-muted rounded"
-                      >
-                        <Copy className="w-3 h-3 text-muted-foreground" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-sm text-muted-foreground">{t('donate.bankLabels.upi', 'UPI ID')}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-mono font-medium text-foreground">{bankDetails.upiId}</span>
-                      <button
-                        onClick={() => copyToClipboard(bankDetails.upiId, 'UPI ID')}
-                        className="p-1 hover:bg-muted rounded"
-                      >
-                        <Copy className="w-3 h-3 text-muted-foreground" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <AnimatePresence initial={false}>
+                  {bankDetailsOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6">
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {t('donate.bankTransferDesc', 'Prefer direct bank transfer? Use these details:')}
+                        </p>
 
-                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                  <p className="text-xs text-muted-foreground flex items-start gap-2">
-                    <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                    {t('donate.bankTransferNote', 'After transfer, please email your payment details to contact E-mail:-nhrdodisha@gmail.com for receipt and tax certificate.')}
-                  </p>
-                </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center py-2 border-b border-border">
+                            <span className="text-sm text-muted-foreground">{t('donate.bankLabels.bank', 'Bank')}</span>
+                            <span className="text-sm font-medium text-foreground">{bankDetails.bankName}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-border">
+                            <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountName', 'Account Name')}</span>
+                            <span className="text-sm font-medium text-foreground text-right max-w-[180px]">{bankDetails.accountName}</span>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-border">
+                            <span className="text-sm text-muted-foreground">{t('donate.bankLabels.accountNo', 'Account No.')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-mono font-medium text-foreground">{bankDetails.accountNumber}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); copyToClipboard(bankDetails.accountNumber, 'Account number'); }}
+                                className="p-1 hover:bg-muted rounded"
+                              >
+                                <Copy className="w-3 h-3 text-muted-foreground" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-border">
+                            <span className="text-sm text-muted-foreground">{t('donate.bankLabels.ifsc', 'IFSC Code')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-mono font-medium text-foreground">{bankDetails.ifscCode}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); copyToClipboard(bankDetails.ifscCode, 'IFSC code'); }}
+                                className="p-1 hover:bg-muted rounded"
+                              >
+                                <Copy className="w-3 h-3 text-muted-foreground" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center py-2 border-b border-border">
+                            <span className="text-sm text-muted-foreground">{t('donate.bankLabels.upi', 'UPI ID')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-mono font-medium text-foreground">{bankDetails.upiId}</span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); copyToClipboard(bankDetails.upiId, 'UPI ID'); }}
+                                className="p-1 hover:bg-muted rounded"
+                              >
+                                <Copy className="w-3 h-3 text-muted-foreground" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
 
-                {/* QR Code Section */}
-                <div className="mt-6 flex flex-col items-center">
-                  <p className="text-sm font-medium text-foreground mb-3">{t('donate.scanToPay', 'Scan to Pay via UPI')}</p>
-                  <button
-                    onClick={() => setShowQrModal(true)}
-                    className="bg-white p-2 rounded-xl shadow-sm border border-border hover:shadow-md hover:scale-[1.02] transition-all cursor-zoom-in"
-                  >
-                    <img
-                      src={qrCode}
-                      alt="Payment QR Code"
-                      className="w-48 h-48 object-contain rounded-lg"
-                    />
-                    <p className="text-xs text-center mt-2 text-slate-500 font-medium">{t('donate.clickToEnlarge', 'Click to enlarge')}</p>
-                  </button>
-                </div>
+                        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                          <p className="text-xs text-muted-foreground flex items-start gap-2">
+                            <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                            {t('donate.bankTransferNote', 'After transfer, please email your payment details to contact E-mail:-nhrdodisha@gmail.com for receipt and tax certificate.')}
+                          </p>
+                        </div>
+
+                        {/* QR Code Section */}
+                        <div className="mt-6 flex flex-col items-center">
+                          <p className="text-sm font-medium text-foreground mb-3">{t('donate.scanToPay', 'Scan to Pay via UPI')}</p>
+                          <button
+                            onClick={() => setShowQrModal(true)}
+                            className="bg-white p-2 rounded-xl shadow-sm border border-border hover:shadow-md hover:scale-[1.02] transition-all cursor-zoom-in"
+                          >
+                            <img
+                              src={qrCode}
+                              alt="Payment QR Code"
+                              className="w-48 h-48 object-contain rounded-lg"
+                            />
+                            <p className="text-xs text-center mt-2 text-slate-500 font-medium">{t('donate.clickToEnlarge', 'Click to enlarge')}</p>
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Where Money Goes */}
