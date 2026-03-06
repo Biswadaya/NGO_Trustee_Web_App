@@ -16,7 +16,7 @@
   },
   "hero": {
     "badge": "25 Years of Trust",
-    "title": "Transforming Rural Odisha",
+    "title": "National Humanity & Rural Development",
     "subtitle": "100,000+ Lives Touched | 500+ Villages",
     "description": "National Humanity & Rural Development (NHRD) is a leading non-profit organization working with poor and marginalized communities in Odisha since 2000. We promote sustainable development by strengthening capacity and improving quality of life through education, women empowerment, child development, health & sanitation, livelihood, disaster response, climate action, skill training, and food security.",
     "ctaDonate": "Make a Donation",
@@ -280,15 +280,25 @@
         "role": "Chairman",
         "description": "Leading with vision for rural development."
       },
-      "Secretary": {
+      "secretary": {
         "name": "Smt. Sradhanjali Samantaray",
         "role": "Secretary",
         "description": "Driving operational excellence."
       },
-      "Director": {
+      "director1": {
         "name": "Smt. Snighdha Kumari Samantray",
         "role": "Director",
         "description": "Coordinating programs and outreach."
+      },
+      "director2": {
+        "name": "Smt. Laxmipriya Swain",
+        "role": "Director",
+        "description": "Strengthening community ties."
+      },
+      "director3": {
+        "name": "Shri Umesh Kumar Swain",
+        "role": "Director",
+        "description": "Ensuring financial integrity."
       }
     }
   },

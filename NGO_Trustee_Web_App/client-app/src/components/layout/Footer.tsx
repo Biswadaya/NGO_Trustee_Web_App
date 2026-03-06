@@ -44,7 +44,7 @@ const Footer = () => {
                             {t('footer.aboutText', 'Empowering communities through sustainable development and social change since 2010. Join us in making a difference.')}
                         </p>
                         <div className="flex items-center gap-2">
-                            <LanguageSwitcher />
+                            <LanguageSwitcher isTransparent />
                         </div>
                     </div>
 
@@ -110,16 +110,7 @@ const Footer = () => {
                             ))}
                         </div>
 
-                        {/* Trust Badges */}
-                        <div className="mt-6 p-4 bg-accent-foreground/10 rounded-lg">
-                            <p className="text-xs text-accent-foreground font-medium mb-2">{t('footer.registered', 'Registered Under:')}</p>
-                            <div className="flex flex-wrap gap-2">
-                                <span className="text-xs px-2 py-1 bg-accent-foreground/10 rounded">80G</span>
-                                <span className="text-xs px-2 py-1 bg-accent-foreground/10 rounded">12A</span>
-                                <span className="text-xs px-2 py-1 bg-accent-foreground/10 rounded">FCRA</span>
-                                <span className="text-xs px-2 py-1 bg-accent-foreground/10 rounded">NITI Aayog</span>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
